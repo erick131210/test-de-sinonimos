@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra-Test Táctil de Sinónimos</title>
+    <title>Test de Sinónimos - Premium</title>
     <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .quiz-container { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid #3b82f6; }
-        h1 { font-size: 22px; text-align: center; color: #1e3a8a; margin-top: 0; margin-bottom: 5px; }
-        .subtitle { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 20px; }
-        .stats-bar { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #374151; margin-bottom: 10px; }
-        .progress-container { background: #e5e7eb; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 25px; }
-        .progress-bar { background: #3b82f6; width: 0%; height: 100%; transition: width 0.3s ease; }
-        .question-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; font-size: 18px; font-weight: 700; text-align: center; color: #0f172a; margin-bottom: 20px; }
-        .options-list { display: flex; flex-direction: column; gap: 12px; }
-        .option-btn { background: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; text-align: left; color: #334155; cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
-        .option-btn:active { transform: scale(0.98); }
-        .option-btn.correct { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
-        .option-btn.incorrect { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
-        .feedback { text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px; min-height: 24px; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .quiz-container { background: #1e293b; width: 100%; max-width: 480px; border-radius: 24px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); border: 1px solid #334155; }
+        h1 { font-size: 24px; text-align: center; color: #3b82f6; margin: 0 0 5px 0; font-weight: 800; }
+        .subtitle { text-align: center; color: #94a3b8; font-size: 14px; margin-bottom: 25px; }
+        .stats-bar { display: flex; justify-content: space-between; font-weight: 700; font-size: 13px; color: #cbd5e1; margin-bottom: 12px; }
+        .progress-container { background: #334155; height: 10px; border-radius: 9999px; overflow: hidden; margin-bottom: 25px; }
+        .progress-bar { background: linear-gradient(90deg, #3b82f6, #60a5fa); width: 0%; height: 100%; transition: width 0.4s ease; }
+        .question-box { background: #0f172a; border: 1px solid #334155; border-radius: 16px; padding: 24px; font-size: 20px; font-weight: 800; text-align: center; color: #f8fafc; margin-bottom: 24px; box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.2); }
+        .options-list { display: flex; flex-direction: column; gap: 14px; }
+        .option-btn { background: #334155; border: 1px solid #475569; border-radius: 14px; padding: 18px; font-size: 16px; font-weight: 600; text-align: left; color: #f1f5f9; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; }
+        .option-btn:active { transform: scale(0.97); }
+        .option-btn.correct { background: #065f46 !important; border-color: #10b981 !important; color: #a7f3d0 !important; font-weight: 700; }
+        .option-btn.incorrect { background: #991b1b !important; border-color: #ef4444 !important; color: #fca5a5 !important; font-weight: 700; }
+        .feedback { text-align: center; font-weight: 700; font-size: 16px; margin-top: 20px; min-height: 24px; }
         .result-screen { text-align: center; display: none; }
-        .result-title { font-size: 26px; font-weight: bold; color: #10b981; margin-bottom: 15px; }
-        .rango-box { background: #eff6ff; border: 2px dashed #3b82f6; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; color: #1d4ed8; margin: 20px 0; }
-        .retry-btn { background: #3b82f6; color: white; border: none; border-radius: 12px; padding: 15px 30px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; }
+        .result-title { font-size: 28px; font-weight: 800; color: #10b981; margin-bottom: 15px; }
+        .rango-box { background: #1e3a8a; border: 2px solid #3b82f6; padding: 18px; border-radius: 16px; font-size: 18px; font-weight: 800; color: #60a5fa; margin: 25px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .retry-btn { background: #3b82f6; color: white; border: none; border-radius: 14px; padding: 16px 32px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 15px; width: 100%; transition: background 0.2s; }
+        .retry-btn:hover { background: #2563eb; }
     </style>
 </head>
 <body>
@@ -31,7 +32,7 @@
 <div class="quiz-container">
     <div id="game-screen">
         <h1>🚀 Ultra-Test Táctil</h1>
-        <div class="subtitle">Toca una opción para marcar tu respuesta</div>
+        <div class="subtitle">Selecciona la casilla correspondiente con un toque</div>
         
         <div class="stats-bar">
             <span id="txt-progreso">Pregunta: 1/50</span>
@@ -52,11 +53,11 @@
 
     <div id="result-screen" class="result-screen">
         <div class="result-title">🎉 ¡Test Completado! 🎉</div>
-        <p style="font-size: 16px; color: #4b5563;">Has terminado las 50 preguntas de Aptitud Verbal.</p>
+        <p style="font-size: 16px; color: #94a3b8;">Has evaluado todas las preguntas de Aptitud Verbal.</p>
         <div class="rango-box" id="rango-final">RANGO</div>
-        <p style="font-size: 16px; text-align: left; padding: 0 10px;">
-            🎯 <b>Aciertos totales:</b> <span id="res-aciertos" style="float:right; color:#10b981; font-weight:bold;">0</span><br><br>
-            🔥 <b>Máxima racha:</b> <span id="res-racha" style="float:right; color:#f59e0b; font-weight:bold;">0</span><br><br>
+        <p style="font-size: 16px; text-align: left; padding: 0 10px; color: #cbd5e1; line-height: 1.6;">
+            🎯 <b>Aciertos totales:</b> <span id="res-aciertos" style="float:right; color:#10b981; font-weight:bold;">0</span><br>
+            🔥 <b>Máxima racha:</b> <span id="res-racha" style="float:right; color:#f59e0b; font-weight:bold;">0</span><br>
             📈 <b>Porcentaje de éxito:</b> <span id="res-porcentaje" style="float:right; color:#3b82f6; font-weight:bold;">0%</span>
         </p>
         <button class="retry-btn" onclick="reiniciarJuego()">🔄 Intentar de Nuevo</button>
@@ -113,17 +114,3 @@ const bancoPreguntas = [
     {n: 46, p: "HÁLITO", o: ["A) vida", "B) agony", "C) espíritu", "D) ánimo", "E) soplo"], r: 4},
     {n: 47, p: "BADULAQUE", o: ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], r: 1},
     {n: 48, p: "CÁUSTICO", o: ["A) prudent", "B) mordaz", "C) agresivo", "D) A y B", "E) B y C"], r: 1},
-    {n: 49, p: "CHOTEAR", o: ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) atacar"], r: 0},
-    {n: 50, p: "FAROLEAR", o: ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], r: 0}
-];
-
-let idxActual = 0;
-let puntaje = 0;
-let racha = 0;
-let maxRacha = 0;
-let bloqueado = false;
-
-
-
-
-
