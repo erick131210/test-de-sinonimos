@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra-Test Táctil de Sinónimos</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #f0f2f5; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .quiz-container { background: white; width: 100%; max-width: 500px; border-radius: 20px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 8px solid #3b82f6; }
+        h1 { font-size: 22px; text-align: center; color: #1e3a8a; margin-top: 0; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 20px; }
+        .stats-bar { display: flex; justify-content: space-between; font-weight: bold; font-size: 14px; color: #374151; margin-bottom: 10px; }
+        .progress-container { background: #e5e7eb; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 25px; }
+        .progress-bar { background: #3b82f6; width: 0%; height: 100%; transition: width 0.3s ease; }
+        .question-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 15px; padding: 20px; font-size: 18px; font-weight: 700; text-align: center; color: #0f172a; margin-bottom: 20px; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { background: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 600; text-align: left; color: #334155; cursor: pointer; transition: all 0.2s ease; -webkit-tap-highlight-color: transparent; }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.correct { background: #d1fae5 !important; border-color: #10b981 !important; color: #065f46 !important; }
+        .option-btn.incorrect { background: #fee2e2 !important; border-color: #ef4444 !important; color: #991b1b !important; }
+        .feedback { text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px; min-height: 24px; }
+        .result-screen { text-align: center; display: none; }
+        .result-title { font-size: 26px; font-weight: bold; color: #10b981; margin-bottom: 15px; }
+        .rango-box { background: #eff6ff; border: 2px dashed #3b82f6; padding: 15px; border-radius: 12px; font-size: 18px; font-weight: bold; color: #1d4ed8; margin: 20px 0; }
+        .retry-btn { background: #3b82f6; color: white; border: none; border-radius: 12px; padding: 15px 30px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="game-screen">
+        <h1>🚀 Ultra-Test Táctil</h1>
+        <div class="subtitle">Toca una opción para marcar tu respuesta</div>
+        
+        <div class="stats-bar">
+            <span id="txt-progreso">Pregunta: 1/50</span>
+            <span id="txt-puntaje">✨ Puntos: 0</span>
+            <span id="txt-racha">🔥 Racha: 0</span>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="barra-progreso"></div>
+        </div>
+        
+        <div class="question-box" id="pregunta-texto">PREMISA</div>
+        
+        <div class="options-list" id="lista-opciones">
+            <!-- Botones táctiles generados por JS -->
+        </div>
+        
+        <div class="feedback" id="feedback-texto"></div>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <div class="result-title">🎉 ¡Test Completado! 🎉</div>
+        <p style="font-size: 16px; color: #4b5563;">Has terminado las 50 preguntas de Aptitud Verbal.</p>
+        
+        <div class="rango-box" id="rango-final">RANGO</div>
+        
+        <p style="font-size: 16px; text-align: left; padding: 0 10px;">
+            🎯 <b>Aciertos totales:</b> <span id="res-aciertos" style="float:right; color:#10b981; font-weight:bold;">0</span><br><br>
+            🔥 <b>Máxima racha:</b> <span id="res-racha" style="float:right; color:#f59e0b; font-weight:bold;">0</span><br><br>
+            📈 <b>Porcentaje de éxito:</b> <span id="res-porcentaje" style="float:right; color:#3b82f6; font-weight:bold;">0%</span>
+        </p>
+        
+        <button class="retry-btn" onclick="reiniciarJuego()">🔄 Intentar de Nuevo</button>
+    </div>
+</div>
+
+<script>
+const bancoPreguntas = [
+    {n: 1, p: "ARGÜIR", o: ["A) argumentar", "B) argento", "C) argamasa", "D) desalentar", "E) albear"], r: 0},
+    {n: 2, p: "PÁRAMO", o: ["A) oasis", "B) jardín", "C) yermo", "D) parapeto", "E) parangón"], r: 2},
+    {n: 3, p: "ENGAÑO", o: ["A) abstruso", "B) hogaño", "C) encono", "D) arana", "E) endriago"], r: 3},
+    {n: 4, p: "ARCADA", o: ["A) arcadia", "B) arcano", "C) basca", "D) arquear", "E) homeostasis"], r: 2},
+    {n: 5, p: "ESQUIVO", o: ["A) asequible", "B) arisco", "C) bisoño", "D) amistoso", "E) esquirla"], r: 1},
+    {n: 6, p: "PAULATINO", o: ["A) diligente", "B) pebete", "C) pausado", "D) laudatorio", "E) raudo"], r: 2},
+    {n: 7, p: "ARISTARCO", o: ["A) aristocrático", "B) crítico", "C) pendiente", "D) plañidero", "E) platónico"], r: 1},
+    {n: 8, p: "ASTUCIA", o: ["A) zalamería", "B) zalema", "C) candidez", "D) artería", "E) lagotería"], r: 3},
+    {n: 9, p: "ARRUMACO", o: ["A) arrinconar", "B) artero", "C) carantoña", "D) arruinado", "E) brumoso"], r: 2},
+    {n: 10, p: "ARTICULACIÓN", o: ["A) artilugio", "B) arúspice", "C) artífice", "D) coyuntura", "E) emulación"], r: 3},
+    {n: 11, p: "ADORNAR", o: ["A) orlar", "B) horadar", "C) gulusmear", "D) afear", "E) almíbarar"], r: 0},
+    {n: 12, p: "CIRCUNLOQUIO", o: ["A) círculo", "B) cimbel", "C) diferir", "D) ambages", "E) acartonado"], r: 3},
+    {n: 13, p: "ACOSAR", o: ["A) adargar", "B) atacar", "C) intuir", "D) adherir", "E) a látere"], r: 1},
+    {n: 14, p: "ÁLGIDO", o: ["A) albino", "B) tórrido", "C) albur", "D) frío", "E) etéreo"], r: 3},
+    {n: 15, p: "CONSENTIR", o: ["A) presentir", "B) desdecir", "C) acceder", "D) precaver", "E) adunar"], r: 2},
+    {n: 16, p: "JUSTA", "o": ["A) combate", "B) nombre", "C) equitativa", "D) sagacidad", "E) hacendosa"], r: 0},
+    {n: 17, p: "COMPUNGIDO", o: ["A) compendiado", "B) triste", "C) ampuloso", "D) gayo", "E) esmirriado"], r: 1},
+    {n: 18, p: "PAVOROSO", o: ["A) pábulo", "B) pacotilla", "C) padecimiento", "D) espantoso", "E) incendiario"], r: 3},
+    {n: 19, p: "ESPOLEAR", o: ["A) desanimar", "B) estimular", "C) expoliar", "D) expiar", "E) espiar"], r: 1},
+    {n: 20, p: "KAN", o: ["A) perro", "B) soberano", "C) alguacil", "D) émulo", "E) súbdito"], r: 1},
+    {n: 21, p: "UBICUO", o: ["A) donde", "B) dimisionario", "C) omnipotente", "D) omnipresente", "E) omnisciente"], r: 3},
+    {n: 22, p: "POSTERGAR", o: ["A) despreciar", "B) posponer", "C) adelantar", "D) estimular", "E) adelantar"], r: 1},
+    {n: 23, p: "LOOR", o: ["A) honor", "B) alabanza", "C) gusto", "D) olor", "E) amor"], r: 1},
+    {n: 24, p: "MARASMO", o: ["A) inmovilidad", "B) enredo", "C) pantano", "D) catarro", "E) dolor"], r: 0},
+    {n: 25, p: "CÓDICE", o: ["A) testamento", "B) manuscrito", "C) codicilo", "D) nota", "E) libro"], r: 1},
+    {n: 26, p: "DADIVOSO", o: ["A) hablador", "B) intemperante", "C) mezquino", "D) expansivo", "E) desprendido"], r: 4},
+    {n: 27, p: "DIÁFANO", o: ["A) luminoso", "B) limpio", "C) frágil", "D) delicado", "E) áspero"], r: 0},
+    {n: 28, p: "PANACEA", o: ["A) orgulloso", "B) inactivo", "C) curalotodo", "D) dulce", "E) hablador"], r: 2},
+    {n: 29, p: "HEBRA", o: ["A) efigie", "B) fibra", "C) burla", "D) sarcasmo", "E) opresión"], r: 1},
+    {n: 30, p: "FÉRULA", o: ["A) color", "B) fiebre", "C) palmeta", "D) cierta tela", "E) hueso"], r: 2},
+    {n: 31, p: "ROSO", o: ["A) raído", "B) bajo", "C) roseta", "D) raspar", "E) distensión"], r: 0},
+    {n: 32, p: "TARASCADA", o: ["A) solicitud", "B) vieja", "C) nafta", "D) trasnochada", "E) dentellada"], r: 4},
+    {n: 33, p: "MANDRIA", o: ["A) estatua", "B) mandado", "C) fruta", "D) tímido", "E) manía"], r: 3},
+    {n: 34, p: "DESPAPUCHO", o: ["A) sandez", "B) despacho", "C) perorata", "D) testimonio", "E) fracción"], r: 0},
+    {n: 35, p: "TRAPISONDA", o: ["A) desorden", "B) tela", "C) cabriola", "D) esplín", "E) espita"], r: 0},
+    {n: 36, p: "CALÍGINE", o: ["A) claro", "B) transparente", "C) opaco", "D) tedio", "E) maximum"], r: 2},
+    {n: 37, p: "IBÍDEM", o: ["A) vienen", "B) así mismo", "C) allí mismo", "D) ignaro", "E) así es"], r: 2},
+    {n: 38, p: "CURDA", o: ["A) molestia", "B) cuerdo", "C) achispado", "D) absurdidez", "E) desbordamiento"], r: 2},
+    {n: 39, p: "ENGORRO", o: ["A) aflicción", "B) lauro", "C) fracaso", "D) castigo", "E) impedimento"], r: 4},
+    {n: 40, p: "HERALDO", o: ["A) mensajero", "B) verdugo", "C) reo", "D) vate", "E) juez"], r: 0},
+    {n: 41, p: "ARMISTICIO", o: ["A) armamento", "B) plebiscito", "C) tregua", "D) cautela", "E) option"], r: 2},
+    {n: 42, p: "HABILITAR", o: ["A) facultar", "B) elegir", "C) escapar", "D) amansar", "E) dominar"], r: 0},
+    {n: 43, p: "ESCRÚPULO", o: ["A) delicadeza", "B) reparo", "C) fastidio", "D) hygiene", "E) moral"], r: 1},
+    {n: 44, p: "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], r: 2},
+    {n: 45, p: "CÚMULO", o: ["A) cantidad", "B) reunión", "C) montón", "D) variedad", "E) aglomeración"], r: 2},
+    {n: 46, p: "HÁLITO", o: ["A) vida", "B) agony", "C) espíritu", "D) ánimo", "E) soplo"], r: 4},
+    {n: 47, p: "BADULAQUE", o: ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], r: 1},
+    {n: 48, p: "CÁUSTICO", o: ["A) prudent", "B) mordaz", "C) agresivo", "D) A y B", "E) B y C"], r: 1},
+    {n: 49, p: "CHOTEAR", o: ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) atacar"], r: 0},
+    {n: 50, p: "FAROLEAR", o: ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], r: 0}
+];
+
 
