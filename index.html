@@ -45,9 +45,7 @@
         
         <div class="question-box" id="pregunta-texto">PREMISA</div>
         
-        <div class="options-list" id="lista-opciones">
-            <!-- Botones táctiles generados por JS -->
-        </div>
+        <div class="options-list" id="lista-opciones"></div>
         
         <div class="feedback" id="feedback-texto"></div>
     </div>
@@ -55,15 +53,12 @@
     <div id="result-screen" class="result-screen">
         <div class="result-title">🎉 ¡Test Completado! 🎉</div>
         <p style="font-size: 16px; color: #4b5563;">Has terminado las 50 preguntas de Aptitud Verbal.</p>
-        
         <div class="rango-box" id="rango-final">RANGO</div>
-        
         <p style="font-size: 16px; text-align: left; padding: 0 10px;">
             🎯 <b>Aciertos totales:</b> <span id="res-aciertos" style="float:right; color:#10b981; font-weight:bold;">0</span><br><br>
             🔥 <b>Máxima racha:</b> <span id="res-racha" style="float:right; color:#f59e0b; font-weight:bold;">0</span><br><br>
             📈 <b>Porcentaje de éxito:</b> <span id="res-porcentaje" style="float:right; color:#3b82f6; font-weight:bold;">0%</span>
         </p>
-        
         <button class="retry-btn" onclick="reiniciarJuego()">🔄 Intentar de Nuevo</button>
     </div>
 </div>
@@ -85,7 +80,7 @@ const bancoPreguntas = [
     {n: 13, p: "ACOSAR", o: ["A) adargar", "B) atacar", "C) intuir", "D) adherir", "E) a látere"], r: 1},
     {n: 14, p: "ÁLGIDO", o: ["A) albino", "B) tórrido", "C) albur", "D) frío", "E) etéreo"], r: 3},
     {n: 15, p: "CONSENTIR", o: ["A) presentir", "B) desdecir", "C) acceder", "D) precaver", "E) adunar"], r: 2},
-    {n: 16, p: "JUSTA", "o": ["A) combate", "B) nombre", "C) equitativa", "D) sagacidad", "E) hacendosa"], r: 0},
+    {n: 16, p: "JUSTA", o: ["A) combate", "B) nombre", "C) equitativa", "D) sagacidad", "E) hacendosa"], r: 0},
     {n: 17, p: "COMPUNGIDO", o: ["A) compendiado", "B) triste", "C) ampuloso", "D) gayo", "E) esmirriado"], r: 1},
     {n: 18, p: "PAVOROSO", o: ["A) pábulo", "B) pacotilla", "C) padecimiento", "D) espantoso", "E) incendiario"], r: 3},
     {n: 19, p: "ESPOLEAR", o: ["A) desanimar", "B) estimular", "C) expoliar", "D) expiar", "E) espiar"], r: 1},
@@ -113,7 +108,7 @@ const bancoPreguntas = [
     {n: 41, p: "ARMISTICIO", o: ["A) armamento", "B) plebiscito", "C) tregua", "D) cautela", "E) option"], r: 2},
     {n: 42, p: "HABILITAR", o: ["A) facultar", "B) elegir", "C) escapar", "D) amansar", "E) dominar"], r: 0},
     {n: 43, p: "ESCRÚPULO", o: ["A) delicadeza", "B) reparo", "C) fastidio", "D) hygiene", "E) moral"], r: 1},
-    {n: 44, p: "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], r: 2},
+    {n: 44, p: "IMPÁVIDO", o: ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], r: 2},
     {n: 45, p: "CÚMULO", o: ["A) cantidad", "B) reunión", "C) montón", "D) variedad", "E) aglomeración"], r: 2},
     {n: 46, p: "HÁLITO", o: ["A) vida", "B) agony", "C) espíritu", "D) ánimo", "E) soplo"], r: 4},
     {n: 47, p: "BADULAQUE", o: ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], r: 1},
@@ -121,5 +116,13 @@ const bancoPreguntas = [
     {n: 49, p: "CHOTEAR", o: ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) atacar"], r: 0},
     {n: 50, p: "FAROLEAR", o: ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], r: 0}
 ];
+
+let idxActual = 0;
+let puntaje = 0;
+let racha = 0;
+let maxRacha = 0;
+let bloqueado = false;
+
+
 
 
