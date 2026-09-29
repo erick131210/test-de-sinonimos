@@ -175,8 +175,8 @@ txtProgreso.innerHTML = "¡Test Completado!"; return;
 bloqueado = false; feedbackTexto.className = "feedback"; feedbackTexto.innerHTML = "";
 contenedorAnalisis.style.display = "none"; btnSiguiente.style.display = "none"; listaOpciones.innerHTML = "";
 const item = bancoPreguntas[idxActual];
-txtProgreso.innerHTML = Pregunta: ${idxActual + 1}/${bancoPreguntas.length};
-preguntaTexto.innerHTML = ${item.n}. ${item.p};
+txtProgreso.innerHTML = `Pregunta: ${idxActual + 1}/${bancoPreguntas.length}`;
+preguntaTexto.innerHTML = `${item.n}. ${item.p}`;
 item.o.forEach((opcion, index) => {
 const boton = document.createElement("button");
 boton.className = "option-btn"; boton.innerHTML = opcion;
@@ -199,10 +199,10 @@ botones[item.r].classList.add("correct");
 feedbackTexto.innerHTML = "❌ Respuesta Incorrecta.";
 feedbackTexto.className = "feedback error"; racha = 0;
 alertaRespuestaCorrecta.style.display = "inline-block";
-alertaRespuestaCorrecta.innerHTML = La respuesta correcta era: ${item.o[item.r]};
+alertaRespuestaCorrecta.innerHTML = `La respuesta correcta era: ${item.o[item.r]}`;
 }
-txtPuntaje.innerHTML = ✨ Puntos: ${puntaje};
-txtRacha.innerHTML = 🔥 Racha: ${racha};
+txtPuntaje.innerHTML = `✨ Puntos: ${puntaje}`;
+txtRacha.innerHTML = `🔥 Racha: ${racha}`;
 analisisTexto.innerHTML = item.a;
 contenedorAnalisis.style.display = "block"; btnSiguiente.style.display = "block";
 }
