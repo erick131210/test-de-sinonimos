@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Táctil de Sinónimos - 150 Preguntas</title>
+    <title>Test Táctil de Sinónimos - 200 Preguntas</title>
     <style>
         * { box-sizing: border-box; font-family: system-ui, sans-serif; }
         body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f8fafc; }
@@ -43,6 +43,7 @@
             background: #f5f7ff;
             border: 2px solid #d9def7;
             text-align: center;
+            color: #111827;
         }
         .resultado-final h2 {
             margin-top: 0;
@@ -51,7 +52,6 @@
             font-size: 1.15rem;
             margin: 9px 0;
         }
-
     </style>
 </head>
 <body>
@@ -61,7 +61,7 @@
     <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Iniciar Test de 50 Preguntas</button>
     
     <div class="stats">
-        <span id="txt-progreso">Pregunta: 1/150</span>
+        <span id="txt-progreso">Pregunta: 1/200</span>
         <span id="txt-puntaje">✨ Puntos: 0</span>
         <span id="txt-racha">🔥 Racha: 0</span>
     </div>
@@ -111,12 +111,12 @@ const bancoPreguntas = [
     {"n": 26, "p": "DADIVOSO", "o": ["A) hablador", "B) intemperante", "C) mezquino", "D) expansivo", "E) desprendido"], "r": 4, "a": "Desprendido. Persona generosa, altruista y desinteresada."},
     {"n": 27, "p": "DIÁFANO", "o": ["A) luminoso", "B) limpio", "C) frágil", "D) delicado", "E) áspero"], "r": 0, "a": "Luminoso. Deja pasar la luz; claro, transparente y despejado."},
     {"n": 28, "p": "PANACEA", "o": ["A) orgulloso", "B) inactivo", "C) curalotodo", "D) dulce", "E) hablador"], "r": 2, "a": "Curalotodo. Remedio mítico capaz de sanar cualquier enfermedad."},
-    {"n": 29, "p": "HEBRA", "o": ["A) efigie", "B) fibra", "C) burla", "D) sarcasmo", "E) opresión"], "r": 1, "a": "Fibra. Filamento largo y delgado de material textil o biológico."},
-    {"n": 30, "p": "FÉRULA", "o": ["A) color", "B) fiebre", "C) palmeta", "D) cierta tela", "E) hueso"], "r": 2, "a": "Palmeta. Históricamente instrumento de castigo; denota yugo o autoridad."},
-    {"n": 31, "p": "ROSO", "o": ["A) raído", "B) bajo", "C) roseta", "D) raspar", "E) distensión"], "r": 0, "a": "Raído. Desgastado por el roce constante perdiendo su superficie."},
-    {"n": 32, "p": "TARASCADA", "o": ["A) solicitud", "B) vieja", "C) nafta", "D) trasnochada", "E) dentellada"], "r": 4, "a": "Dentellada. Mordisco rápido dado con los dientes de forma agresiva."},
-    {"n": 33, "p": "MANDRIA", "o": ["A) estatua", "B) mandado", "C) fruta", "D) tímido", "E) manía"], "r": 3, "a": "Tímido. Individuo cobarde, falto de valor o asustadizo."},
-    {"n": 34, "p": "DESPAPUCHO", "o": ["A) sandez", "B) despacho", "C) perorata", "D) testimonio", "E) fracción"], "r": 0, "a": "Sandez. Expresión absurda, necedad o disparate evidente."},
+{"n": 29, "p": "HEBRA", "o": ["A) efigie", "B) fibra", "C) burla", "D) sarcasmo", "E) opresión"], "r": 1, "a": "Fibra. Filamento largo y delgado de material textil o biológico."},
+{"n": 30, "p": "FÉRULA", "o": ["A) color", "B) fiebre", "C) palmeta", "D) cierta tela", "E) hueso"], "r": 2, "a": "Palmeta. Históricamente instrumento de castigo; denota yugo o autoridad."},
+{"n": 31, "p": "ROSO", "o": ["A) raído", "B) bajo", "C) roseta", "D) raspar", "E) distensión"], "r": 0, "a": "Raído. Desgastado por el roce constante perdiendo su superficie."},
+{"n": 32, "p": "TARASCADA", "o": ["A) solicitud", "B) vieja", "C) nafta", "D) trasnochada", "E) dentellada"], "r": 4, "a": "Dentellada. Mordisco rápido dado con los dientes de forma agresiva."},
+{"n": 33, "p": "MANDRIA", "o": ["A) estatua", "B) mandado", "C) fruta", "D) tímido", "E) manía"], "r": 3, "a": "Tímido. Individuo cobarde, falto de valor o asustadizo."},
+{"n": 34, "p": "DESPAPUCHO", "o": ["A) sandez", "B) despacho", "C) perorata", "D) testimonio", "E) fracción"], "r": 0, "a": "Sandez. Expresión absurda, necedad o disparate evidente."},
 {"n": 35, "p": "TRAPISONDA", "o": ["A) desorden", "B) tela", "C) cabriola", "D) esplín", "E) espita"], "r": 0, "a": "Desorden. Gresca, bulla, alboroto confuso o revuelo."},
 {"n": 36, "p": "CALÍGINE", "o": ["A) claro", "B) transparente", "C) opaco", "D) tedio", "E) máximo"], "r": 2, "a": "Opaco. Oscuridad densa, niebla o ambiente lúgubre y sombrío."},
 {"n": 37, "p": "IBÍDEM", "o": ["A) vienen", "B) así mismo", "C) allí mismo", "D) ignaro", "E) así es"], "r": 2, "a": "Allí mismo. Voz latina para indicar exactamente la misma referencia."},
@@ -126,11 +126,11 @@ const bancoPreguntas = [
 {"n": 41, "p": "ARMISTICIO", "o": ["A) armamento", "B) plebiscito", "C) tregua", "D) cautela", "E) opción"], "r": 2, "a": "Tregua. Suspensión provisional de hostilidades militares pactada."},
 {"n": 42, "p": "HABILITAR", "o": ["A) facultar", "B) elegir", "C) escapar", "D) amansar", "E) dominar"], "r": 0, "a": "Facultar. Hacer legalmente idóneo a alguien u otorgar potestad."},
 {"n": 43, "p": "ESCRÚPULO", "o": ["A) delicadeza", "B) reparo", "C) fastidio", "D) higiene", "E) moral"], "r": 1, "a": "Reparo. Duda o recelo ético sobre si una acción es correcta."},
-{"n": 44, "p": "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) sorprendido", "E) trémulo"], "r": 2, "a": "Calmado. Persona libre de pavor, serena e imperturbable."},
+{"n": 44, "p": "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], "r": 2, "a": "Calmado. Persona libre de pavor, serena e imperturbable."},
 {"n": 45, "p": "CÚMULO", "o": ["A) cantidad", "B) reunión", "C) montón", "D) variedad", "E) aglomeración"], "r": 2, "a": "Montón. Agrupación o acumulación de cosas superpuestas."},
 {"n": 46, "p": "HÁLITO", "o": ["A) vida", "B) agonía", "C) espíritu", "D) ánimo", "E) soplo"], "r": 4, "a": "Soplo. Vapor al respirar; corriente suave de aire o brisa."},
 {"n": 47, "p": "BADULAQUE", "o": ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], "r": 1, "a": "Cándido. Individuo de poco juicio, ingenuo o fácil de engañar."},
-{"n": 48, "p": "CÁUSTICO", "o": ["A) prudente", "B) mordaz", "C) agresivo", "D) opción A y B", "E) opción B y C"], "r": 1, "a": "Mordaz. Describe un comentario irónico, agudo y punzante."},
+{"n": 48, "p": "CÁUSTICO", "o": ["A) prudent", "B) mordaz", "C) agresivo", "D) opción A y B", "E) opción B y C"], "r": 1, "a": "Mordaz. Describe un comentario irónico, agudo y punzante."},
 {"n": 49, "p": "CHOTEAR", "o": ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) ataque"], "r": 0, "a": "Expulsar. Rechazar o desechar a alguien de forma despectiva."},
 {"n": 50, "p": "FAROLEAR", "o": ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], "r": 4, "a": "Presumir. Ostentar altanería para llamar la atención ajena."},
 {"n": 51, "p": "OBLITERAR", "o": ["A) borrar", "B) recordar", "C) expandir", "D) iniciar", "E) festejar"], "r": 0, "a": "Borrar. Obstruir, anular o eliminar un conducto o registro."},
@@ -161,10 +161,10 @@ const bancoPreguntas = [
 {"n": 76, "p": "HETERODOXO", "o": ["A) sumiso", "B) fiel", "C) disidente", "D) común", "E) ignorante"], "r": 2, "a": "Disidente. Que se aparta de la doctrina oficial común."},
 {"n": 77, "p": "INMUTABLE", "o": ["A) inalterable", "B) mudable", "C) frágil", "D) ruidoso", "E) veloz"], "r": 0, "a": "Inalterable. Que no cambia, inmóvil ante las emociones."},
 {"n": 78, "p": "MISÁNTROPO", "o": ["A) sociable", "B) huraño", "C) filántropo", "D) sabio", "E) enfermo"], "r": 1, "a": "Huraño. Muestra aversión al trato humano y se aísla."},
-{"n": 79, "p": "RECALCITRANTE", "o": ["A) flexible", "B) obediente", "C) obstinado", "D) tibio", "E) moderno"], "r": 2, "a": "Obstinado. Terco, aferrado con terquedad a una postura."},
+{"n": 79, "p": "RECALCITRANTE", "o": ["A) flexible", "B) obedient", "C) obstinado", "D) tibio", "E) moderno"], "r": 2, "a": "Obstinado. Terco, aferrado con terquedad a una postura."},
 {"n": 80, "p": "TÁCITO", "o": ["A) explícito", "B) implícito", "C) ruidoso", "D) prohibido", "E) escrito"], "r": 1, "a": "Implícito. Que no se expresa pero se deduce de los hechos."},
 {"n": 81, "p": "UBICUIDAD", "o": ["A) ausencia", "B) omnipresencia", "C) destierro", "D) velocidad", "E) sabiduría"], "r": 1, "a": "Omnipresencia. Facultad de estar en todas partes a la vez."},
-{"n": 82, "p": "VÁSTAGO", "o": ["A) ancestro", "B) tronco", "C) descendiente", "D) amigo", "E) protector"], "r": 2, "a": "Descendiente. Persona que desciende de otra; hijo o retoño."},
+{"n": 82, "p": "VÁSTAGO", "o": ["A) ancestro", "B) tronco", "C) descendant", "D) amigo", "E) protector"], "r": 2, "a": "Descendiente. Persona que desciende de otra; hijo o retoño."},
 {"n": 83, "p": "ABYECTO", "o": ["A) noble", "B) despreciable", "C) lejano", "D) inteligente", "E) generoso"], "r": 1, "a": "Despreciable. Persona ruin, vil o baja en su moral."},
 {"n": 84, "p": "COADYUVAR", "o": ["A) estorbar", "B) oponer", "C) contribuir", "D) iniciar", "E) terminar"], "r": 2, "a": "Contribuir. Prestar ayuda o cooperar para un objetivo común."},
 {"n": 85, "p": "DECREPITUD", "o": ["A) juventud", "B) health", "C) vejez", "D) locura", "E) pobreza"], "r": 2, "a": "Vejez. Decadencia física provocada por la avanzada edad."},
@@ -192,7 +192,7 @@ const bancoPreguntas = [
 {"n": 107, "p": "CARRILLOS", "o": ["A) mofletes", "B) rumores", "C) carrozas", "D) obesidad", "E) pómulos"], "r": 0, "a": "Mofletes. Designa formalmente a las mejillas carnosas o abultadas a ambos lados del rostro humano."},
 {"n": 108, "p": "ACUCIOSO", "o": ["A) genial", "B) perpicaz", "C) laborioso", "D) intuitivo", "E) activo"], "r": 2, "a": "Laborioso. Describe a una persona muy aplicada, diligente y solicita que pone un gran esfuerzo, esmero y rapidez en sus tareas de trabajo o estudio."},
 {"n": 109, "p": "MONJE", "o": ["A) santón", "B) ermitaño", "C) anacoreta", "D) monja", "E) monaguillo"], "r": 2, "a": "Anacoreta. Representa la forma originaria y pura del monacato eremítico: personas que se retiran del mundo para vivir en soledad y contemplación espiritual."},
-{"n": 110, "p": "CHOCHEZ", "o": ["A) ternura", "B) arrumaco", "C) ancianidad", "D) achaques", "E) decrepitud"], "r": 4, "a": "Decrepitud. Estado de decadencia física y mental extrema producida por la avanzada edad biológica, donde se debilitan marcadamente las facultades."},
+{"n": 110, "p": "CHOCHEZ", "o": ["A) ternura", "B) arrumaco", "C) ancianidad", "D) aches", "E) decrepitud"], "r": 4, "a": "Decrepitud. Estado de decadencia física y mental extrema producida por la avanzada edad biológica, donde se debilitan marcadamente las facultades."},
 {"n": 111, "p": "ANARQUISTA", "o": ["A) solerte", "B) libertario", "C) amotinado", "D) desigual", "E) cretino"], "r": 1, "a": "Libertario. Término ideológico e histórico que funciona como sinónimo directo del partidario del anarquismo y de la abolición del Estado."},
 {"n": 112, "p": "POSMA", "o": ["A) pústula", "B) férula", "C) pasividad", "D) cachaza", "E) apatía"], "r": 3, "a": "Cachaza. Describe la lentitud, pesadez o flema excesiva y exasperante en el modo de actuar o de ejecutar las acciones físicas."},
 {"n": 113, "p": "ABSORTO", "o": ["A) alerta", "B) admirado", "C) concentrado", "D) pensativo", "E) iluso"], "r": 1, "a": "Admirado. Significa pasmado, estupefacto o sobrecogido por el asombro ante un suceso extraordinario que suspende el pensamiento."},
@@ -212,7 +212,7 @@ const bancoPreguntas = [
 {"n": 127, "p": "DUBITAR", "o": ["A) indefinir", "B) alternar", "C) hesitar", "D) equivocar", "E) capcioso"], "r": 2, "a": "Hesitar. Verbo en infinitivo de registro culto que significa exactamente dudar, vacilar o mostrar indecisión antes de emitir una resolución."},
 {"n": 128, "p": "DILOGÍA", "o": ["A) falsedades", "B) ambigüedad", "C) falacia", "D) engaño", "E) falsedad"], "r": 1, "a": "Ambigüedad. Cualidad del lenguaje o enunciado que puede entenderse de varios modos o admitir distintas interpretaciones lingüísticas concurrentes."},
 {"n": 129, "p": "INTERINO", "o": ["A) incluido", "B) endógeno", "C) provisional", "D) reemplazo", "E) interno"], "r": 2, "a": "Provisional. Adjetivo que describe aquello que se hace, tiene o ejerce de manera transitoria y temporal, a la espera de una resolución definitiva."},
-{"n": 130, "p": "PLEGARIA", "o": ["A) implorar", "B) petición", "C) jaculatoria", "D) responso", "E) adoración"], "r": 2, "a": "Jaculatoria. Define formalmente a una oración o plegaria muy breve y fervorosa, dicha con profunda devoción religiosa a la divinidad."},
+{"n": 130, "p": "PLEGARIA", "o": ["A) implorar", "B) petición", "C) jaculatoria", "D) responso", "E) adoration"], "r": 2, "a": "Jaculatoria. Define formalmente a una oración o plegaria muy breve y fervorosa, dicha con profunda devoción religiosa a la divinidad."},
 {"n": 131, "p": "DISOLUTO", "o": ["A) libertino", "B) libre", "C) autónomo", "D) absoluto", "E) candinga"], "r": 0, "a": "Libertino. Individuo entregado por completo a los vicios morales y a los placeres desenfrenados, viviendo sin moderación alguna."},
 {"n": 132, "p": "ALBAÑAL", "o": ["A) estanque", "B) palestra", "C) desagüe", "D) letrina", "E) silo"], "r": 2, "a": "Desagüe. Conducto, canal o tubería subterránea construida específicamente para dar salida a las aguas sucias o pluviales de una edificación."},
 {"n": 133, "p": "DESAPERCIBIDO", "o": ["A) inadvertido", "B) desprovisto", "C) ignorado", "D) ignoto", "E) indiferente"], "r": 0, "a": "Inadvertido. Califica a aquello que pasa completamente sin ser visto, que no es percibido o que no llama la atención del entorno."},
@@ -232,7 +232,58 @@ const bancoPreguntas = [
 {"n": 147, "p": "EXPATRIADO", "o": ["A) proscrito", "B) prescrito", "C) suscrito", "D) expulsado", "E) aislado"], "r": 0, "a": "Proscrito. Persona exiliada o desterrada formalmente de su patria debido a motivos políticos o determinaciones de carácter legal judicial."},
 {"n": 148, "p": "CÁFILA", "o": ["A) gorrino", "B) secuela", "C) caterva", "D) difunto", "E) extravio"], "r": 2, "a": "Caterva. Sustantivo colectivo indeterminado que denota a una multitud desordenada de personas o cosas consideradas en grupo con tono despectivo."},
 {"n": 149, "p": "ESTRAGAR", "o": ["A) enfermar", "B) afectar", "C) deshacer", "D) desvastar", "E) devastar"], "r": 4, "a": "Devastar. Destruir un territorio o asolar y arruinar algo por completo, compartiendo el mismo grado máximo de daño estructural o moral."},
-{"n": 150, "p": "LABILIDAD", "o": ["A) habilidad", "B) inconstancia", "C) movimiento", "D) cambiante", "E) emotividad"], "r": 1, "a": "Inconstancia. Sustantivo abstracto que define formalmente la falta de estabilidad, firmeza o la condición de ser mudable o variable."}
+{"n": 150, "p": "LABILIDAD", "o": ["A) habilidad", "B) inconstancia", "C) movimiento", "D) cambiante", "E) emotividad"], "r": 1, "a": "Inconstancia. Sustantivo abstracto que define formalmente la falta de estabilidad, firmeza o la condición de ser mudable o variable."},
+// --- NUEVAS 50 PREGUNTAS INTEGRADAS CON ÉXITO (151 - 200) ---
+{"n": 151, "p": "ENHIESTO", "o": ["A) endurado", "B) penetrante", "C) erecto", "D) espinoso", "E) edificado"], "r": 2, "a": "Erecto. Adjetivo que significa levantado, derecho o vertical."},
+{"n": 152, "p": "RENUENTE", "o": ["A) remiso", "B) precoz", "C) ilógico", "D) indocto", "E) renovado"], "r": 0, "a": "Remiso. Se refiere a la persona reacia o que muestra resistencia o falta de voluntad para cumplir una obligación."},
+{"n": 153, "p": "LOCUACIDAD", "o": ["A) elocuencia", "B) oratoria", "C) labia", "D) verborrea", "E) facundia"], "r": 4, "a": "Facundia. Abundancia de palabras y gran soltura o facilidad para hablar de forma fluida."},
+{"n": 154, "p": "TAJANTE", "o": ["A) divisorio", "B) concluyente", "C) arbitrario", "D) encendido", "E) esquemático"], "r": 1, "a": "Concluyente. Que es firme, categórico y definitivo, no dejando lugar a ninguna duda o discusión."},
+{"n": 155, "p": "MANUFACTURA", "o": ["A) urdimbre", "B) obraje", "C) trabajo", "D) acabado", "E) fábrica"], "r": 1, "a": "Obraje. Obra hecha a mano o taller artesanal donde se elaboran y fabrican dichos productos."},
+{"n": 156, "p": "SEÑORIAL", "o": ["A) imperioso", "B) majestuoso", "C) soberbio", "D) cortesano", "E) orgulloso"], "r": 1, "a": "Majestuoso. Que posee una gran dignidad, distinción, suntuosidad, elegancia y grandeza."},
+{"n": 157, "p": "INCENSAR", "o": ["A) alabar", "B) destacar", "C) flamear", "D) humear", "E) ahumar"], "r": 0, "a": "Alabar. En sentido figurado, lisonjear, adular o elogiar exageradamente a alguien para ganar su favor."},
+{"n": 158, "p": "COMPULSAR", "o": ["A) carear", "B) enfrentar", "C) afrontar", "D) comparar", "E) igualar"], "r": 3, "a": "Comparar. Cotejar o examinar dos o más documentos para comprobar su exacta fidelidad y autenticidad."},
+{"n": 159, "p": "INCITAR", "o": ["A) promover", "B) impulsar", "C) prevenir", "D) inducir", "E) tonificar"], "r": 3, "a": "Inducir. Instigar, mover o provocar directamente a una persona para que realice una acción determinada."},
+{"n": 160, "p": "ESENCIA", "o": ["A) centro", "B) consomé", "C) interés", "D) meollo", "E) vital"], "r": 3, "a": "Meollo. La parte central, sustancial, fundamental o más interna de un asunto o cosa."},
+{"n": 161, "p": "RESCOLDO", "o": ["A) carbón", "B) cisco", "C) brasa", "D) fuego", "E) hoguera"], "r": 2, "a": "Brasa. Brasa menuda que queda cubierta por la ceniza manteniendo el calor del fuego apagado."},
+{"n": 162, "p": "BARBIÁN", "o": ["A) díscolo", "B) timorato", "C) gallardo", "D) benévolo", "E) satánico"], "r": 2, "a": "Gallardo. Adjetivo de registro coloquial para alguien desenvuelto, apuesto, gallardo, simpático y arrojado."},
+{"n": 163, "p": "MACARRA", "o": ["A) arrebato", "B) zaragata", "C) proxeneta", "D) morcilla", "E) piltrafa"], "r": 2, "a": "Proxeneta. En su acepción formal, persona que induce a otra a la prostitución y se beneficia de ella."},
+{"n": 164, "p": "PASADISTA", "o": ["A) medieval", "B) antiguo", "C) anarquista", "D) clásico", "E) reaccionario"], "r": 4, "a": "Reaccionario. Persona que se aferra con rigidez a las ideas, normas o estructuras del pasado frente al progreso."},
+{"n": 165, "p": "AHERROJAR", "o": ["A) humillar", "B) encadenar", "C) dominado", "D) acribillar", "E) fantasear"], "r": 1, "a": "Encadenar. Poner grilletes o hierros a alguien; en sentido figurado, oprimir o privar de la libertad."},
+{"n": 166, "p": "OBSEQUIOSO", "o": ["A) diligente", "B) comedido", "C) manilargo", "D) cumplidor", "E) piropeador"], "r": 1, "a": "Comedido. Persona atenta, servicial, cortés y sumamente moderada que busca agradar a los demás."},
+{"n": 167, "p": "ARROYADA", "o": ["A) atropello", "B) llovizna", "C) crecida", "D) aluvión", "E) aniego"], "r": 2, "a": "Crecida. Aumento notable y violento del caudal de un arroyo debido a lluvias torrenciales."},
+{"n": 168, "p": "DIFUNDIRSE", "o": ["A) disolverse", "B) explayarse", "C) bifurcarse", "D) cundir", "E) mezclarse"], "r": 3, "a": "Cundir. Propagarse o extenderse un elemento incorpóreo (como noticias o rumores) ganando terreno."},
+{"n": 169, "p": "INTERPELA", "o": ["A) cuestionar", "B) censurar", "C) criticar", "D) consultar", "E) preguntar"], "r": 2, "a": "Criticar. Alineado con la clave de tu libro, la interpelación denota un trasfondo de reproche u objeción desaprobatoria."},
+{"n": 170, "p": "OBSECUENTE", "o": ["A) cuidadoso", "B) obediente", "C) conquistado", "D) ocluso", "E) oficioso"], "r": 1, "a": "Obediente. Persona sumisa, obediente o excesivamente rendida a acatar los deseos u órdenes de otra."},
+{"n": 171, "p": "NULIDAD", "o": ["A) paradoja", "B) rescisión", "C) reprobación", "D) negación", "E) noviciado"], "r": 1, "a": "Rescisión. Falta de valor legal; acción jurídica de invalidar o dejar sin efecto un contrato u obligación."},
+{"n": 172, "p": "TRAMAR", "o": ["A) precaver", "B) tamizar", "C) proyectar", "D) desolar", "E) acoquinar"], "r": 2, "a": "Proyectar. Discurrir, idear o planear con astucia la ejecución de un plan o intriga compleja."},
+{"n": 173, "p": "ZARANDEAR", "o": ["A) atarantar", "B) vociferar", "C) estropear", "D) cribar", "E) criticar"], "r": 3, "a": "Cribar. En su acepción original, pasar semillas o tierra por una criba o zaranda para limpiarlas."},
+{"n": 174, "p": "ALQUERÍA", "o": ["A) altillo", "B) cetrería", "C) cortijo", "D) cortejo", "E) ablación"], "r": 2, "a": "Cortijo. Casa de campo o finca rústica destinada a labores de agricultura y ganadería."},
+{"n": 175, "p": "CHÁCHARA", "o": ["A) alboroto", "B) intriga", "C) palique", "D) coloquio", "E) melindre"], "r": 2, "a": "Palique. Conversación de tono ligero, informal y ameno sobre temas de poca trascendencia."},
+{"n": 176, "p": "PINGÜE", "o": ["A) espacioso", "B) empacho", "C) exceso", "D) plétora", "E) abundante"], "r": 4, "a": "Abundante. Adjetivo que designa algo muy abundante, copioso, fértil o cuantioso en ganancias."},
+{"n": 177, "p": "AVEZADO", "o": ["A) camastrón", "B) mutable", "C) insólito", "D) inexperto", "E) experimentado"], "r": 4, "a": "Experimentado. Persona habituada, diestra y experimentada en algo por efecto de la práctica constante."},
+{"n": 178, "p": "BUHONERÍA", "o": ["A) entrevero", "B) cholada", "C) baratija", "D) menester", "E) vocerío"], "r": 2, "a": "Baratija. Conjunto de mercancías de poco valor y precio económico que se venden de forma ambulante."},
+{"n": 179, "p": "CELESTINAJE", "o": ["A) mancebía", "B) tercería", "C) temeridad", "D) feminismo", "E) explotación"], "r": 1, "a": "Tercería. Oficio o mediación de un tercero para facilitar o encubrir una relación amorosa."},
+{"n": 180, "p": "FALLA", "o": ["A) tara", "B) yerro", "C) equívoco", "D) anomalía", "E) imperfección"], "r": 4, "a": "Imperfección. Defecto o carencia en la estructura de algo que reduce su calidad o impide su perfección."},
+{"n": 181, "p": "PENACHO", "o": ["A) protector", "B) copete", "C) plumaje", "D) cumbre", "E) grujido"], "r": 1, "a": "Copete. Grupo de plumas levantadas en la cabeza de algunas aves o mechón de pelo elevado."},
+{"n": 182, "p": "CURSADO", "o": ["A) inocente", "B) examinado", "C) deterioro", "D) baquiano", "E) expedido"], "r": 3, "a": "Baquiano. Persona diestra, práctica, versada o experimentada en un entorno, camino o materia."},
+{"n": 183, "p": "DEDUCIR", "o": ["A) razonar", "B) pensar", "C) filosofar", "D) descontar", "E) aumentar"], "r": 0, "a": "Razonar. Conducir el pensamiento de forma lógica y estructurada para extraer una conclusión (según tu libro)."},
+{"n": 184, "p": "OBSOLETO", "o": ["A) envejecido", "B) discontinuo", "C) arcaizado", "D) caducidad", "E) añoso"], "r": 2, "a": "Arcaizado. Algo antiguo, anticuado o que ha quedado completamente en desuso frente a lo moderno."},
+{"n": 185, "p": "ACTUARIO", "o": ["A) bromista", "B) valedor", "C) agasajo", "D) escribano", "E) testigo"], "r": 3, "a": "Escribano. Oficial público legalmente autorizado para dar fe de las actuaciones en los juzgados."},
+{"n": 186, "p": "DÁRSENA", "o": ["A) almacén", "B) espigón", "C) aduana", "D) muelle", "E) puerto"], "r": 4, "a": "Puerto. Siguiendo la clave de tu libro, engloba de forma general el concepto de infraestructura marítima protegida."},
+{"n": 187, "p": "HONESTIDAD", "o": ["A) prudencia", "B) discreción", "C) castidad", "D) preciado", "E) benemérito"], "r": 2, "a": "Castidad. En su sentido clásico y moral formal del diccionario, denota recato, decencia, pudor y castidad."},
+{"n": 188, "p": "MARAÑERO", "o": ["A) cotillero", "B) cotidiano", "C) zurcido", "D) testarudo", "E) conciso"], "r": 0, "a": "Cotillero. Persona enredadora, embustera o chismosa que disfruta de armar líos e intrigas ajenas."},
+{"n": 189, "p": "CÚMULO", "o": ["A) nubosidad", "B) hacina", "C) pundonor", "D) escarpa", "E) apelación"], "r": 1, "a": "Hacina. Conjunto, montón o acumulación de cosas colocadas apretadamente unas sobre otras."},
+{"n": 190, "p": "DEFECCIÓN", "o": ["A) deformidad", "B) infidelidad", "C) tosquedad", "D) laberinto", "E) regosto"], "r": 1, "a": "Infidelidad. Abandono o separación de una causa, lealtad o partido, quebrando un compromiso fiel."},
+{"n": 191, "p": "COYUNDA", "o": ["A) esponsales", "B) maridaje", "C) sociedad", "D) concubinato", "E) convivencia"], "r": 1, "a": "Maridaje. Enlace, matrimonio o unión conyugal (derivado del yugo que une a las parejas)."},
+{"n": 192, "p": "OMINOSO", "o": ["A) inédito", "B) esclavista", "C) vasallo", "D) nefasto", "E) funesto"], "r": 3, "a": "Nefasto. Hecho azaroso, fatídico, abominable o de mal agüero que presagia una desgracia."},
+{"n": 193, "p": "PRÓDIGO", "o": ["A) arrepentido", "B) abundante", "C) disipador", "D) malévolo", "E) menesteroso"], "r": 2, "a": "Disipador. Persona que desperdicia, derrocha y consume sus bienes económicos en gastos inútiles."},
+{"n": 194, "p": "CASTA", "o": ["A) herencia", "B) prole", "C) raza", "D) linaje", "E) ascendencia"], "r": 3, "a": "Linaje. Ascendencia, estirpe o serie de antepasados familiares, usualmente ilustres."},
+{"n": 195, "p": "CACHAZUDO", "o": ["A) burlón", "B) apático", "C) narigón", "D) bufón", "E) hediondo"], "r": 1, "a": "Apático. Sujeto que actúa con extrema lentitud, calma o pachorra, mostrando falta de dinamismo."},
+{"n": 196, "p": "FAMÉLICO", "o": ["A) escuálido", "B) sucio", "C) haraposo", "D) desnutrido", "E) hambriento"], "r": 4, "a": "Hambriento. Persona o animal que tiene muchísima hambre o que padece severamente por la falta de ella."},
+{"n": 197, "p": "EVERSIÓN", "o": ["A) reacción", "B) reversión", "C) erupción", "D) sismo", "E) cataclismo"], "r": 4, "a": "Cataclismo. Destrucción masiva, ruina, vuelco o caída total de una estructura, orden o territorio."},
+{"n": 198, "p": "ESTOLIDEZ", "o": ["A) necedad", "B) pavura", "C) idiocia", "D) estúpido", "E) torpeza"], "r": 0, "a": "Necedad. Falta absoluta de razón, inteligencia, discurso o sensatez en el comportamiento."},
+{"n": 199, "p": "CONFERENCIA", "o": ["A) exposición", "B) diálogo", "C) cátedra", "D) simposio", "E) panel"], "r": 0, "a": "Exposición. Disertación pública u oral que realiza un especialista para explicar y desarrollar un tema."},
+{"n": 200, "p": "ENCANDILADO", "o": ["A) deleitado", "B) hechizado", "C) enamorado", "D) templado", "E) alelado"], "r": 1, "a": "Hechizado. Persona completamente cautivada, fascinada, deslumbrada o embelesada por algo u alguien."}
 ];
 let preguntas = [];
 let idxActual = 0;
@@ -240,7 +291,6 @@ let puntaje = 0;
 let racha = 0;
 let bloqueado = false;
 let iniciado = false;
-
 const txtProgreso = document.getElementById("txt-progreso");
 const txtPuntaje = document.getElementById("txt-puntaje");
 const txtRacha = document.getElementById("txt-racha");
@@ -252,158 +302,123 @@ const alertaRespuestaCorrecta = document.getElementById("alerta-respuesta-correc
 const analisisTexto = document.getElementById("analisis-texto");
 const btnSiguiente = document.getElementById("btn-siguiente");
 const btnIniciar = document.getElementById("btn-iniciar");
-
 function mezclar(array) {
-    const copia = [...array];
-    for (let i = copia.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-    return copia;
+const copia = [...array];
+for (let i = copia.length - 1; i > 0; i--) {
+const j = Math.floor(Math.random() * (i + 1));
+[copia[i], copia[j]] = [copia[j], copia[i]];
 }
-
+return copia;
+}
 let preguntasRestantes = [...bancoPreguntas];
-
 function iniciarTest() {
-    // Si ya se usaron todas las preguntas, se vuelve a llenar el banco.
-    if (preguntasRestantes.length === 0) {
-        preguntasRestantes = [...bancoPreguntas];
-    }
-
-    // Toma 50 al azar de las que todavía no se han usado.
-    preguntas = mezclar([...preguntasRestantes]).slice(0, Math.min(50, preguntasRestantes.length));
-
-    // Las elimina del banco pendiente para evitar repeticiones entre rondas.
-    const usadas = new Set(preguntas.map(p => p.n));
-    preguntasRestantes = preguntasRestantes.filter(p => !usadas.has(p.n));
-
-    idxActual = 0;
-    puntaje = 0;
-    racha = 0;
-    bloqueado = false;
-    iniciado = true;
-
-    btnIniciar.style.display = "none";
-    txtPuntaje.innerHTML = "✨ Puntos: 0";
-    txtRacha.innerHTML = "🔥 Racha: 0";
-    btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-    btnSiguiente.style.display = "none";
-
-    cargarPregunta();
+if (preguntasRestantes.length === 0) {
+preguntasRestantes = [...bancoPreguntas];
 }
-
+preguntas = mezclar([...preguntasRestantes]).slice(0, Math.min(50, preguntasRestantes.length));
+const usadas = new Set(preguntas.map(p => p.n));
+preguntasRestantes = preguntasRestantes.filter(p => !usadas.has(p.n));
+idxActual = 0;
+puntaje = 0;
+racha = 0;
+bloqueado = false;
+iniciado = true;
+btnIniciar.style.display = "none";
+txtPuntaje.innerHTML = "✨ Puntos: 0";
+txtRacha.innerHTML = "🔥 Racha: 0";
+btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
+btnSiguiente.style.display = "none";
+cargarPregunta();
+}
 function cargarPregunta() {
-    if (!iniciado) return;
-
-    // Cuando se terminaron las 50 preguntas, mostrar el resultado.
-    if (idxActual >= preguntas.length) {
-        mostrarResultado();
-        return;
-    }
-
-    bloqueado = false;
-    feedbackTexto.className = "feedback";
-    feedbackTexto.innerHTML = "";
-    alertaRespuestaCorrecta.style.display = "none";
-    contenedorAnalisis.style.display = "none";
-    btnSiguiente.style.display = "none";
-    btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-    listaOpciones.innerHTML = "";
-
-    const item = preguntas[idxActual];
-
-    txtProgreso.innerHTML = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
-    preguntaTexto.innerHTML = `${item.n}. ${item.p}`;
-
-    item.o.forEach((opcion, index) => {
-        const boton = document.createElement("button");
-        boton.className = "option-btn";
-        boton.innerHTML = opcion;
-        boton.onclick = () => verificarRespuesta(index, boton);
-        listaOpciones.appendChild(boton);
-    });
+if (!iniciado) return;
+if (idxActual >= preguntas.length) {
+mostrarResultado();
+return;
 }
-
+bloqueado = false;
+feedbackTexto.className = "feedback";
+feedbackTexto.innerHTML = "";
+alertaRespuestaCorrecta.style.display = "none";
+contenedorAnalisis.style.display = "none";
+btnSiguiente.style.display = "none";
+btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
+listaOpciones.innerHTML = "";
+const item = preguntas[idxActual];
+txtProgreso.innerHTML = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
+preguntaTexto.innerHTML = `${item.n}. ${item.p}`;
+const letras = ["A)", "B)", "C)", "D)", "E)"];
+const indicesOpciones = mezclar([0, 1, 2, 3, 4]);
+indicesOpciones.forEach(originalIndex => {
+const boton = document.createElement("button");
+boton.className = "option-btn";
+const textoOpcion = item.o[originalIndex].replace(/^[A-E]\)\s*/, "");
+boton.innerHTML = `${letras[listaOpciones.children.length]} ${textoOpcion}`;
+boton.dataset.originalIndex = originalIndex;
+boton.onclick = () => verificarRespuesta(originalIndex, boton);
+listaOpciones.appendChild(boton);
+});
+}
 function mostrarResultado() {
-    const total = preguntas.length;
-    const buenas = puntaje / 10;
-    const malas = total - buenas;
-    const porcentajeBuenas = Math.round((buenas / total) * 100);
-    const porcentajeMalas = Math.round((malas / total) * 100);
-    const nota = (buenas / total * 20).toFixed(1);
-
-    txtProgreso.innerHTML = `🏁 Ronda terminada: ${total}/${total}`;
-    preguntaTexto.innerHTML = "🎉 ¡Terminaste las 50 preguntas!";
-    listaOpciones.innerHTML = "";
-
-    feedbackTexto.className = "feedback success";
-    feedbackTexto.innerHTML = `
-        <div class="resultado-final">
-            <h2>📊 Resultado de tu ronda</h2>
-            <p><strong>📝 Nota:</strong> ${nota} / 20</p>
-            <p><strong>✅ Buenas:</strong> ${buenas} (${porcentajeBuenas}%)</p>
-            <p><strong>❌ Malas:</strong> ${malas} (${porcentajeMalas}%)</p>
-        </div>
-    `;
-
-    contenedorAnalisis.style.display = "none";
-    btnSiguiente.style.display = "block";
-    btnSiguiente.innerHTML = "🔄 Volver a comenzar con otras 50";
-    btnSiguiente.onclick = () => {
-        btnSiguiente.onclick = avanzarPregunta;
-        iniciarTest();
-    };
-
-    // También dejamos el botón de inicio visible como alternativa.
-    btnIniciar.style.display = "none";
+const total = preguntas.length;
+const buenas = puntaje / 10;
+const malas = total - buenas;
+const porcentajeBuenas = Math.round((buenas / total) * 100);
+const porcentajeMalas = Math.round((malas / total) * 100);
+const nota = (buenas / total * 20).toFixed(1);
+txtProgreso.innerHTML = `🏁 Ronda terminada: ${total}/${total}`;
+preguntaTexto.innerHTML = "🎉 ¡Terminaste las 50 preguntas!";
+listaOpciones.innerHTML = "";
+feedbackTexto.className = "feedback success";
+feedbackTexto.innerHTML = `<div class="resultado-final"> <h2>📊 Resultado de tu ronda</h2> <p><strong>📝 Nota:</strong> ${nota} / 20</p> <p><strong>✅ Buenas:</strong> ${buenas} (${porcentajeBuenas}%)</p> <p><strong>❌ Malas:</strong> ${malas} (${porcentajeMalas}%)</p> </div>`;
+contenedorAnalisis.style.display = "none";
+btnSiguiente.style.display = "block";
+btnSiguiente.innerHTML = "🔄 Volver a comenzar con otras 50";
+btnSiguiente.onclick = () => {
+btnSiguiente.onclick = avanzarPregunta;
+iniciarTest();
+};
+btnIniciar.style.display = "none";
 }
 function verificarRespuesta(indiceSeleccionado, botonPresionado) {
-    if (bloqueado) return;
-    bloqueado = true;
-
-    const item = preguntas[idxActual];
-    const botones = listaOpciones.getElementsByClassName("option-btn");
-
-    // Desactivar todos los botones después de responder.
-    Array.from(botones).forEach(boton => boton.disabled = true);
-
-    if (indiceSeleccionado === item.r) {
-        botonPresionado.classList.add("correct");
-        feedbackTexto.innerHTML = "✨ ¡Correcto! Buen análisis semántico.";
-        feedbackTexto.className = "feedback success";
-        puntaje += 10;
-        racha += 1;
-        alertaRespuestaCorrecta.style.display = "none";
-    } else {
-        botonPresionado.classList.add("incorrect");
-        botones[item.r].classList.add("correct");
-        feedbackTexto.innerHTML = "❌ Respuesta incorrecta.";
-        feedbackTexto.className = "feedback error";
-        racha = 0;
-        alertaRespuestaCorrecta.style.display = "inline-block";
-        alertaRespuestaCorrecta.innerHTML =
-            `La respuesta correcta era: ${item.o[item.r]}`;
-    }
-
-    txtPuntaje.innerHTML = `✨ Puntos: ${puntaje}`;
-    txtRacha.innerHTML = `🔥 Racha: ${racha}`;
-    analisisTexto.innerHTML = item.a;
-    contenedorAnalisis.style.display = "block";
-    btnSiguiente.style.display = "block";
-
-    if (idxActual === preguntas.length - 1) {
-        btnSiguiente.innerHTML = "📊 Ver resultado";
-    } else {
-        btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-    }
+if (bloqueado) return;
+bloqueado = true;
+const item = preguntas[idxActual];
+const botones = listaOpciones.getElementsByClassName("option-btn");
+Array.from(botones).forEach(boton => boton.disabled = true);
+if (indiceSeleccionado === item.r) {
+botonPresionado.classList.add("correct");
+feedbackTexto.innerHTML = "✨ ¡Correcto! Buen análisis semántico.";
+feedbackTexto.className = "feedback success";
+puntaje += 10;
+racha += 1;
+alertaRespuestaCorrecta.style.display = "none";
+} else {
+botonPresionado.classList.add("incorrect");
+const botonCorrecto = Array.from(botones).find(b => Number(b.dataset.originalIndex) === item.r);
+if (botonCorrecto) botonCorrecto.classList.add("correct");
+feedbackTexto.innerHTML = "❌ Respuesta incorrecta.";
+feedbackTexto.className = "feedback error";
+racha = 0;
+alertaRespuestaCorrecta.style.display = "inline-block";
+alertaRespuestaCorrecta.innerHTML = `La respuesta correcta era: ${item.o[item.r]}`;
 }
-
+txtPuntaje.innerHTML = `✨ Puntos: ${puntaje}`;
+txtRacha.innerHTML = `🔥 Racha: ${racha}`;
+analisisTexto.innerHTML = item.a;
+contenedorAnalisis.style.display = "block";
+btnSiguiente.style.display = "block";
+if (idxActual === preguntas.length - 1) {
+btnSiguiente.innerHTML = "📊 Ver resultado";
+} else {
+btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
+}
+}
 function avanzarPregunta() {
-    if (!bloqueado) return;
-    idxActual++;
-    // Restaurar el comportamiento normal del botón.
-    btnSiguiente.onclick = avanzarPregunta;
-    cargarPregunta();
+if (!bloqueado) return;
+idxActual++;
+btnSiguiente.onclick = avanzarPregunta;
+cargarPregunta();
 }
 </script>
 </body>
