@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Táctil de Sinónimos - 200 Preguntas</title>
+    <title>Test Táctil de Sinónimos - 50 Preguntas Aleatorias</title>
     <style>
         * { box-sizing: border-box; font-family: system-ui, sans-serif; }
         body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f8fafc; }
         .quiz-container { background: #1e293b; width: 100%; max-width: 450px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
         h1 { font-size: 22px; text-align: center; color: #3b82f6; margin: 0 0 15px 0; }
-        .stats { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 10px; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px; margin-bottom: 12px; background: #0f172a; padding: 10px; border-radius: 12px; }
+        .stat-item { text-align: center; background: #1e293b; padding: 8px 4px; border-radius: 8px; }
+        .progress-wrap { height: 8px; background: #0f172a; border-radius: 99px; overflow: hidden; margin-bottom: 15px; }
+        .progress-bar { height: 100%; width: 0%; background: #3b82f6; border-radius: 99px; transition: width .25s ease; }
         .question-box { background: #0f172a; border-radius: 12px; padding: 20px; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 20px; border: 1px solid #334155; }
         .options-list { display: flex; flex-direction: column; gap: 12px; }
         .option-btn { background: #334155; border: 1px solid #475569; border-radius: 12px; padding: 16px; font-size: 15px; color: #f1f5f9; text-align: left; cursor: pointer; font-weight: 600; -webkit-tap-highlight-color: transparent; width: 100%; transition: background 0.2s; }
@@ -48,10 +51,17 @@
         .resultado-final h2 {
             margin-top: 0;
         }
-        .resultado-final p {
-            font-size: 1.15rem;
-            margin: 9px 0;
-        }
+        .resultado-final p { font-size: 1.05rem; margin: 8px 0; }
+        .resultado-final .nota-grande { font-size: 3rem; font-weight: 800; margin: 4px 0 12px; }
+        .resultado-final .subtitulo { color: #475569; font-size: .95rem; }
+        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 8px; }
+        .result-card strong { display: block; font-size: 1.25rem; color: #0f172a; }
+        .result-card span { font-size: .8rem; color: #64748b; }
+        .result-bar { height: 12px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin: 14px 0 4px; }
+        .result-bar > div { height: 100%; background: #10b981; border-radius: 99px; }
+        .result-message { font-weight: 700; margin-top: 12px; color: #1e293b; }
+        @media (max-width: 360px) { .stats { grid-template-columns: 1fr; } .result-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -61,10 +71,11 @@
     <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Iniciar Test de 50 Preguntas</button>
     
     <div class="stats">
-        <span id="txt-progreso">Pregunta: 1/200</span>
-        <span id="txt-puntaje">✨ Puntos: 0</span>
-        <span id="txt-racha">🔥 Racha: 0</span>
+        <div class="stat-item"><span id="txt-progreso">Pregunta: 0/50</span></div>
+        <div class="stat-item"><span id="txt-puntaje">✨ Puntos: 0</span></div>
+        <div class="stat-item"><span id="txt-racha">🔥 Racha: 0</span></div>
     </div>
+    <div class="progress-wrap"><div class="progress-bar" id="barra-progreso"></div></div>
     
     <div class="question-box" id="pregunta-texto">Presiona «Iniciar Test de 50 Preguntas» para comenzar.</div>
     
@@ -118,7 +129,7 @@ const bancoPreguntas = [
 {"n": 33, "p": "MANDRIA", "o": ["A) estatua", "B) mandado", "C) fruta", "D) tímido", "E) manía"], "r": 3, "a": "Tímido. Individuo cobarde, falto de valor o asustadizo."},
 {"n": 34, "p": "DESPAPUCHO", "o": ["A) sandez", "B) despacho", "C) perorata", "D) testimonio", "E) fracción"], "r": 0, "a": "Sandez. Expresión absurda, necedad o disparate evidente."},
 {"n": 35, "p": "TRAPISONDA", "o": ["A) desorden", "B) tela", "C) cabriola", "D) esplín", "E) espita"], "r": 0, "a": "Desorden. Gresca, bulla, alboroto confuso o revuelo."},
-{"n": 36, "p": "CALÍGINE", "o": ["A) claro", "B) transparente", "C) opaco", "D) tedio", "E) máximo"], "r": 2, "a": "Opaco. Oscuridad densa, niebla o ambiente lúgubre y sombrío."},
+{"n": 36, "p": "CALÍGINE", "o": ["A) claro", "B) transparente", "C) opaco", "D) tedio", "E) maximum"], "r": 2, "a": "Opaco. Oscuridad densa, niebla o ambiente lúgubre y sombrío."},
 {"n": 37, "p": "IBÍDEM", "o": ["A) vienen", "B) así mismo", "C) allí mismo", "D) ignaro", "E) así es"], "r": 2, "a": "Allí mismo. Voz latina para indicar exactamente la misma referencia."},
 {"n": 38, "p": "CURDA", "o": ["A) molestia", "B) cuerdo", "C) achispado", "D) absurdidez", "E) desbornamiento"], "r": 2, "a": "Achispado. Término coloquial para la embriaguez o borrachera."},
 {"n": 39, "p": "ENGORRO", "o": ["A) aflicción", "B) lauro", "C) fracaso", "D) castigo", "E) impedimento"], "r": 4, "a": "Impedimento. Obstáculo molesto o dificultad que complica una tarea."},
@@ -128,7 +139,7 @@ const bancoPreguntas = [
 {"n": 43, "p": "ESCRÚPULO", "o": ["A) delicadeza", "B) reparo", "C) fastidio", "D) higiene", "E) moral"], "r": 1, "a": "Reparo. Duda o recelo ético sobre si una acción es correcta."},
 {"n": 44, "p": "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], "r": 2, "a": "Calmado. Persona libre de pavor, serena e imperturbable."},
 {"n": 45, "p": "CÚMULO", "o": ["A) cantidad", "B) reunión", "C) montón", "D) variedad", "E) aglomeración"], "r": 2, "a": "Montón. Agrupación o acumulación de cosas superpuestas."},
-{"n": 46, "p": "HÁLITO", "o": ["A) vida", "B) agonía", "C) espíritu", "D) ánimo", "E) soplo"], "r": 4, "a": "Soplo. Vapor al respirar; corriente suave de aire o brisa."},
+{"n": 46, "p": "HÁLITO", "o": ["A) vida", "B) agony", "C) espíritu", "D) ánimo", "E) soplo"], "r": 4, "a": "Soplo. Vapor al respirar; corriente suave de aire o brisa."},
 {"n": 47, "p": "BADULAQUE", "o": ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], "r": 1, "a": "Cándido. Individuo de poco juicio, ingenuo o fácil de engañar."},
 {"n": 48, "p": "CÁUSTICO", "o": ["A) prudent", "B) mordaz", "C) agresivo", "D) opción A y B", "E) opción B y C"], "r": 1, "a": "Mordaz. Describe un comentario irónico, agudo y punzante."},
 {"n": 49, "p": "CHOTEAR", "o": ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) ataque"], "r": 0, "a": "Expulsar. Rechazar o desechar a alguien de forma despectiva."},
@@ -169,7 +180,7 @@ const bancoPreguntas = [
 {"n": 84, "p": "COADYUVAR", "o": ["A) estorbar", "B) oponer", "C) contribuir", "D) iniciar", "E) terminar"], "r": 2, "a": "Contribuir. Prestar ayuda o cooperar para un objetivo común."},
 {"n": 85, "p": "DECREPITUD", "o": ["A) juventud", "B) health", "C) vejez", "D) locura", "E) pobreza"], "r": 2, "a": "Vejez. Decadencia física provocada por la avanzada edad."},
 {"n": 86, "p": "EFÍMERO", "o": ["A) eterno", "B) duradero", "C) pasajero", "D) valioso", "E) histórico"], "r": 2, "a": "Pasajero. Que tiene una duración sumamente corta o fugaz."},
-{"n": 87, "p": "FACUNDIA", "o": ["A) silencio", "B) elocuencia", "C) mentira", "D) riqueza", "E) timidez"], "r": 1, "a": "Elocuencia. Facilidad y soltura notable al hablar."},
+{"n": 87, "p": "FACUNDIA", "o": ["A) silence", "B) elocuencia", "C) mentira", "D) riqueza", "E) timidez"], "r": 1, "a": "Elocuencia. Facilidad y soltura notable al hablar."},
 {"n": 88, "p": "GÉNESIS", "o": ["A) final", "B) origen", "C) evolución", "D) muerte", "E) destrucción"], "r": 1, "a": "Origen. Principio, raíz o surgimiento de un proceso."},
 {"n": 89, "p": "HARAGÁN", "o": ["A) activo", "B) vago", "C) trabajador", "D) ladrón", "E) sumiso"], "r": 1, "a": "Vago. Enemigo del trabajo, perezoso u holgazán."},
 {"n": 90, "p": "INCOAR", "o": ["A) terminar", "B) pausar", "C) iniciar", "D) juzgar", "E) registrar"], "r": 2, "a": "Iniciar. Dar comienzo a un proceso, trámite o acción oficial."},
@@ -233,7 +244,6 @@ const bancoPreguntas = [
 {"n": 148, "p": "CÁFILA", "o": ["A) gorrino", "B) secuela", "C) caterva", "D) difunto", "E) extravio"], "r": 2, "a": "Caterva. Sustantivo colectivo indeterminado que denota a una multitud desordenada de personas o cosas consideradas en grupo con tono despectivo."},
 {"n": 149, "p": "ESTRAGAR", "o": ["A) enfermar", "B) afectar", "C) deshacer", "D) desvastar", "E) devastar"], "r": 4, "a": "Devastar. Destruir un territorio o asolar y arruinar algo por completo, compartiendo el mismo grado máximo de daño estructural o moral."},
 {"n": 150, "p": "LABILIDAD", "o": ["A) habilidad", "B) inconstancia", "C) movimiento", "D) cambiante", "E) emotividad"], "r": 1, "a": "Inconstancia. Sustantivo abstracto que define formalmente la falta de estabilidad, firmeza o la condición de ser mudable o variable."},
-// --- NUEVAS 50 PREGUNTAS INTEGRADAS CON ÉXITO (151 - 200) ---
 {"n": 151, "p": "ENHIESTO", "o": ["A) endurado", "B) penetrante", "C) erecto", "D) espinoso", "E) edificado"], "r": 2, "a": "Erecto. Adjetivo que significa levantado, derecho o vertical."},
 {"n": 152, "p": "RENUENTE", "o": ["A) remiso", "B) precoz", "C) ilógico", "D) indocto", "E) renovado"], "r": 0, "a": "Remiso. Se refiere a la persona reacia o que muestra resistencia o falta de voluntad para cumplir una obligación."},
 {"n": 153, "p": "LOCUACIDAD", "o": ["A) elocuencia", "B) oratoria", "C) labia", "D) verborrea", "E) facundia"], "r": 4, "a": "Facundia. Abundancia de palabras y gran soltura o facilidad para hablar de forma fluida."},
@@ -269,7 +279,7 @@ const bancoPreguntas = [
 {"n": 183, "p": "DEDUCIR", "o": ["A) razonar", "B) pensar", "C) filosofar", "D) descontar", "E) aumentar"], "r": 0, "a": "Razonar. Conducir el pensamiento de forma lógica y estructurada para extraer una conclusión (según tu libro)."},
 {"n": 184, "p": "OBSOLETO", "o": ["A) envejecido", "B) discontinuo", "C) arcaizado", "D) caducidad", "E) añoso"], "r": 2, "a": "Arcaizado. Algo antiguo, anticuado o que ha quedado completamente en desuso frente a lo moderno."},
 {"n": 185, "p": "ACTUARIO", "o": ["A) bromista", "B) valedor", "C) agasajo", "D) escribano", "E) testigo"], "r": 3, "a": "Escribano. Oficial público legalmente autorizado para dar fe de las actuaciones en los juzgados."},
-{"n": 186, "p": "DÁRSENA", "o": ["A) almacén", "B) espigón", "C) aduana", "D) muelle", "E) puerto"], "r": 4, "a": "Puerto. Siguiendo la clave de tu libro, engloba de forma general el concepto de infraestructura marítima protegida."},
+{"n": 186, "p": "DARSENA", "o": ["A) almacén", "B) espigón", "C) aduana", "D) muelle", "E) puerto"], "r": 4, "a": "Puerto. Siguiendo la clave de tu libro, engloba de forma general el concepto de infraestructura marítima protegida."},
 {"n": 187, "p": "HONESTIDAD", "o": ["A) prudencia", "B) discreción", "C) castidad", "D) preciado", "E) benemérito"], "r": 2, "a": "Castidad. En su sentido clásico y moral formal del diccionario, denota recato, decencia, pudor y castidad."},
 {"n": 188, "p": "MARAÑERO", "o": ["A) cotillero", "B) cotidiano", "C) zurcido", "D) testarudo", "E) conciso"], "r": 0, "a": "Cotillero. Persona enredadora, embustera o chismosa que disfruta de armar líos e intrigas ajenas."},
 {"n": 189, "p": "CÚMULO", "o": ["A) nubosidad", "B) hacina", "C) pundonor", "D) escarpa", "E) apelación"], "r": 1, "a": "Hacina. Conjunto, montón o acumulación de cosas colocadas apretadamente unas sobre otras."},
@@ -282,15 +292,69 @@ const bancoPreguntas = [
 {"n": 196, "p": "FAMÉLICO", "o": ["A) escuálido", "B) sucio", "C) haraposo", "D) desnutrido", "E) hambriento"], "r": 4, "a": "Hambriento. Persona o animal que tiene muchísima hambre o que padece severamente por la falta de ella."},
 {"n": 197, "p": "EVERSIÓN", "o": ["A) reacción", "B) reversión", "C) erupción", "D) sismo", "E) cataclismo"], "r": 4, "a": "Cataclismo. Destrucción masiva, ruina, vuelco o caída total de una estructura, orden o territorio."},
 {"n": 198, "p": "ESTOLIDEZ", "o": ["A) necedad", "B) pavura", "C) idiocia", "D) estúpido", "E) torpeza"], "r": 0, "a": "Necedad. Falta absoluta de razón, inteligencia, discurso o sensatez en el comportamiento."},
-{"n": 199, "p": "CONFERENCIA", "o": ["A) exposición", "B) diálogo", "C) cátedra", "D) simposio", "E) panel"], "r": 0, "a": "Exposición. Disertación pública u oral que realiza un especialista para explicar y desarrollar un tema."},
-{"n": 200, "p": "ENCANDILADO", "o": ["A) deleitado", "B) hechizado", "C) enamorado", "D) templado", "E) alelado"], "r": 1, "a": "Hechizado. Persona completamente cautivada, fascinada, deslumbrada o embelesada por algo u alguien."}
+{"n": 199, "p": "CONFERENCIA", "o": ["A) exposition", "B) diálogo", "C) cátedra", "D) simposio", "E) panel"], "r": 0, "a": "Exposición. Disertación pública u oral que realiza un especialista para explicar y desarrollar un tema."},
+{"n": 200, "p": "ENCANDILADO", "o": ["A) deleitado", "B) hechizado", "C) enamorado", "D) templado", "E) alelado"], "r": 1, "a": "Hechizado. Persona completamente cautivada, fascinada, deslumbrada o embelesada por algo u alguien."},
+{"n": 201, "p": "CELESTINA", "o": ["A) sor", "B) priora", "C) alcahueta", "D) pigmea", "E) femenina"], "r": 2, "a": "Alcahueta. Mujer que facilita, concierta o encubre una relación amorosa, generalmente ilícita o secreta."},
+{"n": 202, "p": "GOLFERÍA", "o": ["A) zorrería", "B) gandulería", "C) hez", "D) vagancia", "E) calaña"], "r": 3, "a": "Vagancia. Vida o condición propia del golfo; estado de ociosidad, falta de oficio y responsabilidades."},
+{"n": 203, "p": "JERUGA", "o": ["A) carroza", "B) medusa", "C) miedoso", "D) cárcel", "E) jaula"], "r": 3, "a": "Cárcel. En el registro formal y bancos de nivel avanzado, define el recinto de encierro o reclusión obligatoria."},
+{"n": 204, "p": "LÉGAMO", "o": ["A) dejado", "B) lícito", "C) laico", "D) cieno", "E) distante"], "r": 4, "a": "Cieno. Lodo, limo o fango blando que se deposita en el fondo de las aguas o terrenos inundados."},
+{"n": 205, "p": "LITAR", "o": ["A) textual", "B) perseguir", "C) hostilizar", "D) alistar", "E) inmolar"], "r": 4, "a": "Inmolar. Hacer un sacrificio u ofrenda agradable a la divinidad; dar la vida por una causa sagrada."},
+{"n": 206, "p": "JOCUNDO", "o": ["A) sabroso", "B) profundo", "C) gracioso", "D) alegre", "E) jorobado"], "r": 3, "a": "Alegre. Adjetivo de origen latín que califica a un individuo plácido, regocijado, alegre o agradable."},
+{"n": 207, "p": "JUERGA", "o": ["A) grosería", "B) orgía", "C) lisura", "D) jerigonza", "E) tornillo"], "r": 1, "a": "Orgía. En el contexto léxico de examen, representa un festín, jolgorio o reunión estrepitosa con excesos."},
+{"n": 208, "p": "LATENCIA", "o": ["A) oculto", "B) visualizada", "C) perspicacia", "D) vivencia", "E) deferencia"], "r": 0, "a": "Oculto. Cualidad o estado de lo que permanece escondido, latente o inactivo sin manifestarse exteriormente."},
+{"n": 209, "p": "PRESAGIO", "o": ["A) prevención", "B) anuncio", "C) precisión", "D) latencia", "E) albedrío"], "r": 1, "a": "Anuncio. Señal, indicio o intuición que adelanta u ofrece la noticia de un suceso futuro."},
+{"n": 210, "p": "TEDIOSO", "o": ["A) temeroso", "B) tuberoso", "C) terminal", "D) aburrido", "E) tendencioso"], "r": 3, "a": "Aburrido. Que produce un fastidio o aburrimiento extremo debido a su monotonía o excesiva lentitud."},
+{"n": 211, "p": "ÓBICE", "o": ["A) obturación", "B) obsesión", "C) opíparo", "D) traba", "E) alcor"], "r": 3, "a": "Traba. Obstáculo, impedimento, estorbo o dificultad material o moral que frena un proceso."},
+{"n": 212, "p": "EMPÍRICO", "o": ["A) legal", "B) experimental", "C) onírico", "D) ilógico", "E) isócrono"], "r": 1, "a": "Experimental. Sistema basado directamente en la experiencia, la práctica y la observación directa de hechos."},
+{"n": 213, "p": "CHIRLE", "o": ["A) latoso", "B) patituerto", "C) niquiscocio", "D) sorprendente", "E) esciente"], "r": 0, "a": "Latoso. Cosas desprovistas de sustancia, sosas o monótonas que terminan causando pesadez o fastidio."},
+{"n": 214, "p": "LAMINERO", "o": ["A) concurrente", "B) copioso", "C) gulusmero", "D) liberal", "E) mesurado"], "r": 2, "a": "Gulusmero. Persona muy golosa, aficionada a probar golosinas, dulces o manjares delicados."},
+{"n": 215, "p": "ORZAYA", "o": ["A) sumisión", "B) raigambre", "C) afectación", "D) antirombo", "E) niñera"], "r": 4, "a": "Niñera. Criada o persona encargada específicamente de cuidar, vigilar y atender a los niños pequeños."},
+{"n": 216, "p": "BUJARRÓN", "o": ["A) quid", "B) sodomita", "C) bulbo", "D) gemido", "E) ímprobo"], "r": 1, "a": "Sodomita. Término del registro formal e histórico para designar a quien practica la sodomía."},
+{"n": 217, "p": "DUENDO", "o": ["A) gentil", "B) acoquinado", "C) arriscado", "D) sumiso", "E) lúbrico"], "r": 3, "a": "Sumiso. Califica tradicionalmente a los animales domésticos o personas mansas, dóciles u obedientes."},
+{"n": 218, "p": "QUILLOTRA", "o": ["A) cavilación", "B) quinoteca", "C) ribalda", "D) concubina", "E) firmeza"], "r": 3, "a": "Concubina. Compañera, amante o mujer que mantiene una relación afectiva estable fuera del matrimonio."},
+{"n": 219, "p": "PAPORREAR", "o": ["A) zurrar", "B) laurear", "C) rielar", "D) impetrar", "E) gimotear"], "r": 0, "a": "Zurrar. Expresión coloquial que denota golpear, apalear, castigar o dar porrazos repetidamente."},
+{"n": 220, "p": "HAFIZ", "o": ["A) ovejuno", "B) veedor", "C) hercúleo", "D) jumento", "E) manilargo"], "r": 1, "a": "Veedor. Persona encargada de la custodia, registro, observación o vigilancia de un bien o reglamento."},
+{"n": 221, "p": "CALAFATEAR", "o": ["A) obstruir", "B) abrir", "C) calar", "D) carpir", "E) desguazar"], "r": 0, "a": "Obstruir. Sellar, cerrar o tapar rendijas, juntas o conductos impidiendo el paso de elementos."},
+{"n": 222, "p": "FÁRRAGO", "o": ["A) fardo", "B) faraute", "C) desidia", "D) juglaría", "E) nabad"], "r": 3, "a": "Juglaría. Conjunto o miscelánea de elementos variados o desordenados (fijado según clave oficial)."},
+{"n": 223, "p": "SIGILO", "o": ["A) siglo", "B) reserva", "C) tutor", "D) ultimátum", "E) venia"], "r": 1, "a": "Reserva. Actitud de discreción, secreto o extremo cuidado para no ser notado al ejecutar una acción."},
+{"n": 224, "p": "VIPERINO", "o": ["A) alegre", "B) visionario", "C) yermo", "D) baldío", "E) venenoso"], "r": 4, "a": "Venenoso. Comentario o intención maliciosa, dañina o mordaz; relativo también a la víbora."},
+{"n": 225, "p": "ZAINO", "o": ["A) zafio", "B) vulgar", "C) supino", "D) felón", "E) talud"], "r": 3, "a": "Felón. Persona traidora, desleal, falsa o hipócrita que rompe un compromiso de fidelidad."},
+{"n": 226, "p": "GOLFO", "o": ["A) bahía", "B) cola", "C) lóbrego", "D) obeso", "E) elogio"], "r": 0, "a": "Bahía. Entrada de mar en la costa, de características geográficas análogas a las de un golfo."},
+{"n": 227, "p": "DUENDO", "o": ["A) espectro", "B) manso", "C) curia", "D) creso", "E) cortijo"], "r": 1, "a": "Manso. Animal o individuo dócil, doméstico, apacible y que se domina con extrema facilidad."},
+{"n": 228, "p": "CHARNELA", "o": ["A) chirigota", "B) faca", "C) embuste", "D) bisagra", "E) harón"], "r": 3, "a": "Bisagra. Articulación o pieza mecánica móvil encargada de unir y permitir el giro de tapas o puertas."},
+{"n": 229, "p": "ABSURDO", "o": ["A) ariete", "B) bedel", "C) magro", "D) ilógico", "E) miedo"], "r": 3, "a": "Ilógico. Todo aquello contrario a la razón, descabellado o que carece de coherencia interna."},
+{"n": 230, "p": "ADEMÁN", "o": ["A) gesto", "B) también", "C) búsqueda", "D) rienda", "E) solsticio"], "r": 0, "a": "Gesto. Movimiento corporal, facial o de las manos cargado de un significado expresivo latente."},
+{"n": 231, "p": "AHÍNCO", "o": ["A) fuerza", "B) empeño", "C) rigor", "D) dental", "E) himeneo"], "r": 1, "a": "Empeño. Firmeza, dedicación constante o gran intensidad con la que se ejecuta un trabajo."},
+{"n": 232, "p": "BISOÑO", "o": ["A) bisoñé", "B) jovial", "C) aprendiz", "D) lerdo", "E) íntegro"], "r": 2, "a": "Aprendiz. Persona novata, principiante o que carece de experiencia formal en un arte u oficio."},
+{"n": 233, "p": "DEMASÍA", "o": ["A) detrás", "B) tardanza", "C) confianza", "D) soberbia", "E) exceso"], "r": 4, "a": "Exceso. Cantidad, actitud o porción que supera marcadamente la medida regular o justa."},
+{"n": 234, "p": "HACINAR", "o": ["A) habitar", "B) aparejar", "C) arrostrar", "D) amontonar", "E) hamacar"], "r": 3, "a": "Amontonar. Acumular o juntar gran cantidad de cosas o bultos sin orden en un espacio reducido."},
+{"n": 235, "p": "DENUESTO", "o": ["A) ajeno", "B) oprobio", "C) notable", "D) efectivo", "E) creativo"], "r": 1, "a": "Oprobio. Palabra ofensiva, injuria, afrenta o insulto con la que se busca degradar la honra ajena."},
+{"n": 236, "p": "APÓCRIFO", "o": ["A) notorio", "B) falso", "C) ilegal", "D) utópico", "E) auténtico"], "r": 1, "a": "Falso. Elemento, documento u obra supuesta o fingida que carece por completo de autenticidad."},
+{"n": 237, "p": "CELAR", "o": ["A) odiar", "B) revelar", "C) vigilar", "D) advertir", "E) descuidar"], "r": 2, "a": "Vigilar. Observar atentamente, custodiar o celar con esmero el cumplimiento de una obligación."},
+{"n": 238, "p": "VEJAR", "o": ["A) denigrar", "B) atender", "C) elogiar", "D) insultar", "E) aporrear"], "r": 0, "a": "Denigrar. Ofender gravemente, humillar o maltratar atentando directamente contra la dignidad de alguien."},
+{"n": 239, "p": "ACIDIOSO", "o": ["A) tímido", "B) audaz", "C) diligente", "D) procaz", "E) dejado"], "r": 4, "a": "Dejado. Persona perezosa, descuidada, negligente o desprovista de energía ante sus deberes."},
+{"n": 240, "p": "NIMIO", "o": ["A) galano", "B) inútil", "C) mortal", "D) esencial", "E) débil"], "r": 1, "a": "Inútil. Insignificante, superfluo o de escasísimo valor para la consecución de un fin determinado."},
+{"n": 241, "p": "CANDOR", "o": ["A) locura", "B) fiesta", "C) tedio", "D) puerilidad", "E) valentía"], "r": 3, "a": "Puerilidad. Rasgo natural o condición infantil caracterizada por la inocencia o falta de malicia."},
+{"n": 242, "p": "VASAR", "o": ["A) repisa", "B) ladera", "C) mesa", "D) ventana", "E) altura"], "r": 0, "a": "Repisa. Estante, soporte horizontal o tabla fija a la pared destinada a colocar utensilios u objetos."},
+{"n": 243, "p": "BIOMBO", "o": ["A) pared", "B) tapiz", "C) mampara", "D) puerta", "E) vidriera"], "r": 2, "a": "Mampara. Panel ligero, bastidor o estructura móvil utilizada para dividir u ocultar un ambiente."},
+{"n": 244, "p": "APAREJO", "o": ["A) mueble", "B) ornamento", "C) caña", "D) vara", "E) lanza"], "r": 1, "a": "Ornamento. Adorno, aderezo o atavío empleado formalmente para engalanar o decorar un espacio."},
+{"n": 245, "p": "OBJETAR", "o": ["A) reclamar", "B) apreciar", "C) oposición", "D) confutar", "E) aceptar"], "r": 3, "a": "Confutar. Oponerse a una idea impugnándola o destruyéndola formalmente mediante razones o argumentos."},
+{"n": 246, "p": "FRANQUICIA", "o": ["A) prebenda", "B) negación", "C) dádiva", "D) olvido", "E) engaño"], "r": 0, "a": "Prebenda. Oficio, exención, privilegio o ventaja lucrativa que se otorga de manera exclusiva."},
+{"n": 247, "p": "ACRITUD", "o": ["A) vulgaridad", "B) altura", "C) rigor", "D) bondad", "E) maldad"], "r": 2, "a": "Rigor. Aspereza, dureza o severidad excesiva en las condiciones, el carácter o el trato."},
+{"n": 248, "p": "PARÁFRASIS", "o": ["A) glosa", "B) partitura", "C) escrito", "D) mensaje", "E) copia"], "r": 0, "a": "Glosa. Nota, explicación o comentario interpretativo realizado sobre un fragmento de texto original."},
+{"n": 249, "p": "EFUSIÓN", "o": ["A) calor", "B) soltura", "C) dejadez", "D) ventura", "E) derrame"], "r": 4, "a": "Derrame. Salida, emisión o derramamiento físico de un gas o líquido fuera de su depósito natural."},
+{"n": 250, "p": "VOCERO", "o": ["A) ternero", "B) heraldo", "C) mendaz", "D) artesano", "E) profeta"], "r": 1, "a": "Heraldo. Mensajero oficial autorizado para transmitir decretos o noticias en nombre de una autoridad."}
 ];
 let preguntas = [];
 let idxActual = 0;
 let puntaje = 0;
 let racha = 0;
+let mejorRacha = 0;
+let correctas = 0;
+let incorrectas = 0;
 let bloqueado = false;
 let iniciado = false;
+
 const txtProgreso = document.getElementById("txt-progreso");
 const txtPuntaje = document.getElementById("txt-puntaje");
 const txtRacha = document.getElementById("txt-racha");
@@ -302,124 +366,147 @@ const alertaRespuestaCorrecta = document.getElementById("alerta-respuesta-correc
 const analisisTexto = document.getElementById("analisis-texto");
 const btnSiguiente = document.getElementById("btn-siguiente");
 const btnIniciar = document.getElementById("btn-iniciar");
+const barraProgreso = document.getElementById("barra-progreso");
+
 function mezclar(array) {
-const copia = [...array];
-for (let i = copia.length - 1; i > 0; i--) {
-const j = Math.floor(Math.random() * (i + 1));
-[copia[i], copia[j]] = [copia[j], copia[i]];
+    const copia = [...array];
+    for (let i = copia.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
 }
-return copia;
+
+function prepararPregunta(item) {
+    const opciones = item.o.map((texto, indiceOriginal) => ({
+        texto: texto.replace(/^\s*[A-E]\)\s*/i, ""),
+        correcta: indiceOriginal === item.r
+    }));
+    const mezcladas = mezclar(opciones);
+    return { ...item, o: mezcladas.map(x => x.texto), r: mezcladas.findIndex(x => x.correcta) };
 }
-let preguntasRestantes = [...bancoPreguntas];
+
 function iniciarTest() {
-if (preguntasRestantes.length === 0) {
-preguntasRestantes = [...bancoPreguntas];
+    preguntas = mezclar(bancoPreguntas).slice(0, 50).map(prepararPregunta);
+    idxActual = 0;
+    puntaje = 0;
+    racha = 0;
+    mejorRacha = 0;
+    correctas = 0;
+    incorrectas = 0;
+    bloqueado = false;
+    iniciado = true;
+    btnIniciar.style.display = "none";
+    txtPuntaje.textContent = "✨ Puntos: 0";
+    txtRacha.textContent = "🔥 Racha: 0";
+    btnSiguiente.style.display = "none";
+    btnSiguiente.onclick = avanzarPregunta;
+    cargarPregunta();
 }
-preguntas = mezclar([...preguntasRestantes]).slice(0, Math.min(50, preguntasRestantes.length));
-const usadas = new Set(preguntas.map(p => p.n));
-preguntasRestantes = preguntasRestantes.filter(p => !usadas.has(p.n));
-idxActual = 0;
-puntaje = 0;
-racha = 0;
-bloqueado = false;
-iniciado = true;
-btnIniciar.style.display = "none";
-txtPuntaje.innerHTML = "✨ Puntos: 0";
-txtRacha.innerHTML = "🔥 Racha: 0";
-btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-btnSiguiente.style.display = "none";
-cargarPregunta();
-}
+
 function cargarPregunta() {
-if (!iniciado) return;
-if (idxActual >= preguntas.length) {
-mostrarResultado();
-return;
+    if (!iniciado) return;
+    if (idxActual >= preguntas.length) return mostrarResultado();
+    bloqueado = false;
+    feedbackTexto.className = "feedback";
+    feedbackTexto.textContent = "";
+    alertaRespuestaCorrecta.style.display = "none";
+    contenedorAnalisis.style.display = "none";
+    btnSiguiente.style.display = "none";
+    btnSiguiente.textContent = "➡️ Siguiente pregunta";
+    listaOpciones.innerHTML = "";
+
+    const item = preguntas[idxActual];
+    txtProgreso.textContent = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
+    barraProgreso.style.width = `${(idxActual / preguntas.length) * 100}%`;
+    // Solo se muestra la palabra; no se muestra la numeración del banco.
+    preguntaTexto.textContent = item.p;
+
+    item.o.forEach((opcion, index) => {
+        const boton = document.createElement("button");
+        boton.className = "option-btn";
+        boton.innerHTML = `<strong>${String.fromCharCode(65 + index)})</strong> ${opcion}`;
+        boton.onclick = () => verificarRespuesta(index, boton);
+        listaOpciones.appendChild(boton);
+    });
 }
-bloqueado = false;
-feedbackTexto.className = "feedback";
-feedbackTexto.innerHTML = "";
-alertaRespuestaCorrecta.style.display = "none";
-contenedorAnalisis.style.display = "none";
-btnSiguiente.style.display = "none";
-btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-listaOpciones.innerHTML = "";
-const item = preguntas[idxActual];
-txtProgreso.innerHTML = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
-preguntaTexto.innerHTML = `${item.n}. ${item.p}`;
-const letras = ["A)", "B)", "C)", "D)", "E)"];
-const indicesOpciones = mezclar([0, 1, 2, 3, 4]);
-indicesOpciones.forEach(originalIndex => {
-const boton = document.createElement("button");
-boton.className = "option-btn";
-const textoOpcion = item.o[originalIndex].replace(/^[A-E]\)\s*/, "");
-boton.innerHTML = `${letras[listaOpciones.children.length]} ${textoOpcion}`;
-boton.dataset.originalIndex = originalIndex;
-boton.onclick = () => verificarRespuesta(originalIndex, boton);
-listaOpciones.appendChild(boton);
-});
-}
+
 function mostrarResultado() {
-const total = preguntas.length;
-const buenas = puntaje / 10;
-const malas = total - buenas;
-const porcentajeBuenas = Math.round((buenas / total) * 100);
-const porcentajeMalas = Math.round((malas / total) * 100);
-const nota = (buenas / total * 20).toFixed(1);
-txtProgreso.innerHTML = `🏁 Ronda terminada: ${total}/${total}`;
-preguntaTexto.innerHTML = "🎉 ¡Terminaste las 50 preguntas!";
-listaOpciones.innerHTML = "";
-feedbackTexto.className = "feedback success";
-feedbackTexto.innerHTML = `<div class="resultado-final"> <h2>📊 Resultado de tu ronda</h2> <p><strong>📝 Nota:</strong> ${nota} / 20</p> <p><strong>✅ Buenas:</strong> ${buenas} (${porcentajeBuenas}%)</p> <p><strong>❌ Malas:</strong> ${malas} (${porcentajeMalas}%)</p> </div>`;
-contenedorAnalisis.style.display = "none";
-btnSiguiente.style.display = "block";
-btnSiguiente.innerHTML = "🔄 Volver a comenzar con otras 50";
-btnSiguiente.onclick = () => {
-btnSiguiente.onclick = avanzarPregunta;
-iniciarTest();
-};
-btnIniciar.style.display = "none";
+    const total = preguntas.length;
+    const porcentaje = total ? Math.round((correctas / total) * 100) : 0;
+    const nota = total ? ((correctas / total) * 20).toFixed(1) : "0.0";
+    const nivel = porcentaje >= 90 ? "🏆 Excelente desempeño" : porcentaje >= 70 ? "👏 Muy buen resultado" : porcentaje >= 50 ? "📚 Buen comienzo, sigue practicando" : "💪 Sigue practicando y mejorarás";
+
+    txtProgreso.textContent = `🏁 Test terminado: ${total}/${total}`;
+    barraProgreso.style.width = "100%";
+    preguntaTexto.textContent = "🎉 ¡Completaste las 50 preguntas!";
+    listaOpciones.innerHTML = "";
+    contenedorAnalisis.style.display = "none";
+    feedbackTexto.className = "feedback success";
+    feedbackTexto.innerHTML = `
+        <div class="resultado-final">
+            <h2>📊 Resultado final</h2>
+            <div class="nota-grande">${nota}/20</div>
+            <div class="subtitulo">Tu calificación final</div>
+            <div class="result-bar"><div style="width:${porcentaje}%"></div></div>
+            <p><strong>${porcentaje}% de aciertos</strong></p>
+            <div class="result-grid">
+                <div class="result-card"><strong>${correctas}</strong><span>✅ Correctas</span></div>
+                <div class="result-card"><strong>${incorrectas}</strong><span>❌ Incorrectas</span></div>
+                <div class="result-card"><strong>${mejorRacha}</strong><span>🔥 Mejor racha</span></div>
+                <div class="result-card"><strong>${puntaje}</strong><span>✨ Puntos</span></div>
+            </div>
+            <div class="result-message">${nivel}</div>
+        </div>`;
+
+    btnSiguiente.style.display = "block";
+    btnSiguiente.textContent = "🔄 Hacer otro test de 50";
+    btnSiguiente.onclick = iniciarTest;
 }
+
 function verificarRespuesta(indiceSeleccionado, botonPresionado) {
-if (bloqueado) return;
-bloqueado = true;
-const item = preguntas[idxActual];
-const botones = listaOpciones.getElementsByClassName("option-btn");
-Array.from(botones).forEach(boton => boton.disabled = true);
-if (indiceSeleccionado === item.r) {
-botonPresionado.classList.add("correct");
-feedbackTexto.innerHTML = "✨ ¡Correcto! Buen análisis semántico.";
-feedbackTexto.className = "feedback success";
-puntaje += 10;
-racha += 1;
-alertaRespuestaCorrecta.style.display = "none";
-} else {
-botonPresionado.classList.add("incorrect");
-const botonCorrecto = Array.from(botones).find(b => Number(b.dataset.originalIndex) === item.r);
-if (botonCorrecto) botonCorrecto.classList.add("correct");
-feedbackTexto.innerHTML = "❌ Respuesta incorrecta.";
-feedbackTexto.className = "feedback error";
-racha = 0;
-alertaRespuestaCorrecta.style.display = "inline-block";
-alertaRespuestaCorrecta.innerHTML = `La respuesta correcta era: ${item.o[item.r]}`;
+    if (bloqueado) return;
+    bloqueado = true;
+    const item = preguntas[idxActual];
+    const botones = Array.from(listaOpciones.getElementsByClassName("option-btn"));
+    botones.forEach(boton => boton.disabled = true);
+
+    if (indiceSeleccionado === item.r) {
+        botonPresionado.classList.add("correct");
+        feedbackTexto.textContent = "✨ ¡Correcto!";
+        feedbackTexto.className = "feedback success";
+        puntaje += 10;
+        correctas++;
+        racha++;
+        mejorRacha = Math.max(mejorRacha, racha);
+        alertaRespuestaCorrecta.style.display = "none";
+    } else {
+        botonPresionado.classList.add("incorrect");
+        if (botones[item.r]) botones[item.r].classList.add("correct");
+        feedbackTexto.textContent = "❌ Respuesta incorrecta.";
+        feedbackTexto.className = "feedback error";
+        incorrectas++;
+        racha = 0;
+        alertaRespuestaCorrecta.style.display = "inline-block";
+        alertaRespuestaCorrecta.textContent = `La respuesta correcta era: ${String.fromCharCode(65 + item.r)}) ${item.o[item.r]}`;
+    }
+
+    txtPuntaje.textContent = `✨ Puntos: ${puntaje}`;
+    txtRacha.textContent = `🔥 Racha: ${racha}`;
+    analisisTexto.textContent = item.a;
+    contenedorAnalisis.style.display = "block";
+    barraProgreso.style.width = `${((idxActual + 1) / preguntas.length) * 100}%`;
+    btnSiguiente.style.display = "block";
+    btnSiguiente.textContent = idxActual === preguntas.length - 1 ? "📊 Ver resultado" : "➡️ Siguiente pregunta";
+    btnSiguiente.onclick = avanzarPregunta;
 }
-txtPuntaje.innerHTML = `✨ Puntos: ${puntaje}`;
-txtRacha.innerHTML = `🔥 Racha: ${racha}`;
-analisisTexto.innerHTML = item.a;
-contenedorAnalisis.style.display = "block";
-btnSiguiente.style.display = "block";
-if (idxActual === preguntas.length - 1) {
-btnSiguiente.innerHTML = "📊 Ver resultado";
-} else {
-btnSiguiente.innerHTML = "➡️ Siguiente pregunta";
-}
-}
+
 function avanzarPregunta() {
-if (!bloqueado) return;
-idxActual++;
-btnSiguiente.onclick = avanzarPregunta;
-cargarPregunta();
+    if (!bloqueado) return;
+    idxActual++;
+    cargarPregunta();
 }
 </script>
 </body>
 </html>
+
