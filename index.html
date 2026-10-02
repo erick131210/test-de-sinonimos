@@ -7,7 +7,7 @@
     <style>
         * { box-sizing: border-box; font-family: system-ui, sans-serif; }
         body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f8fafc; }
-        .quiz-container { background: #1e293b; width: 100%; max-width: 450px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
+        .quiz-container { background: #1e293b; width: 100%; max-width: 760px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
         h1 { font-size: 22px; text-align: center; color: #3b82f6; margin: 0 0 15px 0; }
         .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px; margin-bottom: 12px; background: #0f172a; padding: 10px; border-radius: 12px; }
         .stat-item { text-align: center; background: #1e293b; padding: 8px 4px; border-radius: 8px; }
@@ -73,34 +73,93 @@
         @media (max-width: 360px) { .modo-selector { grid-template-columns:1fr; } }
 
         @media (max-width: 360px) { .stats { grid-template-columns: 1fr; } .result-grid { grid-template-columns: 1fr; } }
+
+        .screen { width:100%; }
+        .screen.hidden { display:none !important; }
+        .inicio-header { text-align:center; margin-bottom:24px; }
+        .inicio-header h1 { font-size:30px; margin-bottom:8px; }
+        .inicio-header p { margin:0; color:#94a3b8; font-size:14px; }
+        .modo-selector { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:0 auto 22px; max-width:680px; }
+        .modo-card { min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:24px; }
+        .modo-card .modo-icono { font-size:42px; margin-bottom:10px; }
+        .modo-card h3 { font-size:21px; margin:0 0 8px; }
+        .modo-card p { max-width:270px; font-size:13px; }
+        .modo-card.active { transform:translateY(-2px); }
+        .inicio-actions { max-width:680px; margin:0 auto; }
+        .inicio-actions .start-btn { margin-bottom:10px; }
+        .selection-status { min-height:22px; text-align:center; color:#cbd5e1; font-size:13px; margin-bottom:8px; }
+        .quiz-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+        .quiz-header h1 { margin:0; text-align:left; flex:1; }
+        .back-btn { border:1px solid #475569; background:#0f172a; color:#e2e8f0; border-radius:10px; padding:9px 12px; cursor:pointer; font-weight:700; }
+        .quiz-screen .question-box { font-size:20px; line-height:1.45; }
+        @media (max-width: 600px) {
+            body { padding:10px; align-items:flex-start; }
+            .quiz-container { margin:0; padding:14px; border-radius:16px; }
+            .modo-selector { grid-template-columns:1fr; gap:12px; }
+            .modo-card { min-height:150px; padding:18px; }
+            .inicio-header h1 { font-size:24px; }
+            .quiz-header h1 { font-size:20px; }
+            .quiz-screen .question-box { font-size:17px; padding:16px; }
+        }
     </style>
 </head>
 <body>
-
 <div class="quiz-container">
-    <h1>🚀 Test Táctil de Sinónimos</h1>
-    <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Iniciar Test de 50 Preguntas</button>
-    
-    <div class="stats">
-        <div class="stat-item"><span id="txt-progreso">Pregunta: 0/50</span></div>
-        <div class="stat-item"><span id="txt-puntaje">✨ Puntos: 0</span></div>
-        <div class="stat-item"><span id="txt-racha">🔥 Racha: 0</span></div>
-    </div>
-    <div class="progress-wrap"><div class="progress-bar" id="barra-progreso"></div></div>
-    
-    <div class="question-box" id="pregunta-texto">Elige una modalidad y presiona «Iniciar Test de 50 Preguntas» para comenzar.</div>
-    
-    <div class="options-list" id="lista-opciones"></div>
-    
-    <div class="feedback" id="feedback-texto"></div>
-    
-    <div class="analysis-box" id="contenedor-analisis">
-        <div id="alerta-respuesta-correcta" class="correct-answer-alert"></div>
-        <div class="analysis-title">🔍 Análisis Simplificado:</div>
-        <div id="analisis-texto"></div>
-    </div>
-    
-    <button class="next-btn" id="btn-siguiente" onclick="avanzarPregunta()">Siguiente Pregunta ➡️</button>
+
+    <section id="inicio-screen" class="screen">
+        <div class="inicio-header">
+            <h1>📚 Centro de Evaluación</h1>
+            <p>Selecciona qué tipo de examen quieres realizar.</p>
+        </div>
+
+        <div class="modo-selector" id="modo-selector">
+            <button type="button" class="modo-card active" id="modo-sinonimos" onclick="seleccionarModo('sinonimos')">
+                <div class="modo-icono">🔤</div>
+                <h3>Sinónimos</h3>
+                <p>Practica vocabulario y sinónimos con preguntas aleatorias.</p>
+                <span class="modo-badge">250 preguntas • 50 aleatorias</span>
+            </button>
+
+            <button type="button" class="modo-card" id="modo-manual" onclick="seleccionarModo('manual')">
+                <div class="modo-icono">📘</div>
+                <h3>Manual MD 1-0</h3>
+                <p>Preguntas basadas en el Manual Directriz Ejército del Perú, edición 2021.</p>
+                <span class="modo-badge">151 preguntas • 50 aleatorias</span>
+            </button>
+        </div>
+
+        <div class="inicio-actions">
+            <div class="selection-status" id="selection-status">Modalidad seleccionada: <strong>Sinónimos</strong></div>
+            <div class="source-note" id="source-note">Banco de 250 preguntas de sinónimos.</div>
+            <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Comenzar Sinónimos</button>
+        </div>
+    </section>
+
+    <section id="quiz-screen" class="screen hidden">
+        <div class="quiz-header">
+            <h1 id="titulo-test">🔤 Test de Sinónimos</h1>
+            <button type="button" class="back-btn" onclick="volverAlInicio()">↩ Cambiar</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item"><span id="txt-progreso">Pregunta: 0/50</span></div>
+            <div class="stat-item"><span id="txt-puntaje">✨ Puntos: 0</span></div>
+            <div class="stat-item"><span id="txt-racha">🔥 Racha: 0</span></div>
+        </div>
+        <div class="progress-wrap"><div class="progress-bar" id="barra-progreso"></div></div>
+
+        <div class="question-box" id="pregunta-texto"></div>
+        <div class="options-list" id="lista-opciones"></div>
+        <div class="feedback" id="feedback-texto"></div>
+
+        <div class="analysis-box" id="contenedor-analisis">
+            <div id="alerta-respuesta-correcta" class="correct-answer-alert"></div>
+            <div class="analysis-title">🔍 Análisis Simplificado:</div>
+            <div id="analisis-texto"></div>
+        </div>
+
+        <button class="next-btn" id="btn-siguiente" onclick="avanzarPregunta()">Siguiente Pregunta ➡️</button>
+    </section>
 </div>
 
 <script>
@@ -386,6 +445,9 @@ const tituloTest = document.getElementById("titulo-test");
 const sourceNote = document.getElementById("source-note");
 const modoSinonimos = document.getElementById("modo-sinonimos");
 const modoManual = document.getElementById("modo-manual");
+const inicioScreen = document.getElementById("inicio-screen");
+const quizScreen = document.getElementById("quiz-screen");
+const selectionStatus = document.getElementById("selection-status");
 
 function mezclar(array) {
     const copia = [...array];
@@ -418,13 +480,15 @@ function seleccionarModo(modo) {
 
     if (modo === "manual") {
         tituloTest.textContent = "📘 Test Manual MD 1-0";
+        selectionStatus.innerHTML = "Modalidad seleccionada: <strong>Manual MD 1-0</strong>";
         sourceNote.textContent = "Preguntas basadas en el Manual Directriz MD 1-0, Ejército del Perú, edición 2021.";
+        btnIniciar.textContent = "▶️ Comenzar Test del Manual";
     } else {
         tituloTest.textContent = "🔤 Test de Sinónimos";
+        selectionStatus.innerHTML = "Modalidad seleccionada: <strong>Sinónimos</strong>";
         sourceNote.textContent = "Banco de 250 preguntas de sinónimos.";
+        btnIniciar.textContent = "▶️ Comenzar Test de Sinónimos";
     }
-    btnIniciar.textContent = "▶️ Iniciar Test de 50 Preguntas";
-    preguntaTexto.textContent = "Presiona «Iniciar Test de 50 Preguntas» para comenzar.";
 }
 
 function iniciarTest() {
@@ -438,9 +502,8 @@ function iniciarTest() {
     bloqueado = false;
     iniciado = true;
 
-    document.getElementById("modo-selector").style.display = "none";
-    sourceNote.style.display = "none";
-    btnIniciar.style.display = "none";
+    inicioScreen.classList.add("hidden");
+    quizScreen.classList.remove("hidden");
     txtPuntaje.textContent = "✨ Puntos: 0";
     txtRacha.textContent = "🔥 Racha: 0";
     btnSiguiente.style.display = "none";
@@ -514,11 +577,8 @@ function mostrarResultado() {
 
 function reiniciarSeleccion() {
     iniciado = false;
-    document.getElementById("modo-selector").style.display = "grid";
-    sourceNote.style.display = "block";
-    btnIniciar.style.display = "block";
-    seleccionarModo(modoActual);
-    preguntaTexto.textContent = "Elige una modalidad y presiona «Iniciar Test de 50 Preguntas» para comenzar.";
+    inicioScreen.classList.remove("hidden");
+    quizScreen.classList.add("hidden");
     listaOpciones.innerHTML = "";
     feedbackTexto.textContent = "";
     feedbackTexto.className = "feedback";
@@ -528,6 +588,13 @@ function reiniciarSeleccion() {
     txtPuntaje.textContent = "✨ Puntos: 0";
     txtRacha.textContent = "🔥 Racha: 0";
     barraProgreso.style.width = "0%";
+    seleccionarModo(modoActual);
+}
+
+function volverAlInicio() {
+    if (confirm("¿Quieres salir del test y volver a elegir la modalidad?")) {
+        reiniciarSeleccion();
+    }
 }
 
 function verificarRespuesta(indiceSeleccionado, botonPresionado) {
