@@ -1,1 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Táctil de Sinónimos + MD 1-0</title>
+    <style>
+        * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+        body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f8fafc; }
+        .quiz-container { background: #1e293b; width: 100%; max-width: 450px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
+        h1 { font-size: 22px; text-align: center; color: #3b82f6; margin: 0 0 15px 0; }
+        .stats { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 10px; }
+        .question-box { background: #0f172a; border-radius: 12px; padding: 20px; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 20px; border: 1px solid #334155; }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { background: #334155; border: 1px solid #475569; border-radius: 12px; padding: 16px; font-size: 15px; color: #f1f5f9; text-align: left; cursor: pointer; font-weight: 600; -webkit-tap-highlight-color: transparent; width: 100%; transition: background 0.2s; }
+        .option-btn.correct { background: #065f46 !important; border-color: #10b981 !important; }
+        .option-btn.incorrect { background: #991b1b !important; border-color: #ef4444 !important; }
+        .feedback { text-align: center; font-weight: bold; margin-top: 15px; min-height: 20px; font-size: 16px; }
+        .feedback.success { color: #10b981; }
+        .feedback.error { color: #f87171; }
+        .analysis-box { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin-top: 15px; display: none; font-size: 14px; line-height: 1.5; }
+        .analysis-title { color: #3b82f6; font-weight: bold; margin-bottom: 6px; font-size: 15px; }
+        .correct-answer-alert { color: #f87171; font-weight: bold; margin-bottom: 8px; font-size: 14px; background: #451a03; padding: 6px 10px; border-radius: 6px; border: 1px solid #78350f; display: inline-block; }
+        .next-btn { background: #3b82f6; color: white; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: bold; margin-top: 15px; cursor: pointer; display: none; text-align: center; }
+        .next-btn:hover { background: #2563eb; }
+        .start-btn {
+            background: #10b981; color: white; border: none; border-radius: 12px;
+            padding: 15px; font-size: 16px; font-weight: bold; margin-bottom: 15px;
+            cursor: pointer; width: 100%;
+        }
+        .start-btn:hover { background: #059669; }
+        .restart-btn {
+            background: #f59e0b; color: #111827; border: none; border-radius: 12px;
+            padding: 14px; font-size: 15px; font-weight: bold; margin-top: 15px;
+            cursor: pointer; width: 100%;
+        }
+        .option-btn:disabled { cursor: default; opacity: 0.95; }
+        .modo-selector { text-align: center; padding: 10px 0 5px; }
+        .selector-subtitulo { color: #cbd5e1; font-size: 15px; margin: 0 0 18px; line-height: 1.5; }
+        .manual-btn { background: #7c3aed; }
+        .manual-btn:hover { background: #6d28d9; }
+        .modo-actual { text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 12px; color: #60a5fa; }
+        #btn-cambiar-modo { display: block; background: #475569; }
+        #btn-cambiar-modo:hover { background: #334155; }
+    
+        .resultado-final {
+            margin: 18px 0;
+            padding: 18px;
+            border-radius: 14px;
+            background: #f5f7ff;
+            border: 2px solid #d9def7;
+            text-align: center;
+            color: #111827;
+        }
+        .resultado-final h2 { margin-top: 0; }
+        .nota-grande { font-size: 42px; font-weight: 800; margin: 10px 0; }
+        .nota-grande small { font-size: 18px; font-weight: 600; }
+        .resultado-final p {
+            font-size: 1.15rem;
+            margin: 9px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h1 id="titulo-principal">📚 Banco de Preguntas</h1>
+
+    <div id="selector-modo" class="modo-selector">
+        <p class="selector-subtitulo">Selecciona el tipo de examen que deseas realizar:</p>
+        <button class="start-btn" onclick="seleccionarModo('sinonimos')">📖 SINÓNIMOS</button>
+        <button class="start-btn manual-btn" onclick="seleccionarModo('manual')">🎖️ MANUAL MD 1-0</button>
+    </div>
+
+    <div id="panel-examen" style="display:none;">
+        <div class="modo-actual" id="modo-actual">📖 Sinónimos</div>
+        <div class="stats">
+            <span id="txt-progreso">Pregunta: 0/0</span>
+            <span id="txt-puntaje">✨ Puntos: 0</span>
+            <span id="txt-racha">🔥 Racha: 0</span>
+        </div>
+
+        <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Iniciar examen</button>
+
+        <div class="question-box" id="pregunta-texto">Selecciona «Iniciar examen» para comenzar.</div>
+        <div class="options-list" id="lista-opciones"></div>
+        <div class="feedback" id="feedback-texto"></div>
+
+        <div class="analysis-box" id="contenedor-analisis">
+            <div id="alerta-respuesta-correcta" class="correct-answer-alert"></div>
+            <div class="analysis-title">🔍 Análisis Simplificado:</div>
+            <div id="analisis-texto"></div>
+        </div>
+
+        <button class="next-btn" id="btn-siguiente" onclick="avanzarPregunta()">Siguiente Pregunta ➡️</button>
+        <button class="restart-btn" id="btn-cambiar-modo" onclick="cambiarModo()">↩️ Cambiar de modalidad</button>
+    </div>
+</div>
+
+<script>
+const bancoPreguntas = [
+    {"n": 1, "p": "ARGÜIR", "o": ["A) argumentar", "B) argento", "C) argamasa", "D) desalentar", "E) albear"], "r": 0, "a": "Argumentar. Significa probar o deducir algo por medio de razones."},
+    {"n": 2, "p": "PÁRAMO", "o": ["A) oasis", "B) jardín", "C) yermo", "D) parapeto", "E) parangón"], "r": 2, "a": "Yermo. Terreno raso, desabrigado, desierto y estéril."},
+    {"n": 3, "p": "ENGAÑO", "o": ["A) abstruso", "B) hogaño", "C) encono", "D) arana", "E) endriago"], "r": 3, "a": "Arana. Término antiguo que significa mentira, embuste o engaño."},
+    {"n": 4, "p": "ARCADA", "o": ["A) arcadia", "B) arcano", "C) basca", "D) arquear", "E) homeostasis"], "r": 2, "a": "Basca. Malestar del estómago que precede de forma inmediata al vómito."},
+    {"n": 5, "p": "ESQUIVO", "o": ["A) asequible", "B) arisco", "C) bisoño", "D) amistoso", "E) esquirla"], "r": 1, "a": "Arisco. Persona huraña, esquiva o áspera en el trato social."},
+    {"n": 6, "p": "PAULATINO", "o": ["A) diligente", "B) pebete", "C) pausado", "D) laudatorio", "E) raudo"], "r": 2, "a": "Pausado. Que procede paso a paso de manera lenta o gradual."},
+    {"n": 7, "p": "ARISTARCO", "o": ["A) aristocrático", "B) crítico", "C) pendiente", "D) plañidero", "E) platónico"], "r": 1, "a": "Crítico. Persona que ejerce como un censor severo de obras literarias."},
+    {"n": 8, "p": "ASTUCIA", "o": ["A) zalamería", "B) zalema", "C) candidez", "D) artería", "E) lagotería"], "r": 3, "a": "Artería. Astucia, maña o destreza calculada para engañar."},
+    {"n": 9, "p": "ARRUMACO", "o": ["A) arrinconar", "B) artero", "C) carantoña", "D) arruinado", "E) brumoso"], "r": 2, "a": "Carantoña. Demostración afectuosa, mimo o caricia exagerada."},
+    {"n": 10, "p": "ARTICULACIÓN", "o": ["A) artilugio", "B) arúspice", "C) artífice", "D) coyuntura", "E) emulación"], "r": 3, "a": "Coyuntura. Unión movible de dos piezas o huesos del cuerpo."},
+    {"n": 11, "p": "ADORNAR", "o": ["A) orlar", "B) horadar", "C) gulusmear", "D) afear", "E) almíbarar"], "r": 0, "a": "Orlar. Adornar el borde de algo con un ribete u orla."},
+    {"n": 12, "p": "CIRCUNLOQUIO", "o": ["A) círculo", "B) cimbel", "C) diferir", "D) ambages", "E) acartonado"], "r": 3, "a": "Ambages. Rodeos de palabras para evitar una respuesta directa."},
+    {"n": 13, "p": "ACOSAR", "o": ["A) adargar", "B) atacar", "C) intuir", "D) abrir", "E) a látere"], "r": 1, "a": "Atacar. Perseguir de forma insistentemente u hostigar a alguien."},
+    {"n": 14, "p": "ÁLGIDO", "o": ["A) albino", "B) tórrido", "C) albur", "D) frío", "E) etéreo"], "r": 3, "a": "Frío. Describe algo intensamente helado o el punto culminante."},
+    {"n": 15, "p": "CONSENTIR", "o": ["A) presentir", "B) desdecir", "C) acceder", "D) precaver", "E) adunar"], "r": 2, "a": "Acceder. Permitir, dar por bueno o condescender con una solicitud."},
+    {"n": 16, "p": "JUSTA", "o": ["A) combate", "B) nombre", "C) equitativa", "D) sagacidad", "E) hacendosa"], "r": 0, "a": "Combate. Torneo histórico o enfrentamiento entre caballeros armados."},
+    {"n": 17, "p": "COMPUNGIDO", "o": ["A) compendiado", "B) triste", "C) ampuloso", "D) gayo", "E) esmirriado"], "r": 1, "a": "Triste. Siente dolor, pesadumbre, culpa o profunda tristeza."},
+    {"n": 18, "p": "PAVOROSO", "o": ["A) pábulo", "B) pacotilla", "C) padding", "D) espantoso", "E) incendiario"], "r": 3, "a": "Espantoso. Infunde gran miedo, pavor o terror incontrolable."},
+    {"n": 19, "p": "ESPOLEAR", "o": ["A) desanimar", "B) estimular", "C) expoliar", "D) expiar", "E) espiar"], "r": 1, "a": "Estimular. Picar con espuelas; figuradamente es impulsar una action."},
+    {"n": 20, "p": "KAN", "o": ["A) perro", "B) soberano", "C) alguacil", "D) émulo", "E) súbdito"], "r": 1, "a": "Soberano. Título honorífico de jefes tribales o príncipes mongoles."},
+    {"n": 21, "p": "UBICUO", "o": ["A) donde", "B) dimisionario", "C) omnipotente", "D) omnipresente", "E) omnisciente"], "r": 3, "a": "Omnipresente. Que está presente en todas partes al mismo tiempo."},
+    {"n": 22, "p": "POSTERGAR", "o": ["A) despreciar", "B) posponer", "C) adelantar", "D) estimular", "E) acelerar"], "r": 1, "a": "Posponer. Dejar algo para un momento posterior o retrasarlo."},
+    {"n": 23, "p": "LOOR", "o": ["A) honor", "B) alabanza", "C) gusto", "D) olor", "E) amor"], "r": 1, "a": "Alabanza. Término lírico que equivale a elogio o encomio público."},
+    {"n": 24, "p": "MARASMO", "o": ["A) inmovilidad", "B) enredo", "C) pantano", "D) catarro", "E) dolor"], "r": 0, "a": "Inmovilidad. Extrema inactividad, paralización o estancamiento."},
+    {"n": 25, "p": "CÓDICE", "o": ["A) testamento", "B) manuscrito", "C) codicilo", "D) nota", "E) libro"], "r": 1, "a": "Manuscrito. Libro antiguo anterior a la imprenta escrito a mano."},
+    {"n": 26, "p": "DADIVOSO", "o": ["A) hablador", "B) intemperante", "C) mezquino", "D) expansivo", "E) desprendido"], "r": 4, "a": "Desprendido. Persona generosa, altruista y desinteresada."},
+    {"n": 27, "p": "DIÁFANO", "o": ["A) luminoso", "B) limpio", "C) frágil", "D) delicado", "E) áspero"], "r": 0, "a": "Luminoso. Deja pasar la luz; claro, transparente y despejado."},
+    {"n": 28, "p": "PANACEA", "o": ["A) orgulloso", "B) inactivo", "C) curalotodo", "D) dulce", "E) hablador"], "r": 2, "a": "Curalotodo. Remedio mítico capaz de sanar cualquier enfermedad."},
+{"n": 29, "p": "HEBRA", "o": ["A) efigie", "B) fibra", "C) burla", "D) sarcasmo", "E) opresión"], "r": 1, "a": "Fibra. Filamento largo y delgado de material textil o biológico."},
+{"n": 30, "p": "FÉRULA", "o": ["A) color", "B) fiebre", "C) palmeta", "D) cierta tela", "E) hueso"], "r": 2, "a": "Palmeta. Históricamente instrumento de castigo; denota yugo o autoridad."},
+{"n": 31, "p": "ROSO", "o": ["A) raído", "B) bajo", "C) roseta", "D) raspar", "E) distensión"], "r": 0, "a": "Raído. Desgastado por el roce constante perdiendo su superficie."},
+{"n": 32, "p": "TARASCADA", "o": ["A) solicitud", "B) vieja", "C) nafta", "D) trasnochada", "E) dentellada"], "r": 4, "a": "Dentellada. Mordisco rápido dado con los dientes de forma agresiva."},
+{"n": 33, "p": "MANDRIA", "o": ["A) estatua", "B) mandado", "C) fruta", "D) tímido", "E) manía"], "r": 3, "a": "Tímido. Individuo cobarde, falto de valor o asustadizo."},
+{"n": 34, "p": "DESPAPUCHO", "o": ["A) sandez", "B) despacho", "C) perorata", "D) testimonio", "E) fracción"], "r": 0, "a": "Sandez. Expresión absurda, necedad o disparate evidente."},
+{"n": 35, "p": "TRAPISONDA", "o": ["A) desorden", "B) tela", "C) cabriola", "D) esplín", "E) espita"], "r": 0, "a": "Desorden. Gresca, bulla, alboroto confuso o revuelo."},
+{"n": 36, "p": "CALÍGINE", "o": ["A) claro", "B) transparente", "C) opaco", "D) tedio", "E) maximum"], "r": 2, "a": "Opaco. Oscuridad densa, niebla o ambiente lúgubre y sombrío."},
+{"n": 37, "p": "IBÍDEM", "o": ["A) vienen", "B) así mismo", "C) allí mismo", "D) ignaro", "E) así es"], "r": 2, "a": "Allí mismo. Voz latina para indicar exactamente la misma referencia."},
+{"n": 38, "p": "CURDA", "o": ["A) molestia", "B) cuerdo", "C) achispado", "D) absurdidez", "E) desbornamiento"], "r": 2, "a": "Achispado. Término coloquial para la embriaguez o borrachera."},
+{"n": 39, "p": "ENGORRO", "o": ["A) aflicción", "B) lauro", "C) fracaso", "D) castigo", "E) impedimento"], "r": 4, "a": "Impedimento. Obstáculo molesto o dificultad que complica una tarea."},
+{"n": 40, "p": "HERALDO", "o": ["A) mensajero", "B) verdugo", "C) reo", "D) vate", "E) juez"], "r": 0, "a": "Mensajero. Encargado de llevar un mensaje o anunciar algo."},
+{"n": 41, "p": "ARMISTICIO", "o": ["A) armamento", "B) plebiscito", "C) tregua", "D) cautela", "E) opción"], "r": 2, "a": "Tregua. Suspensión provisional de hostilidades militares pactada."},
+{"n": 42, "p": "HABILITAR", "o": ["A) facultar", "B) elegir", "C) escapar", "D) amansar", "E) dominar"], "r": 0, "a": "Facultar. Hacer legalmente idóneo a alguien u otorgar potestad."},
+{"n": 43, "p": "ESCRÚPULO", "o": ["A) delicadeza", "B) reparo", "C) fastidio", "D) higiene", "E) moral"], "r": 1, "a": "Reparo. Duda o recelo ético sobre si una acción es correcta."},
+{"n": 44, "p": "IMPÁVIDO", "o": ["A) callado", "B) inmóvil", "C) calmado", "D) surprised", "E) trémulo"], "r": 2, "a": "Calmado. Persona libre de pavor, serena e imperturbable."},
+{"n": 45, "p": "CÚMULO", "o": ["A) cantidad", "B) reunión", "C) montón", "D) variedad", "E) aglomeración"], "r": 2, "a": "Montón. Agrupación o acumulación de cosas superpuestas."},
+{"n": 46, "p": "HÁLITO", "o": ["A) vida", "B) agony", "C) espíritu", "D) ánimo", "E) soplo"], "r": 4, "a": "Soplo. Vapor al respirar; corriente suave de aire o brisa."},
+{"n": 47, "p": "BADULAQUE", "o": ["A) engañado", "B) cándido", "C) camorrero", "D) osado", "E) embustero"], "r": 1, "a": "Cándido. Individuo de poco juicio, ingenuo o fácil de engañar."},
+{"n": 48, "p": "CÁUSTICO", "o": ["A) prudent", "B) mordaz", "C) agresivo", "D) opción A y B", "E) opción B y C"], "r": 1, "a": "Mordaz. Describe un comentario irónico, agudo y punzante."},
+{"n": 49, "p": "CHOTEAR", "o": ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) ataque"], "r": 0, "a": "Expulsar. Rechazar o desechar a alguien de forma despectiva."},
+{"n": 50, "p": "FAROLEAR", "o": ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], "r": 4, "a": "Presumir. Ostentar altanería para llamar la atención ajena."},
+{"n": 51, "p": "OBLITERAR", "o": ["A) borrar", "B) recordar", "C) expandir", "D) iniciar", "E) festejar"], "r": 0, "a": "Borrar. Obstruir, anular o eliminar un conducto o registro."},
+{"n": 52, "p": "ESOTÉRICO", "o": ["A) common", "B) oculto", "C) científico", "D) público", "E) ruidoso"], "r": 1, "a": "Oculto. Reservado a unos pocos, secreto o de difícil acceso."},
+{"n": 53, "p": "EXHAUSTIVO", "o": ["A) incompleto", "B) superficial", "C) completo", "D) cansado", "E) efímero"], "r": 2, "a": "Completo. Que agota por completo una materia, minucioso."},
+{"n": 54, "p": "INDOLENCIA", "o": ["A) dolor", "B) empatía", "C) rapidez", "D) pereza", "E) entusiasmo"], "r": 3, "a": "Pereza. Falta de ánimo, dejadez o negligencia ante los deberes."},
+{"n": 55, "p": "LACONISMO", "o": ["A) extensión", "B) elocuencia", "C) exageración", "D) orgullo", "E) brevedad"], "r": 4, "a": "Brevedad. Expresarse con pocas y concisas palabras."},
+{"n": 56, "p": "NEFANDO", "o": ["A) abominable", "B) sagrado", "C) tierno", "D) chistoso", "E) neutral"], "r": 0, "a": "Abominable. Indigno, torpe, sucio, digno de repulsa moral."},
+{"n": 57, "p": "ONEROSO", "o": ["A) barato", "B) liviano", "C) costoso", "D) festivo", "E) honrado"], "r": 2, "a": "Costoso. Que genera un gran gasto económico, gravoso."},
+{"n": 58, "p": "PUSILÁNIME", "o": ["A) valiente", "B) cobarde", "C) generoso", "D) enfermo", "E) sabio"], "r": 1, "a": "Cobarde. Falto de ánimo o valor para enfrentar riesgos."},
+{"n": 59, "p": "QUIMERA", "o": ["A) reality", "B) monstruo", "C) certeza", "D) ilusión", "E) verdad"], "r": 3, "a": "Ilusión. Producto de la imaginación que es irrealizable."},
+{"n": 60, "p": "SUTILEZA", "o": ["A) grosería", "B) agudeza", "C) pesadez", "D) mentira", "E) lentitud"], "r": 1, "a": "Agudeza. Delicadeza, ingenio o perspicacia fina."},
+{"n": 61, "p": "VOLUBLE", "o": ["A) estable", "B) pesado", "C) cambiante", "D) eterno", "E) rígido"], "r": 2, "a": "Cambiante. Que cambia de opinión o carácter con facilidad."},
+{"n": 62, "p": "CONCULCAR", "o": ["A) respetar", "B) violar", "C) aplaudir", "D) estudiar", "E) redactar"], "r": 1, "a": "Violar. Quebrantar una ley, norma o derecho ciudadano."},
+{"n": 63, "p": "EXECRAR", "o": ["A) bendecir", "B) amar", "C) maldecir", "D) limpiar", "E) tolerar"], "r": 2, "a": "Maldecir. Condenar o reprobar con fuerza moral una acción."},
+{"n": 64, "p": "FRUGAL", "o": ["A) excesivo", "B) moderado", "C) frutal", "D) costoso", "E) glotón"], "r": 1, "a": "Moderado. Comedido en el comer; alimentación sencilla y sana."},
+{"n": 65, "p": "GARRULO", "o": ["A) hablador", "B) taciturno", "C) educado", "D) violento", "E) silencioso"], "r": 0, "a": "Hablador. Persona charlatana o que habla en exceso."},
+{"n": 66, "p": "INERTE", "o": ["A) dinámico", "B) vivo", "C) inmóvil", "D) útil", "E) artificial"], "r": 2, "a": "Inmóvil. Falto de vida o movilidad, incapaz de reaccionar."},
+{"n": 67, "p": "MACILENTO", "o": ["A) robusto", "B) pálido", "C) alegre", "D) sucio", "E) veloz"], "r": 1, "a": "Pálido. Aspecto físico descolorido, flaco o demacrado."},
+{"n": 68, "p": "OSTRACISMO", "o": ["A) asilo", "B) destierro", "C) bienvenida", "D) premio", "E) juicio"], "r": 1, "a": "Destierro. Aislamiento forzado de la vida pública o de la patria."},
+{"n": 69, "p": "PROLIJO", "o": ["A) breve", "B) descuidado", "C) detallado", "D) lejano", "E) apurado"], "r": 2, "a": "Detallado. Realizado con gran minuciosidad y esmero."},
+{"n": 70, "p": "SAGAZ", "o": ["A) ingenuo", "B) lento", "C) astuto", "D) torpe", "E) honrado"], "r": 2, "a": "Astuto. Rápido para captar las cosas, perspicaz."},
+{"n": 71, "p": "VILIPENDIAR", "o": ["A) alabar", "B) comprar", "C) despreciar", "D) proteger", "E) perdonar"], "r": 2, "a": "Despreciar. Menospreciar, denigrar o rebajar la dignidad."},
+{"n": 72, "p": "CHABACANO", "o": ["A) fino", "B) basto", "C) dulce", "D) lejano", "E) oculto"], "r": 1, "a": "Basto. Vulgar, grosero, de mal gusto u ordinario."},
+{"n": 73, "p": "DILAPIDAR", "o": ["A) ahorrar", "B) cuidat", "C) malgastar", "D) sembrar", "E) construir"], "r": 2, "a": "Malgastar. Despilfarrar bienes o dinero descontroladamente."},
+{"n": 74, "p": "ENERVAR", "o": ["A) fortalecer", "B) debilitar", "C) enojar", "D) gritar", "E) calmar"], "r": 1, "a": "Debilitar. Disminuir las fuerzas o relajar las fibras."},
+{"n": 75, "p": "FRENESÍ", "o": ["A) calma", "B) lentitud", "C) exaltación", "D) tristeza", "E) cordura"], "r": 2, "a": "Exaltación. Delirio, excitación extrema o ímpetu del ánimo."},
+{"n": 76, "p": "HETERODOXO", "o": ["A) sumiso", "B) fiel", "C) disidente", "D) común", "E) ignorante"], "r": 2, "a": "Disidente. Que se aparta de la doctrina oficial común."},
+{"n": 77, "p": "INMUTABLE", "o": ["A) inalterable", "B) mudable", "C) frágil", "D) ruidoso", "E) veloz"], "r": 0, "a": "Inalterable. Que no cambia, inmóvil ante las emociones."},
+{"n": 78, "p": "MISÁNTROPO", "o": ["A) sociable", "B) huraño", "C) filántropo", "D) sabio", "E) enfermo"], "r": 1, "a": "Huraño. Muestra aversión al trato humano y se aísla."},
+{"n": 79, "p": "RECALCITRANTE", "o": ["A) flexible", "B) obedient", "C) obstinado", "D) tibio", "E) moderno"], "r": 2, "a": "Obstinado. Terco, aferrado con terquedad a una postura."},
+{"n": 80, "p": "TÁCITO", "o": ["A) explícito", "B) implícito", "C) ruidoso", "D) prohibido", "E) escrito"], "r": 1, "a": "Implícito. Que no se expresa pero se deduce de los hechos."},
+{"n": 81, "p": "UBICUIDAD", "o": ["A) ausencia", "B) omnipresencia", "C) destierro", "D) velocidad", "E) sabiduría"], "r": 1, "a": "Omnipresencia. Facultad de estar en todas partes a la vez."},
+{"n": 82, "p": "VÁSTAGO", "o": ["A) ancestro", "B) tronco", "C) descendant", "D) amigo", "E) protector"], "r": 2, "a": "Descendiente. Persona que desciende de otra; hijo o retoño."},
+{"n": 83, "p": "ABYECTO", "o": ["A) noble", "B) despreciable", "C) lejano", "D) inteligente", "E) generoso"], "r": 1, "a": "Despreciable. Persona ruin, vil o baja en su moral."},
+{"n": 84, "p": "COADYUVAR", "o": ["A) estorbar", "B) oponer", "C) contribuir", "D) iniciar", "E) terminar"], "r": 2, "a": "Contribuir. Prestar ayuda o cooperar para un objetivo común."},
+{"n": 85, "p": "DECREPITUD", "o": ["A) juventud", "B) health", "C) vejez", "D) locura", "E) pobreza"], "r": 2, "a": "Vejez. Decadencia física provocada por la avanzada edad."},
+{"n": 86, "p": "EFÍMERO", "o": ["A) eterno", "B) duradero", "C) pasajero", "D) valioso", "E) histórico"], "r": 2, "a": "Pasajero. Que tiene una duración sumamente corta o fugaz."},
+{"n": 87, "p": "FACUNDIA", "o": ["A) silence", "B) elocuencia", "C) mentira", "D) riqueza", "E) timidez"], "r": 1, "a": "Elocuencia. Facilidad y soltura notable al hablar."},
+{"n": 88, "p": "GÉNESIS", "o": ["A) final", "B) origen", "C) evolución", "D) muerte", "E) destrucción"], "r": 1, "a": "Origen. Principio, raíz o surgimiento de un proceso."},
+{"n": 89, "p": "HARAGÁN", "o": ["A) activo", "B) vago", "C) trabajador", "D) ladrón", "E) sumiso"], "r": 1, "a": "Vago. Enemigo del trabajo, perezoso u holgazán."},
+{"n": 90, "p": "INCOAR", "o": ["A) terminar", "B) pausar", "C) iniciar", "D) juzgar", "E) registrar"], "r": 2, "a": "Iniciar. Dar comienzo a un proceso, trámite o acción oficial."},
+{"n": 91, "p": "CHASCO", "o": ["A) acierto", "B) broma", "C) triunfo", "D) fiasco", "E) encuentro"], "r": 3, "a": "Fiasco. Desilusión o revés inesperado que causa frustración."},
+{"n": 92, "p": "PÓSITO", "o": ["A) depósito", "B) posición", "C) apostura", "D) excremento", "E) oquedad"], "r": 0, "a": "Depósito. Almacén de granos; depósito general."},
+{"n": 93, "p": "LOCATARIO", "o": ["A) manicomio", "B) vesanía", "C) ciudadano", "D) arrendatario", "E) degustador"], "r": 3, "a": "Arrendatario. Persona que toma un bien en alquiler (inquilino)."},
+{"n": 94, "p": "NECROPSIA", "o": ["A) autopsia", "B) excremento", "C) investigación", "D) resumen", "E) cementerio"], "r": 0, "a": "Autopsia. Examen anatómico de un cadáver para saber la causa de muerte."},
+{"n": 95, "p": "VETO", "o": ["A) mina", "B) censura", "C) prohibición", "D) sufragio", "E) cédula"], "r": 2, "a": "Prohibición. Facultad para impedir la ejecución de una norma o ley."},
+{"n": 96, "p": "LIBAR", "o": ["A) lamer", "B) marear", "C) tomar", "D) soltar", "E) emancipar"], "r": 2, "a": "Tomar. Beber un líquido a pequeños sorbos, equivalente a tomar."},
+{"n": 97, "p": "LAYA", "o": ["A) línea", "B) tiberio", "C) calidad", "D) evasiva", "E) alaba"], "r": 2, "a": "Calidad. Define la clase, condición, naturaleza o calidad de algo."},
+{"n": 98, "p": "CEPA", "o": ["A) aprenda", "B) conozca", "C) isla", "D) hygiene", "E) raza"], "r": 4, "a": "Raza. Sustantivo que define el origen o tronco familiar de una especie."},
+{"n": 99, "p": "CAPITULAR", "o": ["A) cercenar", "B) cadalso", "C) claudicar", "D) ahorcar", "E) título"], "r": 2, "a": "Claudicar. Significa rendirse bajo condiciones o dejar de oponer resistencia."},
+{"n": 100, "p": "PANFLETO", "o": ["A) totalidad", "B) sátira", "C) acto", "D) boceto", "E) soltura"], "r": 1, "a": "Sátira. Escrito de corte agresivo diseñado para criticar con dureza."},
+{"n": 101, "p": "INEPTO", "o": ["A) limitado", "B) incapaz", "C) impotente", "D) inapto", "E) tozudo"], "r": 1, "a": "Incapaz. Define a quien carece por completo de la aptitud, capacidad o competencia natural o intelectual para resolver problemas generales."},
+{"n": 102, "p": "AVERIGUAR", "o": ["A) buscar", "B) encuestar", "C) entrevistar", "D) inquirir", "E) chismear"], "r": 3, "a": "Inquirir. Significa indagar, examinar o averiguar cuidadosamente y de manera profunda la verdad sobre un asunto."},
+{"n": 103, "p": "CAMBIANTE", "o": ["A) impuntual", "B) belicoso", "C) movible", "D) veleidoso", "E) descortés"], "r": 3, "a": "Veleidoso. Califica a las personas inconstantes o volubles que mudan con extrema facilidad de gustos, opiniones o caprichos."},
+{"n": 104, "p": "REPUTADO", "o": ["A) lañado", "B) impoluto", "C) indocto", "D) tunante", "E) putativo"], "r": 4, "a": "Putativo. Comparten la raíz etimológica latente de ser 'considerado, reputado o tenido por tal' en base a una suposición o creencia formal."},
+{"n": 105, "p": "ALCOR", "o": ["A) elevación", "B) colina", "C) cordillera", "D) montaña", "E) ladera"], "r": 1, "a": "Colina. Define con precisión a una eminencia natural de tierra que se caracteriza por ser de poca altura, menor que una montaña."},
+{"n": 106, "p": "ESTOLIDEZ", "o": ["A) idiocia", "B) retraso", "C) abulia", "D) atraso", "E) estulticia"], "r": 4, "a": "Estulticia. Significa tontería, necedad profunda o una alarmante falta de razón y luces intelectuales en el obrar."},
+{"n": 107, "p": "CARRILLOS", "o": ["A) mofletes", "B) rumores", "C) carrozas", "D) obesidad", "E) pómulos"], "r": 0, "a": "Mofletes. Designa formalmente a las mejillas carnosas o abultadas a ambos lados del rostro humano."},
+{"n": 108, "p": "ACUCIOSO", "o": ["A) genial", "B) perpicaz", "C) laborioso", "D) intuitivo", "E) activo"], "r": 2, "a": "Laborioso. Describe a una persona muy aplicada, diligente y solicita que pone un gran esfuerzo, esmero y rapidez en sus tareas de trabajo o estudio."},
+{"n": 109, "p": "MONJE", "o": ["A) santón", "B) ermitaño", "C) anacoreta", "D) monja", "E) monaguillo"], "r": 2, "a": "Anacoreta. Representa la forma originaria y pura del monacato eremítico: personas que se retiran del mundo para vivir en soledad y contemplación espiritual."},
+{"n": 110, "p": "CHOCHEZ", "o": ["A) ternura", "B) arrumaco", "C) ancianidad", "D) aches", "E) decrepitud"], "r": 4, "a": "Decrepitud. Estado de decadencia física y mental extrema producida por la avanzada edad biológica, donde se debilitan marcadamente las facultades."},
+{"n": 111, "p": "ANARQUISTA", "o": ["A) solerte", "B) libertario", "C) amotinado", "D) desigual", "E) cretino"], "r": 1, "a": "Libertario. Término ideológico e histórico que funciona como sinónimo directo del partidario del anarquismo y de la abolición del Estado."},
+{"n": 112, "p": "POSMA", "o": ["A) pústula", "B) férula", "C) pasividad", "D) cachaza", "E) apatía"], "r": 3, "a": "Cachaza. Describe la lentitud, pesadez o flema excesiva y exasperante en el modo de actuar o de ejecutar las acciones físicas."},
+{"n": 113, "p": "ABSORTO", "o": ["A) alerta", "B) admirado", "C) concentrado", "D) pensativo", "E) iluso"], "r": 1, "a": "Admirado. Significa pasmado, estupefacto o sobrecogido por el asombro ante un suceso extraordinario que suspende el pensamiento."},
+{"n": 114, "p": "ESCOSOR", "o": ["A) antojo", "B) alivio", "C) picazón", "D) ardor", "E) curiosidad"], "r": 2, "a": "Picazón. Sensación incómoda en la piel que produce la necesidad e impulso inmediato de rascarse para aliviar la zona."},
+{"n": 115, "p": "INCINERAR", "o": ["A) inhumar", "B) quemar", "C) crematorio", "D) calcinar", "E) incendiar"], "r": 3, "a": "Calcinar. Someter un cuerpo a la acción del fuego intenso hasta reducirlo por completo a cenizas o provocar su descomposición total."},
+{"n": 116, "p": "ENGENDRO", "o": ["A) fenómeno", "B) bestial", "C) craso", "D) criatura", "E) neonato"], "r": 0, "a": "Fenómeno. Criatura viva que presenta graves anomalías orgánicas, malformaciones marcadas o una fealdad que rompe el orden natural."},
+{"n": 117, "p": "ANTIGUO", "o": ["A) secular", "B) colonial", "C) feudal", "D) monacal", "E) gastado"], "r": 0, "a": "Secular. Califica a aquello que dura un siglo o que se extiende majestuosamente a lo largo de varias centurias del tiempo."},
+{"n": 118, "p": "GENEROSO", "o": ["A) bondadoso", "B) pródigo", "C) benigno", "D) abundancia", "E) ostentoso"], "r": 1, "a": "Pródigo. Adjetivo que describe a la persona desprendida que gasta u otorga sus recursos materiales con gran largueza y sin restricciones."},
+{"n": 119, "p": "PAUPÉRRIMO", "o": ["A) ingente", "B) miseria", "C) inane", "D) mentecato", "E) inope"], "r": 4, "a": "Inope. Adjetivo culto que designa formalmente al individuo indigente, pobre y completamente desprovisto de los recursos económicos necesarios."},
+{"n": 120, "p": "ORCO", "o": ["A) paraíso", "B) fantasma", "C) suplicio", "D) báratro", "E) angustia"], "r": 3, "a": "Báratro. Voz clásica y poética utilizada para designar de forma exacta al infierno o a un abismo profundo y tenebroso de castigo."},
+{"n": 121, "p": "ACARDENALADO", "o": ["A) consagrado", "B) espiritual", "C) encarnado", "D) santiguado", "E) violáceo"], "r": 2, "a": "Encarnado. Coloración roja viva o de color de carne congestionada que adoptan los tejidos inflamados por un golpe o contusión subcutánea."},
+{"n": 122, "p": "RECELOSO", "o": ["A) tímido", "B) camastrón", "C) suspicaz", "D) celoso", "E) inseguro"], "r": 2, "a": "Suspicaz. Persona propensa a concebir sospechas o que desconfía con extrema facilidad de las intenciones de los demás."},
+{"n": 123, "p": "LLANURA", "o": ["A) desierto", "B) plano", "C) sencillez", "D) valle", "E) sabana"], "r": 4, "a": "Sabana. Sustantivo que define geográficamente a una llanura de gran extensión en regiones tropicales o subtropicales que carece casi de árboles."},
+{"n": 124, "p": "JAYÁN", "o": ["A) membrudo", "B) garrido", "C) agarrado", "D) deportista", "E) pesista"], "r": 0, "a": "Membrudo. Individuo robusto, corpulento, de gran estatura y dotado de miembros fuertemente desarrollados para el vigor físico."},
+{"n": 125, "p": "SEQUEDAD", "o": ["A) infertilidad", "B) esterilidad", "C) extenuación", "D) inhóspito", "E) enjutez"], "r": 4, "a": "Enjutez. Sustantivo abstracto que define la delgadez extrema o la cualidad de estar seco, chupado y desprovisto de carnes o masas de grasa corporal."},
+{"n": 126, "p": "IMPASIBLE", "o": ["A) chabacano", "B) cenobita", "C) astroso", "D) indolente", "E) obstinado"], "r": 3, "a": "Indolente. Califica a quien no se afecta, conmueve o perturba ante el dolor ajeno o las circunstancias externas intensas, mostrando total imperturbabilidad."},
+{"n": 127, "p": "DUBITAR", "o": ["A) indefinir", "B) alternar", "C) hesitar", "D) equivocar", "E) capcioso"], "r": 2, "a": "Hesitar. Verbo en infinitivo de registro culto que significa exactamente dudar, vacilar o mostrar indecisión antes de emitir una resolución."},
+{"n": 128, "p": "DILOGÍA", "o": ["A) falsedades", "B) ambigüedad", "C) falacia", "D) engaño", "E) falsedad"], "r": 1, "a": "Ambigüedad. Cualidad del lenguaje o enunciado que puede entenderse de varios modos o admitir distintas interpretaciones lingüísticas concurrentes."},
+{"n": 129, "p": "INTERINO", "o": ["A) incluido", "B) endógeno", "C) provisional", "D) reemplazo", "E) interno"], "r": 2, "a": "Provisional. Adjetivo que describe aquello que se hace, tiene o ejerce de manera transitoria y temporal, a la espera de una resolución definitiva."},
+{"n": 130, "p": "PLEGARIA", "o": ["A) implorar", "B) petición", "C) jaculatoria", "D) responso", "E) adoration"], "r": 2, "a": "Jaculatoria. Define formalmente a una oración o plegaria muy breve y fervorosa, dicha con profunda devoción religiosa a la divinidad."},
+{"n": 131, "p": "DISOLUTO", "o": ["A) libertino", "B) libre", "C) autónomo", "D) absoluto", "E) candinga"], "r": 0, "a": "Libertino. Individuo entregado por completo a los vicios morales y a los placeres desenfrenados, viviendo sin moderación alguna."},
+{"n": 132, "p": "ALBAÑAL", "o": ["A) estanque", "B) palestra", "C) desagüe", "D) letrina", "E) silo"], "r": 2, "a": "Desagüe. Conducto, canal o tubería subterránea construida específicamente para dar salida a las aguas sucias o pluviales de una edificación."},
+{"n": 133, "p": "DESAPERCIBIDO", "o": ["A) inadvertido", "B) desprovisto", "C) ignorado", "D) ignoto", "E) indiferente"], "r": 0, "a": "Inadvertido. Califica a aquello que pasa completamente sin ser visto, que no es percibido o que no llama la atención del entorno."},
+{"n": 134, "p": "LAXADO", "o": ["A) absuelto", "B) ablandado", "C) extendido", "D) cansado", "E) dilatado"], "r": 1, "a": "Ablandado. Participio que comparte el núcleo semántico de disminuir la tensión, firmeza o rigidez natural de los tejidos orgánicos o materiales."},
+{"n": 135, "p": "PELOTILLERO", "o": ["A) cuentista", "B) suertero", "C) servil", "D) sortilegio", "E) sugestión"], "r": 2, "a": "Servil. Adjetivo que describe a la persona aduladora o lisonjera que muestra una sumisión baja exagerada ante sus superiores para obtener favors."},
+{"n": 136, "p": "DENUESTO", "o": ["A) deprecación", "B) litigio", "C) agravio", "D) hollar", "E) humillar"], "r": 2, "a": "Agravio. Sustantivo masculino que significa ofensa, insulto o injuria dirigida a perjudicar la honra o la dignidad moral de un individuo."},
+{"n": 137, "p": "POLISARCIA", "o": ["A) inapetencia", "B) hidropesía", "C) seboso", "D) obesidad", "E) gordura"], "r": 3, "a": "Obesidad. Término médico y científico equivalente que define la acumulación crónica y patológica de tejido graso en el organismo vivo."},
+{"n": 138, "p": "INSANIA", "o": ["A) locura", "B) parolina", "C) neurosis", "D) psicopatía", "E) demencia"], "r": 4, "a": "Demencia. Estado patológico y forense caracterizado por la pérdida profunda de la razón, el juicio o el deterioro de las capacidades cognitivas."},
+{"n": 139, "p": "INQUINA", "o": ["A) animosidad", "B) amargura", "C) enfado", "D) cólera", "E) despecho"], "r": 0, "a": "Animosidad. Sentimiento latente de mala voluntad, enemistad o aversión profunda y persistente manifestada hacia otra persona."},
+{"n": 140, "p": "PRETERIR", "o": ["A) suplantar", "B) reparar", "C) posponer", "D) desubicar", "E) relegar"], "r": 2, "a": "Posponer. Acción de retrasar, postergar o dejar en un segundo plano la atención o el trámite de una cosa o persona en favor de otra."},
+{"n": 141, "p": "ATÁVICO", "o": ["A) genético", "B) ancestral", "C) arcaico", "D) prosapia", "E) heredado"], "r": 1, "a": "Ancestral. Adjetivo que califica a todo rasgo, costumbre o comportamiento remoto que pertenece o se hereda de los antepasados familiares."},
+{"n": 142, "p": "INEDIA", "o": ["A) cansancio", "B) indolencia", "C) pereza", "D) ensueño", "E) albinismo"], "r": 1, "a": "Indolencia. Estado conductual de desidia, apatía o inacción absoluta que caracteriza a quien carece voluntariamente de energía para obrar."},
+{"n": 143, "p": "ARRAIGAR", "o": ["A) aclimatar", "B) afincar", "C) ramificar", "D) determinar", "E) mitigar"], "r": 1, "a": "Afincar. Verbo en infinitivo que significa establecer de manera firme y duradera una residencia fija, adquiriendo raíces patrimoniales en un lugar."},
+{"n": 144, "p": "ESPELUZNO", "o": ["A) pavura", "B) escalofrío", "C) espanto", "D) pánico", "E) terciana"], "r": 2, "a": "Espanto. Sustantivo que designa un susto o terror de gran intensidad, procesado a partir de la raíz verbal de causar horror sobrecegedor."},
+{"n": 145, "p": "REILAR", "o": ["A) enfocar", "B) brillar", "C) titilar", "D) refulgir", "E) sustentar"], "r": 2, "a": "Titilar. Centellear con un brillo trémulo, parpadeante o intermitente, equivaliendo a la acción física de la luz de moverse como temblando."},
+{"n": 146, "p": "ABYECTO", "o": ["A) calculador", "B) rastrero", "C) excreta", "D) repulido", "E) trufa"], "r": 1, "a": "Rastrero. Adjetivo valorativo que define a un individuo moralmente degradado, vil, despreciable o ruin en el plano de su conducta."},
+{"n": 147, "p": "EXPATRIADO", "o": ["A) proscrito", "B) prescrito", "C) suscrito", "D) expulsado", "E) aislado"], "r": 0, "a": "Proscrito. Persona exiliada o desterrada formalmente de su patria debido a motivos políticos o determinaciones de carácter legal judicial."},
+{"n": 148, "p": "CÁFILA", "o": ["A) gorrino", "B) secuela", "C) caterva", "D) difunto", "E) extravio"], "r": 2, "a": "Caterva. Sustantivo colectivo indeterminado que denota a una multitud desordenada de personas o cosas consideradas en grupo con tono despectivo."},
+{"n": 149, "p": "ESTRAGAR", "o": ["A) enfermar", "B) afectar", "C) deshacer", "D) desvastar", "E) devastar"], "r": 4, "a": "Devastar. Destruir un territorio o asolar y arruinar algo por completo, compartiendo el mismo grado máximo de daño estructural o moral."},
+{"n": 150, "p": "LABILIDAD", "o": ["A) habilidad", "B) inconstancia", "C) movimiento", "D) cambiante", "E) emotividad"], "r": 1, "a": "Inconstancia. Sustantivo abstracto que define formalmente la falta de estabilidad, firmeza o la condición de ser mudable o variable."},
+{"n": 151, "p": "ENHIESTO", "o": ["A) endurado", "B) penetrante", "C) erecto", "D) espinoso", "E) edificado"], "r": 2, "a": "Erecto. Adjetivo que significa levantado, derecho o vertical."},
+{"n": 152, "p": "RENUENTE", "o": ["A) remiso", "B) precoz", "C) ilógico", "D) indocto", "E) renovado"], "r": 0, "a": "Remiso. Se refiere a la persona reacia o que muestra resistencia o falta de voluntad para cumplir una obligación."},
+{"n": 153, "p": "LOCUACIDAD", "o": ["A) elocuencia", "B) oratoria", "C) labia", "D) verborrea", "E) facundia"], "r": 4, "a": "Facundia. Abundancia de palabras y gran soltura o facilidad para hablar de forma fluida."},
+{"n": 154, "p": "TAJANTE", "o": ["A) divisorio", "B) concluyente", "C) arbitrario", "D) encendido", "E) esquemático"], "r": 1, "a": "Concluyente. Que es firme, categórico y definitivo, no dejando lugar a ninguna duda o discusión."},
+{"n": 155, "p": "MANUFACTURA", "o": ["A) urdimbre", "B) obraje", "C) trabajo", "D) acabado", "E) fábrica"], "r": 1, "a": "Obraje. Obra hecha a mano o taller artesanal donde se elaboran y fabrican dichos productos."},
+{"n": 156, "p": "SEÑORIAL", "o": ["A) imperioso", "B) majestuoso", "C) soberbio", "D) cortesano", "E) orgulloso"], "r": 1, "a": "Majestuoso. Que posee una gran dignidad, distinción, suntuosidad, elegancia y grandeza."},
+{"n": 157, "p": "INCENSAR", "o": ["A) alabar", "B) destacar", "C) flamear", "D) humear", "E) ahumar"], "r": 0, "a": "Alabar. En sentido figurado, lisonjear, adular o elogiar exageradamente a alguien para ganar su favor."},
+{"n": 158, "p": "COMPULSAR", "o": ["A) carear", "B) enfrentar", "C) afrontar", "D) comparar", "E) igualar"], "r": 3, "a": "Comparar. Cotejar o examinar dos o más documentos para comprobar su exacta fidelidad y autenticidad."},
+{"n": 159, "p": "INCITAR", "o": ["A) promover", "B) impulsar", "C) prevenir", "D) inducir", "E) tonificar"], "r": 3, "a": "Inducir. Instigar, mover o provocar directamente a una persona para que realice una acción determinada."},
+{"n": 160, "p": "ESENCIA", "o": ["A) centro", "B) consomé", "C) interés", "D) meollo", "E) vital"], "r": 3, "a": "Meollo. La parte central, sustancial, fundamental o más interna de un asunto o cosa."},
+{"n": 161, "p": "RESCOLDO", "o": ["A) carbón", "B) cisco", "C) brasa", "D) fuego", "E) hoguera"], "r": 2, "a": "Brasa. Brasa menuda que queda cubierta por la ceniza manteniendo el calor del fuego apagado."},
+{"n": 162, "p": "BARBIÁN", "o": ["A) díscolo", "B) timorato", "C) gallardo", "D) benévolo", "E) satánico"], "r": 2, "a": "Gallardo. Adjetivo de registro coloquial para alguien desenvuelto, apuesto, gallardo, simpático y arrojado."},
+{"n": 163, "p": "MACARRA", "o": ["A) arrebato", "B) zaragata", "C) proxeneta", "D) morcilla", "E) piltrafa"], "r": 2, "a": "Proxeneta. En su acepción formal, persona que induce a otra a la prostitución y se beneficia de ella."},
+{"n": 164, "p": "PASADISTA", "o": ["A) medieval", "B) antiguo", "C) anarquista", "D) clásico", "E) reaccionario"], "r": 4, "a": "Reaccionario. Persona que se aferra con rigidez a las ideas, normas o estructuras del pasado frente al progreso."},
+{"n": 165, "p": "AHERROJAR", "o": ["A) humillar", "B) encadenar", "C) dominado", "D) acribillar", "E) fantasear"], "r": 1, "a": "Encadenar. Poner grilletes o hierros a alguien; en sentido figurado, oprimir o privar de la libertad."},
+{"n": 166, "p": "OBSEQUIOSO", "o": ["A) diligente", "B) comedido", "C) manilargo", "D) cumplidor", "E) piropeador"], "r": 1, "a": "Comedido. Persona atenta, servicial, cortés y sumamente moderada que busca agradar a los demás."},
+{"n": 167, "p": "ARROYADA", "o": ["A) atropello", "B) llovizna", "C) crecida", "D) aluvión", "E) aniego"], "r": 2, "a": "Crecida. Aumento notable y violento del caudal de un arroyo debido a lluvias torrenciales."},
+{"n": 168, "p": "DIFUNDIRSE", "o": ["A) disolverse", "B) explayarse", "C) bifurcarse", "D) cundir", "E) mezclarse"], "r": 3, "a": "Cundir. Propagarse o extenderse un elemento incorpóreo (como noticias o rumores) ganando terreno."},
+{"n": 169, "p": "INTERPELA", "o": ["A) cuestionar", "B) censurar", "C) criticar", "D) consultar", "E) preguntar"], "r": 2, "a": "Criticar. Alineado con la clave de tu libro, la interpelación denota un trasfondo de reproche u objeción desaprobatoria."},
+{"n": 170, "p": "OBSECUENTE", "o": ["A) cuidadoso", "B) obediente", "C) conquistado", "D) ocluso", "E) oficioso"], "r": 1, "a": "Obediente. Persona sumisa, obediente o excesivamente rendida a acatar los deseos u órdenes de otra."},
+{"n": 171, "p": "NULIDAD", "o": ["A) paradoja", "B) rescisión", "C) reprobación", "D) negación", "E) noviciado"], "r": 1, "a": "Rescisión. Falta de valor legal; acción jurídica de invalidar o dejar sin efecto un contrato u obligación."},
+{"n": 172, "p": "TRAMAR", "o": ["A) precaver", "B) tamizar", "C) proyectar", "D) desolar", "E) acoquinar"], "r": 2, "a": "Proyectar. Discurrir, idear o planear con astucia la ejecución de un plan o intriga compleja."},
+{"n": 173, "p": "ZARANDEAR", "o": ["A) atarantar", "B) vociferar", "C) estropear", "D) cribar", "E) criticar"], "r": 3, "a": "Cribar. En su acepción original, pasar semillas o tierra por una criba o zaranda para limpiarlas."},
+{"n": 174, "p": "ALQUERÍA", "o": ["A) altillo", "B) cetrería", "C) cortijo", "D) cortejo", "E) ablación"], "r": 2, "a": "Cortijo. Casa de campo o finca rústica destinada a labores de agricultura y ganadería."},
+{"n": 175, "p": "CHÁCHARA", "o": ["A) alboroto", "B) intriga", "C) palique", "D) coloquio", "E) melindre"], "r": 2, "a": "Palique. Conversación de tono ligero, informal y ameno sobre temas de poca trascendencia."},
+{"n": 176, "p": "PINGÜE", "o": ["A) espacioso", "B) empacho", "C) exceso", "D) plétora", "E) abundante"], "r": 4, "a": "Abundante. Adjetivo que designa algo muy abundante, copioso, fértil o cuantioso en ganancias."},
+{"n": 177, "p": "AVEZADO", "o": ["A) camastrón", "B) mutable", "C) insólito", "D) inexperto", "E) experimentado"], "r": 4, "a": "Experimentado. Persona habituada, diestra y experimentada en algo por efecto de la práctica constante."},
+{"n": 178, "p": "BUHONERÍA", "o": ["A) entrevero", "B) cholada", "C) baratija", "D) menester", "E) vocerío"], "r": 2, "a": "Baratija. Conjunto de mercancías de poco valor y precio económico que se venden de forma ambulante."},
+{"n": 179, "p": "CELESTINAJE", "o": ["A) mancebía", "B) tercería", "C) temeridad", "D) feminismo", "E) explotación"], "r": 1, "a": "Tercería. Oficio o mediación de un tercero para facilitar o encubrir una relación amorosa."},
+{"n": 180, "p": "FALLA", "o": ["A) tara", "B) yerro", "C) equívoco", "D) anomalía", "E) imperfección"], "r": 4, "a": "Imperfección. Defecto o carencia en la estructura de algo que reduce su calidad o impide su perfección."},
+{"n": 181, "p": "PENACHO", "o": ["A) protector", "B) copete", "C) plumaje", "D) cumbre", "E) grujido"], "r": 1, "a": "Copete. Grupo de plumas levantadas en la cabeza de algunas aves o mechón de pelo elevado."},
+{"n": 182, "p": "CURSADO", "o": ["A) inocente", "B) examinado", "C) deterioration", "D) baquiano", "E) expedido"], "r": 3, "a": "Baquiano. Persona diestra, práctica, versada o experimentada en un entorno, camino o materia."},
+{"n": 183, "p": "DEDUCIR", "o": ["A) razonar", "B) pensar", "C) filosofar", "D) descontar", "E) aumentar"], "r": 0, "a": "Razonar. Conducir el pensamiento de forma lógica y estructurada para extraer una conclusión (según tu libro)."},
+{"n": 184, "p": "OBSOLETO", "o": ["A) envejecido", "B) discontinuo", "C) arcaizado", "D) caducidad", "E) añoso"], "r": 2, "a": "Arcaizado. Algo antiguo, anticuado o que ha quedado completamente en desuso frente a lo moderno."},
+{"n": 185, "p": "ACTUARIO", "o": ["A) bromista", "B) valedor", "C) agasajo", "D) escribano", "E) testigo"], "r": 3, "a": "Escribano. Oficial público legalmente autorizado para dar fe de las actuaciones en los juzgados."},
+{"n": 186, "p": "DARSENA", "o": ["A) almacén", "B) espigón", "C) aduana", "D) muelle", "E) puerto"], "r": 4, "a": "Puerto. Siguiendo la clave de tu libro, engloba de forma general el concepto de infraestructura marítima protegida."},
+{"n": 187, "p": "HONESTIDAD", "o": ["A) prudencia", "B) discreción", "C) castidad", "D) preciado", "E) benemérito"], "r": 2, "a": "Castidad. En su sentido clásico y moral formal del diccionario, denota recato, decencia, pudor y castidad."},
+{"n": 188, "p": "MARAÑERO", "o": ["A) cotillero", "B) cotidiano", "C) zurcido", "D) testarudo", "E) conciso"], "r": 0, "a": "Cotillero. Persona enredadora, embustera o chismosa que disfruta de armar líos e intrigas ajenas."},
+{"n": 189, "p": "CÚMULO", "o": ["A) nubosidad", "B) hacina", "C) pundonor", "D) escarpa", "E) apelación"], "r": 1, "a": "Hacina. Conjunto, montón o acumulación de cosas colocadas apretadamente unas sobre otras."},
+{"n": 190, "p": "DEFECCIÓN", "o": ["A) deformidad", "B) infidelidad", "C) tosquedad", "D) laberinto", "E) regosto"], "r": 1, "a": "Infidelidad. Abandono o separación de una causa, lealtad o partido, quebrando un compromiso fiel."},
+{"n": 191, "p": "COYUNDA", "o": ["A) esponsales", "B) maridaje", "C) sociedad", "D) concubinato", "E) convivencia"], "r": 1, "a": "Maridaje. Enlace, matrimonio o unión conyugal (derivado del yugo que une a las parejas)."},
+{"n": 192, "p": "OMINOSO", "o": ["A) inédito", "B) esclavista", "C) vasallo", "D) nefasto", "E) funesto"], "r": 3, "a": "Nefasto. Hecho azaroso, fatídico, abominable o de mal agüero que presagia una desgracia."},
+{"n": 193, "p": "PRÓDIGO", "o": ["A) arrepentido", "B) abundante", "C) disipador", "D) malévolo", "E) menesteroso"], "r": 2, "a": "Disipador. Persona que desperdicia, derrocha y consume sus bienes económicos en gastos inútiles."},
+{"n": 194, "p": "CASTA", "o": ["A) herencia", "B) prole", "C) raza", "D) linaje", "E) ascendencia"], "r": 3, "a": "Linaje. Ascendencia, estirpe o serie de antepasados familiares, usualmente ilustres."},
+{"n": 195, "p": "CACHAZUDO", "o": ["A) burlón", "B) apático", "C) narigón", "D) bufón", "E) hediondo"], "r": 1, "a": "Apático. Sujeto que actúa con extrema lentitud, calma o pachorra, mostrando falta de dinamismo."},
+{"n": 196, "p": "FAMÉLICO", "o": ["A) escuálido", "B) sucio", "C) haraposo", "D) desnutrido", "E) hambriento"], "r": 4, "a": "Hambriento. Persona o animal que tiene muchísima hambre o que padece severamente por la falta de ella."},
+{"n": 197, "p": "EVERSIÓN", "o": ["A) reacción", "B) reversión", "C) erupción", "D) sismo", "E) cataclismo"], "r": 4, "a": "Cataclismo. Destrucción masiva, ruina, vuelco o caída total de una estructura, orden o territorio."},
+{"n": 198, "p": "ESTOLIDEZ", "o": ["A) necedad", "B) pavura", "C) idiocia", "D) estúpido", "E) torpeza"], "r": 0, "a": "Necedad. Falta absoluta de razón, inteligencia, discurso o sensatez en el comportamiento."},
+{"n": 199, "p": "CONFERENCIA", "o": ["A) exposition", "B) diálogo", "C) cátedra", "D) simposio", "E) panel"], "r": 0, "a": "Exposición. Disertación pública u oral que realiza un especialista para explicar y desarrollar un tema."},
+{"n": 200, "p": "ENCANDILADO", "o": ["A) deleitado", "B) hechizado", "C) enamorado", "D) templado", "E) alelado"], "r": 1, "a": "Hechizado. Persona completamente cautivada, fascinada, deslumbrada o embelesada por algo u alguien."},
+{"n": 201, "p": "CELESTINA", "o": ["A) sor", "B) priora", "C) alcahueta", "D) pigmea", "E) femenina"], "r": 2, "a": "Alcahueta. Mujer que facilita, concierta o encubre una relación amorosa, generalmente ilícita o secreta."},
+{"n": 202, "p": "GOLFERÍA", "o": ["A) zorrería", "B) gandulería", "C) hez", "D) vagancia", "E) calaña"], "r": 3, "a": "Vagancia. Vida o condición propia del golfo; estado de ociosidad, falta de oficio y responsabilidades."},
+{"n": 203, "p": "JERUGA", "o": ["A) carroza", "B) medusa", "C) miedoso", "D) cárcel", "E) jaula"], "r": 3, "a": "Cárcel. En el registro formal y bancos de nivel avanzado, define el recinto de encierro o reclusión obligatoria."},
+{"n": 204, "p": "LÉGAMO", "o": ["A) dejado", "B) lícito", "C) laico", "D) cieno", "E) distante"], "r": 4, "a": "Cieno. Lodo, limo o fango blando que se deposita en el fondo de las aguas o terrenos inundados."},
+{"n": 205, "p": "LITAR", "o": ["A) textual", "B) perseguir", "C) hostilizar", "D) alistar", "E) inmolar"], "r": 4, "a": "Inmolar. Hacer un sacrificio u ofrenda agradable a la divinidad; dar la vida por una causa sagrada."},
+{"n": 206, "p": "JOCUNDO", "o": ["A) sabroso", "B) profundo", "C) gracioso", "D) alegre", "E) jorobado"], "r": 3, "a": "Alegre. Adjetivo de origen latín que califica a un individuo plácido, regocijado, alegre o agradable."},
+{"n": 207, "p": "JUERGA", "o": ["A) grosería", "B) orgía", "C) lisura", "D) jerigonza", "E) tornillo"], "r": 1, "a": "Orgía. En el contexto léxico de examen, representa un festín, jolgorio o reunión estrepitosa con excesos."},
+{"n": 208, "p": "LATENCIA", "o": ["A) oculto", "B) visualizada", "C) perspicacia", "D) vivencia", "E) deferencia"], "r": 0, "a": "Oculto. Cualidad o estado de lo que permanece escondido, latente o inactivo sin manifestarse exteriormente."},
+{"n": 209, "p": "PRESAGIO", "o": ["A) prevención", "B) anuncio", "C) precisión", "D) latencia", "E) albedrío"], "r": 1, "a": "Anuncio. Señal, indicio o intuición que adelanta u ofrece la noticia de un suceso futuro."},
+{"n": 210, "p": "TEDIOSO", "o": ["A) temeroso", "B) tuberoso", "C) terminal", "D) aburrido", "E) tendencioso"], "r": 3, "a": "Aburrido. Que produce un fastidio o aburrimiento extremo debido a su monotonía o excesiva lentitud."},
+{"n": 211, "p": "ÓBICE", "o": ["A) obturación", "B) obsesión", "C) opíparo", "D) traba", "E) alcor"], "r": 3, "a": "Traba. Obstáculo, impedimento, estorbo o dificultad material o moral que frena un proceso."},
+{"n": 212, "p": "EMPÍRICO", "o": ["A) legal", "B) experimental", "C) onírico", "D) ilógico", "E) isócrono"], "r": 1, "a": "Experimental. Sistema basado directamente en la experiencia, la práctica y la observación directa de hechos."},
+{"n": 213, "p": "CHIRLE", "o": ["A) latoso", "B) patituerto", "C) niquiscocio", "D) sorprendente", "E) esciente"], "r": 0, "a": "Latoso. Cosas desprovistas de sustancia, sosas o monótonas que terminan causando pesadez o fastidio."},
+{"n": 214, "p": "LAMINERO", "o": ["A) concurrente", "B) copioso", "C) gulusmero", "D) liberal", "E) mesurado"], "r": 2, "a": "Gulusmero. Persona muy golosa, aficionada a probar golosinas, dulces o manjares delicados."},
+{"n": 215, "p": "ORZAYA", "o": ["A) sumisión", "B) raigambre", "C) afectación", "D) antirombo", "E) niñera"], "r": 4, "a": "Niñera. Criada o persona encargada específicamente de cuidar, vigilar y atender a los niños pequeños."},
+{"n": 216, "p": "BUJARRÓN", "o": ["A) quid", "B) sodomita", "C) bulbo", "D) gemido", "E) ímprobo"], "r": 1, "a": "Sodomita. Término del registro formal e histórico para designar a quien practica la sodomía."},
+{"n": 217, "p": "DUENDO", "o": ["A) gentil", "B) acoquinado", "C) arriscado", "D) sumiso", "E) lúbrico"], "r": 3, "a": "Sumiso. Califica tradicionalmente a los animales domésticos o personas mansas, dóciles u obedientes."},
+{"n": 218, "p": "QUILLOTRA", "o": ["A) cavilación", "B) quinoteca", "C) ribalda", "D) concubina", "E) firmeza"], "r": 3, "a": "Concubina. Compañera, amante o mujer que mantiene una relación afectiva estable fuera del matrimonio."},
+{"n": 219, "p": "PAPORREAR", "o": ["A) zurrar", "B) laurear", "C) rielar", "D) impetrar", "E) gimotear"], "r": 0, "a": "Zurrar. Expresión coloquial que denota golpear, apalear, castigar o dar porrazos repetidamente."},
+{"n": 220, "p": "HAFIZ", "o": ["A) ovejuno", "B) veedor", "C) hercúleo", "D) jumento", "E) manilargo"], "r": 1, "a": "Veedor. Persona encargada de la custodia, registro, observación o vigilancia de un bien o reglamento."},
+{"n": 221, "p": "CALAFATEAR", "o": ["A) obstruir", "B) abrir", "C) calar", "D) carpir", "E) desguazar"], "r": 0, "a": "Obstruir. Sellar, cerrar o tapar rendijas, juntas o conductos impidiendo el paso de elementos."},
+{"n": 222, "p": "FÁRRAGO", "o": ["A) fardo", "B) faraute", "C) desidia", "D) juglaría", "E) nabad"], "r": 3, "a": "Juglaría. Conjunto o miscelánea de elementos variados o desordenados (fijado según clave oficial)."},
+{"n": 223, "p": "SIGILO", "o": ["A) siglo", "B) reserva", "C) tutor", "D) ultimátum", "E) venia"], "r": 1, "a": "Reserva. Actitud de discreción, secreto o extremo cuidado para no ser notado al ejecutar una acción."},
+{"n": 224, "p": "VIPERINO", "o": ["A) alegre", "B) visionario", "C) yermo", "D) baldío", "E) venenoso"], "r": 4, "a": "Venenoso. Comentario o intención maliciosa, dañina o mordaz; relativo también a la víbora."},
+{"n": 225, "p": "ZAINO", "o": ["A) zafio", "B) vulgar", "C) supino", "D) felón", "E) talud"], "r": 3, "a": "Felón. Persona traidora, desleal, falsa o hipócrita que rompe un compromiso de fidelidad."},
+{"n": 226, "p": "GOLFO", "o": ["A) bahía", "B) cola", "C) lóbrego", "D) obeso", "E) elogio"], "r": 0, "a": "Bahía. Entrada de mar en la costa, de características geográficas análogas a las de un golfo."},
+{"n": 227, "p": "DUENDO", "o": ["A) espectro", "B) manso", "C) curia", "D) creso", "E) cortijo"], "r": 1, "a": "Manso. Animal o individuo dócil, doméstico, apacible y que se domina con extrema facilidad."},
+{"n": 228, "p": "CHARNELA", "o": ["A) chirigota", "B) faca", "C) embuste", "D) bisagra", "E) harón"], "r": 3, "a": "Bisagra. Articulación o pieza mecánica móvil encargada de unir y permitir el giro de tapas o puertas."},
+{"n": 229, "p": "ABSURDO", "o": ["A) ariete", "B) bedel", "C) magro", "D) ilógico", "E) miedo"], "r": 3, "a": "Ilógico. Todo aquello contrario a la razón, descabellado o que carece de coherencia interna."},
+{"n": 230, "p": "ADEMÁN", "o": ["A) gesto", "B) también", "C) búsqueda", "D) rienda", "E) solsticio"], "r": 0, "a": "Gesto. Movimiento corporal, facial o de las manos cargado de un significado expresivo latente."},
+{"n": 231, "p": "AHÍNCO", "o": ["A) fuerza", "B) empeño", "C) rigor", "D) dental", "E) himeneo"], "r": 1, "a": "Empeño. Firmeza, dedicación constante o gran intensidad con la que se ejecuta un trabajo."},
+{"n": 232, "p": "BISOÑO", "o": ["A) bisoñé", "B) jovial", "C) aprendiz", "D) lerdo", "E) íntegro"], "r": 2, "a": "Aprendiz. Persona novata, principiante o que carece de experiencia formal en un arte u oficio."},
+{"n": 233, "p": "DEMASÍA", "o": ["A) detrás", "B) tardanza", "C) confianza", "D) soberbia", "E) exceso"], "r": 4, "a": "Exceso. Cantidad, actitud o porción que supera marcadamente la medida regular o justa."},
+{"n": 234, "p": "HACINAR", "o": ["A) habitar", "B) aparejar", "C) arrostrar", "D) amontonar", "E) hamacar"], "r": 3, "a": "Amontonar. Acumular o juntar gran cantidad de cosas o bultos sin orden en un espacio reducido."},
+{"n": 235, "p": "DENUESTO", "o": ["A) ajeno", "B) oprobio", "C) notable", "D) efectivo", "E) creative"], "r": 1, "a": "Oprobio. Palabra ofensiva, injuria, afrenta o insulto con la que se busca degradar la honra ajena."},
+{"n": 236, "p": "APÓCRIFO", "o": ["A) notorio", "B) falso", "C) ilegal", "D) utópico", "E) auténtico"], "r": 1, "a": "Falso. Elemento, documento u obra supuesta o fingida que carece por completo de autenticidad."},
+{"n": 237, "p": "CELAR", "o": ["A) odiar", "B) revelar", "C) vigilar", "D) advertir", "E) descuidar"], "r": 2, "a": "Vigilar. Observar atentamente, custodiar o celar con esmero el cumplimiento de una obligación."},
+{"n": 238, "p": "VEJAR", "o": ["A) denigrar", "B) atender", "C) elogiar", "D) insultar", "E) aporrear"], "r": 0, "a": "Denigrar. Ofender gravemente, humillar o maltratar atentando directamente contra la dignidad de alguien."},
+{"n": 239, "p": "ACIDIOSO", "o": ["A) tímido", "B) audaz", "C) diligente", "D) procaz", "E) dejado"], "r": 4, "a": "Dejado. Persona perezosa, descuidada, negligente o desprovista de energía ante sus deberes."},
+{"n": 240, "p": "NIMIO", "o": ["A) galano", "B) inútil", "C) mortal", "D) esencial", "E) débil"], "r": 1, "a": "Inútil. Insignificante, superfluo o de escasísimo valor para la consecución de un fin determinado."},
+{"n": 241, "p": "CANDOR", "o": ["A) locura", "B) fiesta", "C) tedio", "D) puerilidad", "E) valentía"], "r": 3, "a": "Puerilidad. Rasgo natural o condición infantil caracterizada por la inocencia o falta de malicia."},
+{"n": 242, "p": "VASAR", "o": ["A) repisa", "B) ladera", "C) mesa", "D) ventana", "E) altura"], "r": 0, "a": "Repisa. Estante, soporte horizontal o tabla fija a la pared destinada a colocar utensilios u objetos."},
+{"n": 243, "p": "BIOMBO", "o": ["A) pared", "B) tapiz", "C) mampara", "D) puerta", "E) vidriera"], "r": 2, "a": "Mampara. Panel ligero, bastidor o estructura móvil utilizada para dividir u ocultar un ambiente."},
+{"n": 244, "p": "APAREJO", "o": ["A) mueble", "B) ornamento", "C) caña", "D) vara", "E) lanza"], "r": 1, "a": "Ornamento. Adorno, aderezo o atavío empleado formalmente para engalanar o decorar un espacio."},
+{"n": 245, "p": "OBJETAR", "o": ["A) reclamar", "B) apreciar", "C) oposición", "D) confutar", "E) aceptar"], "r": 3, "a": "Confutar. Oponerse a una idea impugnándola o destruyéndola formalmente mediante razones o argumentos."},
+{"n": 246, "p": "FRANQUICIA", "o": ["A) prebenda", "B) negación", "C) dádiva", "D) olvido", "E) engaño"], "r": 0, "a": "Prebenda. Oficio, exención, privilegio o ventaja lucrativa que se otorga de manera exclusiva."},
+{"n": 247, "p": "ACRITUD", "o": ["A) vulgaridad", "B) altura", "C) rigor", "D) bondad", "E) maldad"], "r": 2, "a": "Rigor. Aspereza, dureza o severidad excesiva en las condiciones, el carácter o el trato."},
+{"n": 248, "p": "PARÁFRASIS", "o": ["A) glosa", "B) partitura", "C) escrito", "D) mensaje", "E) copia"], "r": 0, "a": "Glosa. Nota, explicación o comentario interpretativo realizado sobre un fragmento de texto original."},
+{"n": 249, "p": "EFUSIÓN", "o": ["A) calor", "B) soltura", "C) dejadez", "D) ventura", "E) derrame"], "r": 4, "a": "Derrame. Salida, emisión o derramamiento físico de un gas o líquido fuera de su depósito natural."},
+{"n": 250, "p": "VOCERO", "o": ["A) ternero", "B) heraldo", "C) mendaz", "D) artesano", "E) profeta"], "r": 1, "a": "Heraldo. Mensajero oficial autorizado para transmitir decretos o noticias en nombre de una autoridad."},
+{"n": 251, "p": "OBSTINACIÓN", "o": ["A) exaltación", "B) sigilo", "C) atracción", "D) pertinacia", "E) consunción"], "r": 3, "a": "Pertinacia. Obstinación pertinaz, terquedad o la cualidad de ser muy duradero o persistente en algo."},
+{"n": 252, "p": "RÍGIDO", "o": ["A) guiado", "B) austero", "C) persuasivo", "D) disuasivo", "E) certero"], "r": 1, "a": "Austero. Que es severo, riguroso en el cumplimiento de las normas morales o en el estilo de vida, sin excesos ni adornos."},
+{"n": 253, "p": "MONTARAZ", "o": ["A) valiente", "B) rústico", "C) urbano", "D) hosco", "E) salvaje"], "r": 4, "a": "Salvaje. Que no es doméstico, no está cultivado o se encuentra en un estado natural y libre, sin domesticar."},
+{"n": 254, "p": "INEXORABLE", "o": ["A) moldeable", "B) precisable", "C) destinado", "D) inmutable", "E) presumible"], "r": 3, "a": "Inmutable. Que no cambia ni es propenso a cambiar; constante, firme y permanente."},
+{"n": 255, "p": "SIMPOSIO", "o": ["A) conferencia", "B) discurso", "C) soliloquio", "D) atrio", "E) foro"], "r": 0, "a": "Conferencia. Reunión de personas donde se debate y expone un asunto, o disertación pública sobre un tema científico, artístico o literario."},
+{"n": 256, "p": "SÁPIDO", "o": ["A) sabroso", "B) conocido", "C) delicioso", "D) hartura", "E) gordura"], "r": 0, "a": "Sabroso. Que tiene un sabor agradable y vivo al paladar."},
+{"n": 257, "p": "TORVO", "o": ["A) bestial", "B) atraer", "C) fiero", "D) miedo", "E) noble"], "r": 2, "a": "Fiero. Que es agresivo, salvaje, duro o que causa espanto por su aspecto o mirada."},
+{"n": 258, "p": "TURGENTE", "o": ["A) espeso", "B) ambiguo", "C) innecesario", "D) belicoso", "E) abultado"], "r": 4, "a": "Abultado. Que tiene bulto, volumen o que está hinchado y sobresale."},
+{"n": 259, "p": "HÁLITO", "o": ["A) nimbo", "B) descubrir", "C) entender", "D) aliento", "E) aburrido"], "r": 3, "a": "Aliento. Aire que se expulsa al respirar, o emanación de un cuerpo."},
+{"n": 260, "p": "HÍBRIDO", "o": ["A) impuro", "B) desabrido", "C) indefinido", "D) áspero", "E) mestizaje"], "r": 0, "a": "Impuro. Que contiene mezcla de sustancias extrañas que alteran su pureza o naturaleza, perdiendo su condición de puro."},
+{"n": 261, "p": "HOLGORIO", "o": ["A) diversión", "B) amplitud", "C) regocijo", "D) desocupado", "E) domicilio"], "r": 2, "a": "Regocijo. Alegría intensa o júbilo, especialmente el que se manifiesta exteriormente con celebraciones o fiestas."},
+{"n": 262, "p": "IMBERBE", "o": ["A) tontería", "B) lampiño", "C) implícito", "D) pelón", "E) empedernido"], "r": 1, "a": "Lampiño. Que no tiene pelo o que tiene muy poco, especialmente en la cara o en el cuerpo."},
+{"n": 263, "p": "SOLEMNE", "o": ["A) rígido", "B) serio", "C) patriótico", "D) litúrgico", "E) militar"], "r": 1, "a": "Serio. Grave, formal y considerado, que no muestra ligereza o falta de respeto."},
+{"n": 264, "p": "RÉDITO", "o": ["A) ganancia", "B) crédito", "C) residuo", "D) rescate", "E) rudimento"], "r": 0, "a": "Ganancia. Beneficio económico o utilidad monetaria que rinde un capital, una inversión o una actividad económica."},
+{"n": 265, "p": "INOPE", "o": ["A) lerdo", "B) mísero", "C) austero", "D) recio", "E) hábil"], "r": 1, "a": "Mísero. Que vive en un estado de extrema pobreza, desdicha, indigencia o miseria."},
+{"n": 266, "p": "REBUSCA", "o": ["A) descarto", "B) sediento", "C) jumento", "D) raído", "E) encuentro"], "r": 0, "a": "Descarto. Vinculado al desecho, residuo o los restos que se separan o dejan de lado en un campo tras la cosecha."},
+{"n": 267, "p": "ALEVOSO", "o": ["A) holgazán", "B) perverso", "C) infidente", "D) necio", "E) basto"], "r": 2, "a": "Infidente. Que es infiel, que comete una falta a la confianza o que revela secretos confiados (traidor)."},
+{"n": 268, "p": "SUMIR", "o": ["A) rehuir", "B) cobrar", "C) suturar", "D) entreabrir", "E) abismar"], "r": 4, "a": "Abismar. Hundir o meter a alguien en un lugar o en una situación profunda o extrema física o mentalmente."},
+{"n": 269, "p": "PÁRAMO", "o": ["A) terreno", "B) bosque", "C) desierto", "D) prado", "E) feroz"], "r": 2, "a": "Desierto. Territorio arenoso, pedregoso, seco y desabrigado que carece casi por completo de vegetación."},
+{"n": 270, "p": "MEDROSO", "o": ["A) mediano", "B) timorato", "C) ocioso", "D) pasible", "E) activo"], "r": 1, "a": "Timorato. Que siente un temor excesivo, timidez o que es propenso a asustarse con facilidad; miedoso."},
+{"n": 271, "p": "INCÓLUME", "o": ["A) latoso", "B) inoportuno", "C) duro", "D) indino", "E) ileso"], "r": 4, "a": "Ileso. Que resulta sin daño alguno de un peligro, accidente o situación de riesgo."},
+{"n": 272, "p": "OPROBIO", "o": ["A) encono", "B) desaprobación", "C) ignominia", "D) ditirambo", "E) concordia"], "r": 2, "a": "Ignominia. Ofensa pública que afecta el honor, la deshonra o la humillación que sufre una persona."},
+{"n": 273, "p": "TOSCO", "o": ["A) burdo", "B) huraño", "C) grosería", "D) áspero", "E) corriente"], "r": 0, "a": "Burdo. Tosco, basto, hecho con materiales de poca calidad o sin esmero y delicadeza."},
+{"n": 274, "p": "CARENCIA", "o": ["A) censura", "B) defecto", "C) improperio", "D) duda", "E) asenso"], "r": 1, "a": "Defecto. Falta o privación de las cualidades propias e inherentes a algo; imperfección natural o moral."},
+{"n": 275, "p": "NEGATIVA", "o": ["A) voluntad", "B) dejadez", "C) aseveración", "D) intuición", "E) positiva"], "r": 1, "a": "Dejadez. Actitud psicológica de rechazo, apatía o desgano donde la persona cae en la inacción o desidia."},
+{"n": 276, "p": "NESCIENTE", "o": ["A) remoto", "B) actual", "C) filial", "D) yerto", "E) ignorante"], "r": 4, "a": "Ignorante. Que carece de conocimiento, instrucción o que ignora una materia o asunto específico."},
+{"n": 277, "p": "ASOLAR", "o": ["A) consolar", "B) presagiar", "C) encarar", "D) arrasar", "E) presumir"], "r": 3, "a": "Arrasar. Destruir por completo, arruinar o demoler una superficie o lugar sin dejar nada en pie."},
+{"n": 278, "p": "PÚTRIDO", "o": ["A) fétido", "B) descompuesto", "C) inmundo", "D) hediondo", "E) putrefacto"], "r": 4, "a": "Putrefacto. Que está podrido o se encuentra en un estado completo de descomposición orgánica."},
+{"n": 279, "p": "INTRINSIQUEZA", "o": ["A) malignidad", "B) familiaridad", "C) sumisión", "D) absolución", "E) oscuridad"], "r": 1, "a": "Familiaridad. Íntima amistad, confianza estrecha o trato afectuoso propio de los amigos íntimos."},
+{"n": 280, "p": "MITOTERO", "o": ["A) animoso", "B) repelente", "C) fementido", "D) melindroso", "E) humilde"], "r": 3, "a": "Melindroso. Persona que manifiesta una delicadeza afectada, remilgada o exagerada en sus acciones o gestos."},
+{"n": 281, "p": "JINGLAR", "o": ["A) temblar", "B) erguirse", "C) oscilar", "D) amagar", "E) rehuir"], "r": 2, "a": "Oscilar. Moverse de una parte a otra colgado; efectuar movimientos de vaivén o balancearse."},
+{"n": 282, "p": "ORONDO", "o": ["A) engolado", "B) terne", "C) nimio", "D) fútil", "E) inútil"], "r": 0, "a": "Engolado. Persona engreída, presuntuosa, altanera o llena de vanidad que actúa con superioridad."},
+{"n": 283, "p": "BARRENAR", "o": ["A) lisura", "B) fusta", "C) horadar", "D) bazofia", "E) mimbre"], "r": 2, "a": "Horadar. Hacer un agujero, taladrar o perforar una cosa atravesándola de parte a parte."},
+{"n": 284, "p": "VANÍLOCUO", "o": ["A) elogioso", "B) verborreico", "C) impetuoso", "D) silencioso", "E) hermético"], "r": 1, "a": "Verborreico. Que habla demasiado, de manera vana o con abundancia excesiva de palabras con poco contenido."},
+{"n": 285, "p": "FEÉRICO", "o": ["A) encantador", "B) límpido", "C) gemebundo", "D) rígido", "E) alevoso"], "r": 0, "a": "Encantador. Perteneciente o relativo a las hadas o a la magia; maravilloso o de una belleza fascinante."},
+{"n": 286, "p": "SANFASÓN", "o": ["A) sagitario", "B) hiriente", "C) torpe", "D) desfachatez", "E) sigiloso"], "r": 3, "a": "Desfachatez. Desvergüenza, descaro o falta total de respeto y formas (proviene del francés sans façon)."},
+{"n": 287, "p": "DESIDIOSO", "o": ["A) taciturno", "B) vesánico", "C) portentoso", "D) disidente", "E) incurioso"], "r": 4, "a": "Incurioso. Que carece de curiosidad, cuidado o interés; negligente, apático o dejado frente a sus deberes."},
+{"n": 288, "p": "ABSTRUSO", "o": ["A) diáfano", "B) compuesto", "C) intrincado", "D) embarazoso", "E) rotundo"], "r": 2, "a": "Intrincado. Que es de difícil comprensión por ser muy complejo, enredado, complicado o confuso."},
+{"n": 289, "p": "ZAFIO", "o": ["A) esbelto", "B) sandio", "C) ineducado", "D) sagaz", "E) probable"], "r": 2, "a": "Ineducado. Persona grosera, tosca, ruda o que muestra una total falta de buenos modales y cortesía."},
+{"n": 290, "p": "ANODINO", "o": ["A) inicuo", "B) ineficaz", "C) precoz", "D) propincuo", "E) inocuo"], "r": 1, "a": "Ineficaz. Que es insignificante, insustancial o que no tiene la capacidad para alcanzar el efecto deseado."},
+{"n": 291, "p": "POSE", "o": ["A) modo", "B) método", "C) actitud", "D) silueta", "E) afectación"], "r": 4, "a": "Afectación. Falta de naturalidad; postura o manera artificial de comportarse para aparentar algo que no se es."},
+{"n": 292, "p": "SAGAZ", "o": ["A) audaz", "B) mendaz", "C) perspicaz", "D) mordaz", "E) rapaz"], "r": 2, "a": "Perspicaz. Que tiene una inteligencia rápida y aguda que le permite percatarse de cosas de forma rápida."},
+{"n": 293, "p": "TUPIDO", "o": ["A) tejido", "B) indispuesto", "C) lleno", "D) obstruido", "E) detenido"], "r": 3, "a": "Obstruido. Que tiene un conducto, paso o abertura cerrado, tapado o bloqueado por un obstáculo."},
+{"n": 294, "p": "HOSCO", "o": ["A) áspero", "B) amargo", "C) duro", "D) hostil", "E) odioso"], "r": 3, "a": "Hostil. Que muestra un carácter desagradable, huraño o una actitud contraria y poco amigable."},
+{"n": 295, "p": "INSINUANTE", "o": ["A) artero", "B) persuasivo", "C) codicioso", "D) melodioso", "E) ruidoso"], "r": 1, "a": "Persuasivo. Que tiene la fuerza, eficacia o habilidad sutil para convencer o inducir a alguien a creer o hacer algo."},
+{"n": 296, "p": "QUEBRAJA", "o": ["A) modestia", "B) anuencia", "C) suspenso", "D) fealdad", "E) rendija"], "r": 4, "a": "Rendija. Grieta, abertura o hendidura larga y estrecha que se produce en un cuerpo sólido."},
+{"n": 297, "p": "DISCRIMEN", "o": ["A) inocencia", "B) peligro", "C) humildad", "D) vanidad", "E) barbaridad"], "r": 1, "a": "Peligro. Situación crítica, límite o riesgo inminente en la que existe la posibilidad de que suceda un mal."},
+{"n": 298, "p": "REMISO", "o": ["A) temido", "B) ardido", "C) necio", "D) acidioso", "E) venal"], "r": 3, "a": "Acidioso. Que muestra falta de voluntad, desgana, pereza, desidia o flojera para realizar las cosas (variante de acedioso)."},
+{"n": 299, "p": "EXIMIO", "o": ["A) exangüe", "B) exento", "C) excelente", "D) experto", "E) estulto"], "r": 2, "a": "Excelente. Muy ilustre, excelso, eminente o que sobresale por sus extraordinarias cualidades."},
+{"n": 300, "p": "SUTILEZA", "o": ["A) amabilidad", "B) imperturbabilidad", "C) intrascendencia", "D) inalterabilidad", "E) ingeniosidad"], "r": 4, "a": "Ingeniosidad. Agudeza, perspicacia, finura o ingenio mental para discurrir o notar detalles difíciles."}
+];
+const bancoMD = [
+{n:301,p:"MD 1-0: ¿Cuál enunciado distingue mejor una capacidad fundamental de una capacidad operacional?",o:["A) La fundamental integra capacidades operacionales similares; la operacional reúne habilidades componentes de una fundamental.","B) La fundamental solo existe en el nivel táctico; la operacional solo en el estratégico.","C) La fundamental se limita a personal; la operacional exclusivamente a material.","D) Ambas expresiones son equivalentes y se usan indistintamente.","E) La operacional reemplaza a las funciones del Ejército."],r:0,a:"Las capacidades fundamentales agrupan capacidades operacionales similares y orientan el diseño de la estructura y magnitud de la fuerza; las operacionales son habilidades componentes de una fundamental."},
+{n:302,p:"MD 1-0: Si una fuerza debe articular capacidades según su misión y amenaza específica dentro de una brigada de combate, ¿qué concepto de la visión institucional se está aplicando?",o:["A) Fuerza modular.","B) Fuerza únicamente territorial.","C) Acción cívica.","D) Cooperación internacional.","E) Control administrativo."],r:0,a:"Fuerza modular. La visión describe una fuerza modular capaz de articular diversas capacidades fundamentales según misión y amenaza específica."},
+{n:303,p:"MD 1-0: Una actividad orientada a vigilar fronteras y producir información para garantizar la seguridad se relaciona directamente con qué acción estratégica?",o:["A) Investigación histórica del patrimonio.","B) Actividades de inteligencia y vigilancia de fronteras.","C) Cooperación cultural internacional.","D) Gestión presupuestal institucional.","E) Formación de colegios militares."],r:1,a:"El rol de garantizar la independencia, soberanía e integridad territorial incluye desarrollar actividades de inteligencia y operaciones de vigilancia de fronteras."},
+{n:304,p:"MD 1-0: ¿Qué combinación corresponde a las seis capacidades fundamentales señaladas en el manual?",o:["A) Comando y control, inteligencia, movimiento y maniobra, fuegos, protección y sostenimiento.","B) Logística, personal, educación, sanidad, ingeniería y comunicaciones.","C) Ofensiva, defensiva, estabilidad, apoyo, reserva y movilización.","D) Planeamiento, presupuesto, doctrina, educación, salud y relaciones internacionales.","E) Ciberdefensa, telemática, aviación, ingeniería, artillería y caballería."],r:0,a:"Las seis capacidades fundamentales son comando y control, inteligencia, movimiento y maniobra, fuegos, protección y sostenimiento."},
+{n:305,p:"MD 1-0: Si una actividad comprende colección, procesamiento, difusión, reconocimiento y vigilancia y contrainteligencia, ¿a qué capacidad operacional pertenece?",o:["A) Fuegos.","B) Protección.","C) Inteligencia.","D) Sostenimiento.","E) Movimiento y maniobra."],r:2,a:"Inteligencia. El manual enumera esas actividades dentro de la capacidad operacional de inteligencia."},
+{n:306,p:"MD 1-0: ¿Cuál es la finalidad central de la misión institucional descrita en el capítulo 2?",o:["A) Contribuir a garantizar independencia, soberanía, integridad territorial y bienestar general de la población.","B) Concentrar todas las funciones estatales en el Ejército.","C) Sustituir permanentemente a las autoridades civiles.","D) Limitar la acción militar al ámbito internacional.","E) Priorizar exclusivamente el desarrollo económico."],r:0,a:"La misión busca contribuir a garantizar la independencia, soberanía, integridad territorial y bienestar general, además de participar en desarrollo, orden interno, defensa civil y política exterior conforme a ley."},
+{n:307,p:"MD 1-0: ¿Cuál de los siguientes NO forma parte de la visión institucional?",o:["A) Disuasivo.","B) Reconocido.","C) Respetado.","D) Integrado a la sociedad.","E) Autosuficiente económicamente."],r:4,a:"La visión señala: ser un Ejército disuasivo, reconocido, respetado e integrado a la sociedad. La autosuficiencia económica no forma parte de esa formulación."},
+{n:308,p:"MD 1-0: ¿Qué órgano realiza el planeamiento estratégico institucional y asesora al Comandante General?",o:["A) Inspectoría General del Ejército.","B) Estado Mayor General del Ejército.","C) Procuraduría Pública del Ejército.","D) Órgano de Control Institucional.","E) Consejo Consultivo del Ejército."],r:1,a:"El Estado Mayor General del Ejército es el órgano de planeamiento y asesoramiento del más alto nivel."},
+{n:309,p:"MD 1-0: ¿Qué diferencia establece el manual entre interoperatividad e interoperabilidad?",o:["A) La interoperatividad se refiere a operar coordinadamente con otras fuerzas; la interoperabilidad a proporcionar o recibir servicios entre fuerzas o sistemas según la misión.","B) Son términos idénticos sin distinción conceptual.","C) La primera es administrativa y la segunda presupuestal.","D) La primera corresponde solo al ciberespacio y la segunda solo al dominio terrestre.","E) La primera es una capacidad fundamental y la segunda un rol estratégico."],r:0,a:"El glosario distingue la interoperatividad como capacidad de operar coordinada y simultáneamente con otras fuerzas, y la interoperabilidad como capacidad de proporcionar o recibir servicios entre fuerzas o sistemas."},
+{n:310,p:"MD 1-0: Si dos o más Fuerzas Armadas emplean sus medios para cumplir una misión conjunta, ¿qué concepto corresponde?",o:["A) Operación integrada.","B) Operación conjunta.","C) Acción cívica.","D) Acción multisectorial.","E) Gestión del riesgo."],r:1,a:"Operación conjunta. El manual la describe como aquella que involucra el empleo de dos o más fuerzas: Ejército, Marina o Fuerza Aérea."},
+{n:311,p:"MD 1-0: ¿Qué institución conduce políticamente el Sector Defensa?",o:["A) Comando Conjunto de las Fuerzas Armadas.","B) Ejército del Perú.","C) Ministerio de Defensa.","D) Estado Mayor General del Ejército.","E) Policía Nacional del Perú."],r:2,a:"El Ministerio de Defensa es el órgano rector y responsable de la conducción política del Sector Defensa."},
+{n:312,p:"MD 1-0: ¿Cuál es la función del Comando Conjunto destacada en el capítulo 1?",o:["A) Conducir exclusivamente operaciones del Ejército.","B) Realizar el planeamiento, preparación, coordinación y conducción de operaciones militares conjuntas.","C) Administrar el presupuesto de cada instituto armado.","D) Ejercer la defensa jurídica de las Fuerzas Armadas.","E) Dirigir los colegios militares."],r:1,a:"El CCFFAA realiza el planeamiento, preparación, coordinación y conducción de las operaciones militares conjuntas."},
+{n:313,p:"MD 1-0: ¿Cuál afirmación refleja mejor el concepto de ambiente operacional?",o:["A) Solo comprende el terreno físico donde opera una unidad.","B) Es la combinación de condiciones, circunstancias e influencias que afectan el empleo de capacidades y las decisiones del comandante.","C) Se limita a amenazas externas convencionales.","D) Es equivalente al área administrativa de una unidad.","E) Excluye las dimensiones aérea, marítima y ciberespacial."],r:1,a:"Ambiente operacional: combinación de condiciones, circunstancias e influencias que afectan el empleo de capacidades militares y las decisiones del comandante; comprende dimensiones terrestre, aérea, marítima, espacial y ciberespacial."},
+{n:314,p:"MD 1-0: ¿Cuál es el propósito de los roles estratégicos asignados por el Estado al Ejército?",o:["A) Convertirlos en normas presupuestales.","B) Concretar propósitos estatales en misiones mediante planeamiento y empleo de capacidades militares.","C) Sustituir la Constitución y las leyes.","D) Limitar las capacidades al tiempo de paz.","E) Regular únicamente la carrera militar."],r:1,a:"Los roles estratégicos son propósitos que el Estado asigna al Ejército y se concretan en misiones mediante planeamiento y empleo de capacidades militares."},
+{n:315,p:"MD 1-0: ¿Qué caracteriza a un Ejército multimisión?",o:["A) Una fuerza diseñada para una única misión permanente.","B) Una estructura moderna, modular y polivalente sustentada en planeamiento basado en capacidades.","C) Una fuerza sin especialidades.","D) Una organización exclusivamente administrativa.","E) Una fuerza limitada al combate convencional."],r:1,a:"Ejército multimisión: estructura moderna, modular y polivalente, sustentada en planeamiento basado en capacidades militares."},
+{n:316,p:"MD 1-0: ¿Cuál NO corresponde a la ética militar descrita en el manual?",o:["A) Orientar las acciones mediante principios, valores y deberes.","B) Crear conciencia de responsabilidad asociada al ejercicio profesional.","C) Sustituir la preparación técnica y física del militar.","D) Formar parte transversal de la educación ética-moral.","E) Orientar la conducta de los integrantes de la institución."],r:2,a:"La ética militar orienta mediante principios, valores y deberes y crea conciencia de responsabilidad; no sustituye la preparación técnica y física."},
+{n:317,p:"MD 1-0: ¿Cuál conjunto corresponde a los principios militares enumerados en la sección 3.6?",o:["A) Respeto por la Constitución y leyes; respeto por DDHH y DIH; honor militar; ética en el actuar; compromiso y fe institucional; perseverancia y abnegación.","B) Disciplina, logística, inteligencia, maniobra, fuegos y protección.","C) Lealtad, presupuesto, educación, salud, movilidad y ciberdefensa.","D) Honor, ofensiva, defensiva, estabilidad, reserva y sostenimiento.","E) Vocación, carrera, ascenso, sanción, presupuesto y mando."],r:0,a:"Es el conjunto de seis principios militares expresamente enumerados en la sección 3.6."},
+{n:318,p:"MD 1-0: ¿Por qué el liderazgo se considera permanente y progresivo?",o:["A) Porque solo se desarrolla al alcanzar los grados superiores.","B) Porque la formación del líder militar continúa a lo largo de la carrera en dimensiones individual y organizacional.","C) Porque depende exclusivamente del mando formal.","D) Porque reemplaza la formación académica.","E) Porque solo se aplica durante operaciones."],r:1,a:"La formación del líder militar es permanente y progresiva a lo largo de la carrera, en dimensiones individual y organizacional."},
+{n:319,p:"MD 1-0: ¿Qué órgano realiza funciones de control, supervisión e investigación de asuntos militares, operacionales y disciplinarios?",o:["A) Inspectoría General del Ejército.","B) Estado Mayor General del Ejército.","C) Comandancia General del Ejército.","D) Procuraduría Pública del Ejército.","E) Consejo Superior del Ejército."],r:0,a:"La Inspectoría General del Ejército realiza funciones de control, supervisión e investigación en el ámbito de su competencia."},
+{n:320,p:"MD 1-0: ¿Cuál es la finalidad del desarrollo nacional según el glosario?",o:["A) Aumentar exclusivamente el poder militar.","B) Lograr la plena satisfacción de las necesidades de la población mediante crecimiento sostenido y sustentable del Poder Nacional.","C) Sustituir el sistema de defensa nacional.","D) Concentrar la economía en el sector Defensa.","E) Limitar la participación del Estado al ámbito regional."],r:1,a:"Desarrollo nacional: proceso de crecimiento sostenido y sustentable del Poder Nacional para alcanzar el bienestar general y satisfacer las necesidades de la población."},
+{n:321,p:"MD 1-0: ¿Qué principio describe mejor la acción multisectorial?",o:["A) Integración, cooperación y sincronización de actividades de dos o más sectores bajo coordinación o regulación de una autoridad designada.","B) Empleo exclusivo de medios militares.","C) Coordinación únicamente entre unidades del Ejército.","D) Acción limitada al ámbito internacional.","E) Sustitución de organismos civiles por unidades militares."],r:0,a:"Acción multisectorial: integración, cooperación y sincronización de actividades de dos o más sectores para alcanzar unidad de esfuerzos."},
+{n:322,p:"MD 1-0: ¿Cuál opción define mejor defensa nacional según el glosario?",o:["A) Conjunto de previsiones y acciones del Gobierno para permitir la supervivencia, permanencia y desarrollo del Estado frente a antagonismos o presiones.","B) Empleo de las Fuerzas Armadas únicamente en combate.","C) Protección exclusiva de fronteras frente a amenazas externas.","D) Actividad reservada al Ministerio de Defensa.","E) Medida temporal aplicable solo durante conflictos."],r:0,a:"Defensa nacional: conjunto de previsiones y acciones que adopta el Gobierno para permitir la supervivencia, permanencia y desarrollo del Estado frente a antagonismos o presiones."},
+{n:323,p:"MD 1-0: En la visión institucional, ¿qué atributo se vincula con una gestión moderna, eficiente y transparente y una cultura innovadora basada en valores?",o:["A) Disuasivo.","B) Reconocido.","C) Respetado.","D) Integrado a la sociedad.","E) Modular."],r:2,a:"Respetado. El manual relaciona este atributo con gestión institucional moderna, eficiente y transparente, cultura innovadora basada en valores, liderazgo y profesionalismo."},
+{n:324,p:"MD 1-0: ¿Cuál actividad pertenece a la capacidad operacional de protección y no a inteligencia?",o:["A) Colección.","B) Procesamiento.","C) Contrainteligencia.","D) Ciberdefensa y seguridad de la información.","E) Difusión."],r:3,a:"Ciberdefensa y seguridad de la información figura entre las capacidades operacionales de protección."},
+{n:325,p:"MD 1-0: ¿Qué relación establece el manual entre desarrollo nacional y defensa nacional?",o:["A) Son objetivos incompatibles.","B) Un mayor grado de desarrollo nacional incrementa las posibilidades de la defensa nacional.","C) El desarrollo nacional elimina la necesidad de defensa.","D) La defensa nacional depende solo del desarrollo militar.","E) El desarrollo nacional se limita a infraestructura vial."],r:1,a:"El glosario establece que cuanto mayor sea el grado de desarrollo nacional, mayores serán las posibilidades de la defensa nacional."},
+{n:326,p:"MD 1-0: ¿Qué describe mejor movimiento y maniobra como capacidad fundamental?",o:["A) Procesar información para producir inteligencia.","B) Desplegar, cambiar, reagrupar o trasladar fuerzas para obtener una posición de ventaja relativa.","C) Administrar exclusivamente recursos financieros.","D) Ejecutar únicamente fuegos indirectos.","E) Proteger solo instalaciones administrativas."],r:1,a:"Movimiento y maniobra permite desplegar, cambiar, reagrupar o trasladar fuerzas para obtener una posición de ventaja relativa."},
+{n:327,p:"MD 1-0: ¿Qué caracteriza al ambiente operacional VICA?",o:["A) Volátil, incierto, complejo y ambiguo.","B) Variable, integrado, convencional y administrativo.","C) Vigilado, interno, coordinado y armado.","D) Visible, inmediato, centralizado y adaptable.","E) Virtual, industrial, convencional y aéreo."],r:0,a:"VICA significa volátil, incierto, complejo y ambiguo, características señaladas para el ambiente operacional."},
+{n:328,p:"MD 1-0: Si una acción busca mejorar condiciones sociales y económicas mediante cooperación entre FFAA y órganos civiles responsables, ¿qué concepto corresponde?",o:["A) Acción cívica.","B) Fuegos.","C) Geoestrategia.","D) Contrainteligencia.","E) Fuerza modular."],r:0,a:"Acción cívica: conjunto de actividades de las FFAA en apoyo de la población y en cooperación con órganos civiles responsables."},
+{n:329,p:"MD 1-0: ¿Cuál enunciado corresponde al concepto de fuerza modular?",o:["A) Fuerza que articula diversas capacidades operacionales según misionamiento, amenaza y ambiente operacional.","B) Fuerza integrada únicamente por unidades de una misma especialidad.","C) Fuerza diseñada sin considerar la amenaza.","D) Fuerza empleada solo en operaciones ofensivas.","E) Fuerza que reemplaza las capacidades fundamentales por medios administrativos."],r:0,a:"Fuerza modular: articula diversas capacidades operacionales de acuerdo con el misionamiento, amenaza específica y ambiente operacional."},
+{n:330,p:"MD 1-0: ¿Qué idea central del capítulo 6 justifica la transformación institucional?",o:["A) La necesidad de adaptarse al ambiente operacional futuro y a los retos de la seguridad multidimensional.","B) La reducción permanente de capacidades.","C) El abandono de la doctrina Wiracocha.","D) La eliminación de la planificación institucional.","E) La concentración exclusiva en amenazas tradicionales."],r:0,a:"El capítulo 6 aborda la necesidad de adaptarse al ambiente operacional del futuro, los retos de la seguridad multidimensional y el Plan de Transformación Institucional."}
+];
+
+// Los bancos permanecen separados: nunca se mezclan Sinónimos y Manual MD 1-0.
+let modoActual = null;
+let bancoActual = [];
+let preguntas = [];
+let preguntasRestantes = [];
+let idxActual = 0;
+let puntaje = 0;
+let racha = 0;
+let bloqueado = false;
+let iniciado = false;
+const txtProgreso = document.getElementById("txt-progreso");
+const txtPuntaje = document.getElementById("txt-puntaje");
+const txtRacha = document.getElementById("txt-racha");
+const preguntaTexto = document.getElementById("pregunta-texto");
+const listaOpciones = document.getElementById("lista-opciones");
+const feedbackTexto = document.getElementById("feedback-texto");
+const contenedorAnalisis = document.getElementById("contenedor-analisis");
+const alertaRespuestaCorrecta = document.getElementById("alerta-respuesta-correcta");
+const analisisTexto = document.getElementById("analisis-texto");
+const btnSiguiente = document.getElementById("btn-siguiente");
+const btnIniciar = document.getElementById("btn-iniciar");
+const selectorModo = document.getElementById("selector-modo");
+const panelExamen = document.getElementById("panel-examen");
+const tituloPrincipal = document.getElementById("titulo-principal");
+const modoActualTexto = document.getElementById("modo-actual");
+const btnCambiarModo = document.getElementById("btn-cambiar-modo");
+
+function mezclar(array) {
+  const copia = [...array];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
+}
+
+function obtenerSignificado(item) { return item.a || "Significado no disponible en el banco."; }
+
+function prepararOpciones(item) {
+  const opciones = item.o.map((texto, indiceOriginal) => ({ texto: texto.replace(/^[A-E]\)\s*/i, ""), indiceOriginal }));
+  const mezcladas = mezclar(opciones);
+  item._opciones = mezcladas.map((x, i) => ({ etiqueta: String.fromCharCode(65 + i), texto: x.texto, indiceOriginal: x.indiceOriginal }));
+  item._respuesta = item._opciones.findIndex(x => x.indiceOriginal === item.r);
+}
+
+function cargarPregunta() {
+  if (!iniciado) return;
+  if (idxActual >= preguntas.length) { mostrarResultado(); return; }
+  bloqueado = false;
+  const item = preguntas[idxActual];
+  prepararOpciones(item);
+  feedbackTexto.className = "feedback";
+  feedbackTexto.innerHTML = "";
+  alertaRespuestaCorrecta.style.display = "none";
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "none";
+  listaOpciones.innerHTML = "";
+  txtProgreso.textContent = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
+  preguntaTexto.textContent = item.p;
+  item._opciones.forEach((opcion, index) => {
+    const boton = document.createElement("button");
+    boton.className = "option-btn";
+    boton.innerHTML = `<strong>${opcion.etiqueta})</strong> ${opcion.texto}`;
+    boton.onclick = () => verificarRespuesta(index, boton);
+    listaOpciones.appendChild(boton);
+  });
+}
+
+function mostrarResultado() {
+  const total = preguntas.length;
+  const buenas = Math.round(puntaje / 10);
+  const malas = total - buenas;
+  const porcentajeBuenas = Math.round((buenas / total) * 100);
+  const porcentajeMalas = Math.round((malas / total) * 100);
+  const nota = (buenas / total * 20).toFixed(1);
+  txtProgreso.textContent = `🏁 Ronda terminada: ${total}/${total}`;
+  preguntaTexto.innerHTML = `🎉 ¡Terminaste el examen de ${modoActual === 'sinonimos' ? 'Sinónimos' : 'Manual MD 1-0'}!`;
+  listaOpciones.innerHTML = "";
+  feedbackTexto.className = "feedback success";
+  feedbackTexto.innerHTML = `<div class="resultado-final"><h2>📊 Resultado final</h2><div class="nota-grande">${nota}<small>/20</small></div><p><strong>✅ Buenas:</strong> ${buenas} (${porcentajeBuenas}%)</p><p><strong>❌ Malas:</strong> ${malas} (${porcentajeMalas}%)</p><p><strong>🎯 Puntaje:</strong> ${puntaje} puntos</p></div>`;
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "block";
+  btnSiguiente.textContent = modoActual === 'sinonimos' ? "🔄 Otras 50 preguntas de Sinónimos" : "🔄 Nuevo examen MD 1-0";
+  btnSiguiente.onclick = iniciarTest;
+}
+function verificarRespuesta(indiceSeleccionado, botonPresionado) {
+  if (bloqueado) return;
+  bloqueado = true;
+  const item = preguntas[idxActual];
+  const botones = Array.from(listaOpciones.getElementsByClassName("option-btn"));
+  botones.forEach(b => b.disabled = true);
+  const esCorrecta = indiceSeleccionado === item._respuesta;
+  if (esCorrecta) {
+    botonPresionado.classList.add("correct");
+    feedbackTexto.innerHTML = "✨ ¡Correcto!";
+    feedbackTexto.className = "feedback success";
+    puntaje += 10;
+    racha += 1;
+    alertaRespuestaCorrecta.style.display = "none";
+  } else {
+    botonPresionado.classList.add("incorrect");
+    botones[item._respuesta].classList.add("correct");
+    feedbackTexto.innerHTML = "❌ Respuesta incorrecta.";
+    feedbackTexto.className = "feedback error";
+    racha = 0;
+    alertaRespuestaCorrecta.style.display = "inline-block";
+    alertaRespuestaCorrecta.innerHTML = `Respuesta correcta: <strong>${item._opciones[item._respuesta].etiqueta}) ${item._opciones[item._respuesta].texto}</strong>`;
+  }
+  txtPuntaje.textContent = `✨ Puntos: ${puntaje}`;
+  txtRacha.textContent = `🔥 Racha: ${racha}`;
+  const significadoRespuesta = obtenerSignificado(item);
+  const esSinonimo = item.n <= 300;
+  const conceptoPregunta = esSinonimo
+    ? `${item.p}: ${significadoRespuesta}`
+    : `El concepto planteado se relaciona con la respuesta correcta según el contenido del Manual MD 1-0.`;
+  analisisTexto.innerHTML = esSinonimo
+    ? `<div><strong>📖 Significado de la respuesta:</strong> ${significadoRespuesta}</div><div style="margin-top:8px"><strong>🧠 Concepto de la pregunta:</strong> ${conceptoPregunta}</div>`
+    : `<div><strong>📖 Significado de la respuesta:</strong> ${significadoRespuesta}</div><div style="margin-top:8px"><strong>🧠 Relación:</strong> ${conceptoPregunta}</div>`;
+  contenedorAnalisis.style.display = "block";
+  btnSiguiente.style.display = "block";
+  btnSiguiente.textContent = idxActual === preguntas.length - 1 ? "📊 Ver resultado" : "➡️ Siguiente pregunta";
+  btnSiguiente.onclick = avanzarPregunta;
+}
+
+function avanzarPregunta() {
+  if (!bloqueado) return;
+  idxActual++;
+  cargarPregunta();
+}
+
+function seleccionarModo(modo) {
+  modoActual = modo;
+  bancoActual = modo === 'sinonimos' ? bancoPreguntas : bancoMD;
+  preguntasRestantes = mezclar([...bancoActual]);
+  selectorModo.style.display = "none";
+  panelExamen.style.display = "block";
+  tituloPrincipal.textContent = modo === 'sinonimos' ? "📖 Test de Sinónimos" : "🎖️ Test del Manual MD 1-0";
+  modoActualTexto.textContent = modo === 'sinonimos' ? "📖 Sinónimos" : "🎖️ Manual MD 1-0";
+  const cantidad = modo === 'sinonimos' ? 50 : Math.min(50, bancoMD.length);
+  btnIniciar.textContent = modo === 'sinonimos' ? "▶️ Iniciar 50 preguntas de Sinónimos" : `▶️ Iniciar ${cantidad} preguntas del MD 1-0`;
+  txtProgreso.textContent = `Pregunta: 0/${cantidad}`;
+  preguntaTexto.textContent = modo === 'sinonimos' ? "Presiona «Iniciar» para comenzar el examen de Sinónimos." : "Presiona «Iniciar» para comenzar el examen exclusivo del Manual MD 1-0.";
+  listaOpciones.innerHTML = "";
+  feedbackTexto.innerHTML = "";
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "none";
+  btnIniciar.style.display = "block";
+  iniciado = false;
+}
+
+function cambiarModo() {
+  modoActual = null;
+  bancoActual = [];
+  preguntas = [];
+  preguntasRestantes = [];
+  selectorModo.style.display = "block";
+  panelExamen.style.display = "none";
+  tituloPrincipal.textContent = "📚 Banco de Preguntas";
+}
+
+function iniciarTest() {
+  if (!modoActual || bancoActual.length === 0) return;
+  if (preguntasRestantes.length === 0) preguntasRestantes = mezclar([...bancoActual]);
+
+  // Sinónimos: rondas de 50. Manual MD 1-0: usa el banco del manual únicamente.
+  const cantidadRonda = modoActual === 'sinonimos' ? 50 : Math.min(50, preguntasRestantes.length);
+  preguntas = mezclar([...preguntasRestantes]).slice(0, cantidadRonda);
+  const usadas = new Set(preguntas.map(p => p.n));
+  preguntasRestantes = preguntasRestantes.filter(p => !usadas.has(p.n));
+
+  idxActual = 0; puntaje = 0; racha = 0; bloqueado = false; iniciado = true;
+  btnIniciar.style.display = "none";
+  txtPuntaje.textContent = "✨ Puntos: 0";
+  txtRacha.textContent = "🔥 Racha: 0";
+  btnSiguiente.style.display = "none";
+  cargarPregunta();
+}
+</script>
+</body>
+</html>
 
