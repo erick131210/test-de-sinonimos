@@ -3,16 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Sinónimos y Manual MD 1-0</title>
+    <title>Test Táctil de Sinónimos + MD 1-0</title>
     <style>
         * { box-sizing: border-box; font-family: system-ui, sans-serif; }
         body { background: #0f172a; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f8fafc; }
-        .quiz-container { background: #1e293b; width: 100%; max-width: 760px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
+        .quiz-container { background: #1e293b; width: 100%; max-width: 450px; border-radius: 20px; padding: 20px; border: 1px solid #334155; display: flex; flex-direction: column; }
         h1 { font-size: 22px; text-align: center; color: #3b82f6; margin: 0 0 15px 0; }
-        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 13px; margin-bottom: 12px; background: #0f172a; padding: 10px; border-radius: 12px; }
-        .stat-item { text-align: center; background: #1e293b; padding: 8px 4px; border-radius: 8px; }
-        .progress-wrap { height: 8px; background: #0f172a; border-radius: 99px; overflow: hidden; margin-bottom: 15px; }
-        .progress-bar { height: 100%; width: 0%; background: #3b82f6; border-radius: 99px; transition: width .25s ease; }
+        .stats { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; background: #0f172a; padding: 10px; border-radius: 10px; }
         .question-box { background: #0f172a; border-radius: 12px; padding: 20px; font-size: 18px; font-weight: bold; text-align: center; margin-bottom: 20px; border: 1px solid #334155; }
         .options-list { display: flex; flex-direction: column; gap: 12px; }
         .option-btn { background: #334155; border: 1px solid #475569; border-radius: 12px; padding: 16px; font-size: 15px; color: #f1f5f9; text-align: left; cursor: pointer; font-weight: 600; -webkit-tap-highlight-color: transparent; width: 100%; transition: background 0.2s; }
@@ -38,6 +35,13 @@
             cursor: pointer; width: 100%;
         }
         .option-btn:disabled { cursor: default; opacity: 0.95; }
+        .modo-selector { text-align: center; padding: 10px 0 5px; }
+        .selector-subtitulo { color: #cbd5e1; font-size: 15px; margin: 0 0 18px; line-height: 1.5; }
+        .manual-btn { background: #7c3aed; }
+        .manual-btn:hover { background: #6d28d9; }
+        .modo-actual { text-align: center; font-size: 18px; font-weight: 800; margin-bottom: 12px; color: #60a5fa; }
+        #btn-cambiar-modo { display: block; background: #475569; }
+        #btn-cambiar-modo:hover { background: #334155; }
     
         .resultado-final {
             margin: 18px 0;
@@ -48,107 +52,37 @@
             text-align: center;
             color: #111827;
         }
-        .resultado-final h2 {
-            margin-top: 0;
-        }
-        .resultado-final p { font-size: 1.05rem; margin: 8px 0; }
-        .resultado-final .nota-grande { font-size: 3rem; font-weight: 800; margin: 4px 0 12px; }
-        .resultado-final .subtitulo { color: #475569; font-size: .95rem; }
-        .result-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
-        .result-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 8px; }
-        .result-card strong { display: block; font-size: 1.25rem; color: #0f172a; }
-        .result-card span { font-size: .8rem; color: #64748b; }
-        .result-bar { height: 12px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin: 14px 0 4px; }
-        .result-bar > div { height: 100%; background: #10b981; border-radius: 99px; }
-        .result-message { font-weight: 700; margin-top: 12px; color: #1e293b; }
-
-        .modo-selector { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 0 15px; }
-        .modo-card { background:#0f172a; border:2px solid #334155; border-radius:14px; padding:14px; cursor:pointer; text-align:left; transition:.2s; color:#f8fafc; }
-        .modo-card:hover { border-color:#3b82f6; transform:translateY(-1px); }
-        .modo-card.active { border-color:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,.15); }
-        .modo-card h3 { margin:0 0 5px; font-size:16px; }
-        .modo-card p { margin:0; font-size:12px; color:#94a3b8; line-height:1.35; }
-        .modo-badge { display:inline-block; font-size:11px; padding:3px 7px; border-radius:999px; background:#1e293b; margin-top:7px; color:#cbd5e1; }
-        .source-note { font-size:11px; color:#94a3b8; text-align:center; margin:4px 0 12px; line-height:1.35; }
-        @media (max-width: 360px) { .modo-selector { grid-template-columns:1fr; } }
-
-        @media (max-width: 360px) { .stats { grid-template-columns: 1fr; } .result-grid { grid-template-columns: 1fr; } }
-
-        .screen { width:100%; }
-        .screen.hidden { display:none !important; }
-        .inicio-header { text-align:center; margin-bottom:24px; }
-        .inicio-header h1 { font-size:30px; margin-bottom:8px; }
-        .inicio-header p { margin:0; color:#94a3b8; font-size:14px; }
-        .modo-selector { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:0 auto 22px; max-width:680px; }
-        .modo-card { min-height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:24px; }
-        .modo-card .modo-icono { font-size:42px; margin-bottom:10px; }
-        .modo-card h3 { font-size:21px; margin:0 0 8px; }
-        .modo-card p { max-width:270px; font-size:13px; }
-        .modo-card.active { transform:translateY(-2px); }
-        .inicio-actions { max-width:680px; margin:0 auto; }
-        .inicio-actions .start-btn { margin-bottom:10px; }
-        .selection-status { min-height:22px; text-align:center; color:#cbd5e1; font-size:13px; margin-bottom:8px; }
-        .quiz-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
-        .quiz-header h1 { margin:0; text-align:left; flex:1; }
-        .back-btn { border:1px solid #475569; background:#0f172a; color:#e2e8f0; border-radius:10px; padding:9px 12px; cursor:pointer; font-weight:700; }
-        .quiz-screen .question-box { font-size:20px; line-height:1.45; }
-        @media (max-width: 600px) {
-            body { padding:10px; align-items:flex-start; }
-            .quiz-container { margin:0; padding:14px; border-radius:16px; }
-            .modo-selector { grid-template-columns:1fr; gap:12px; }
-            .modo-card { min-height:150px; padding:18px; }
-            .inicio-header h1 { font-size:24px; }
-            .quiz-header h1 { font-size:20px; }
-            .quiz-screen .question-box { font-size:17px; padding:16px; }
+        .resultado-final h2 { margin-top: 0; }
+        .nota-grande { font-size: 42px; font-weight: 800; margin: 10px 0; }
+        .nota-grande small { font-size: 18px; font-weight: 600; }
+        .resultado-final p {
+            font-size: 1.15rem;
+            margin: 9px 0;
         }
     </style>
 </head>
 <body>
+
 <div class="quiz-container">
+    <h1 id="titulo-principal">📚 Banco de Preguntas</h1>
 
-    <section id="inicio-screen" class="screen">
-        <div class="inicio-header">
-            <h1>📚 Centro de Evaluación</h1>
-            <p>Selecciona qué tipo de examen quieres realizar.</p>
-        </div>
+    <div id="selector-modo" class="modo-selector">
+        <p class="selector-subtitulo">Selecciona el tipo de examen que deseas realizar:</p>
+        <button class="start-btn" onclick="seleccionarModo('sinonimos')">📖 SINÓNIMOS</button>
+        <button class="start-btn manual-btn" onclick="seleccionarModo('manual')">🎖️ MANUAL MD 1-0</button>
+    </div>
 
-        <div class="modo-selector" id="modo-selector">
-            <button type="button" class="modo-card active" id="modo-sinonimos" onclick="seleccionarModo('sinonimos')">
-                <div class="modo-icono">🔤</div>
-                <h3>Sinónimos</h3>
-                <p>Practica vocabulario y sinónimos con preguntas aleatorias.</p>
-                <span class="modo-badge">250 preguntas • 50 aleatorias</span>
-            </button>
-
-            <button type="button" class="modo-card" id="modo-manual" onclick="seleccionarModo('manual')">
-                <div class="modo-icono">📘</div>
-                <h3>Manual MD 1-0</h3>
-                <p>Preguntas basadas en el Manual Directriz Ejército del Perú, edición 2021.</p>
-                <span class="modo-badge">151 preguntas • 50 aleatorias</span>
-            </button>
-        </div>
-
-        <div class="inicio-actions">
-            <div class="selection-status" id="selection-status">Modalidad seleccionada: <strong>Sinónimos</strong></div>
-            <div class="source-note" id="source-note">Banco de 250 preguntas de sinónimos.</div>
-            <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Comenzar Sinónimos</button>
-        </div>
-    </section>
-
-    <section id="quiz-screen" class="screen hidden">
-        <div class="quiz-header">
-            <h1 id="titulo-test">🔤 Test de Sinónimos</h1>
-            <button type="button" class="back-btn" onclick="volverAlInicio()">↩ Cambiar</button>
-        </div>
-
+    <div id="panel-examen" style="display:none;">
+        <div class="modo-actual" id="modo-actual">📖 Sinónimos</div>
         <div class="stats">
-            <div class="stat-item"><span id="txt-progreso">Pregunta: 0/50</span></div>
-            <div class="stat-item"><span id="txt-puntaje">✨ Puntos: 0</span></div>
-            <div class="stat-item"><span id="txt-racha">🔥 Racha: 0</span></div>
+            <span id="txt-progreso">Pregunta: 0/0</span>
+            <span id="txt-puntaje">✨ Puntos: 0</span>
+            <span id="txt-racha">🔥 Racha: 0</span>
         </div>
-        <div class="progress-wrap"><div class="progress-bar" id="barra-progreso"></div></div>
 
-        <div class="question-box" id="pregunta-texto"></div>
+        <button class="start-btn" id="btn-iniciar" onclick="iniciarTest()">▶️ Iniciar examen</button>
+
+        <div class="question-box" id="pregunta-texto">Selecciona «Iniciar examen» para comenzar.</div>
         <div class="options-list" id="lista-opciones"></div>
         <div class="feedback" id="feedback-texto"></div>
 
@@ -159,7 +93,8 @@
         </div>
 
         <button class="next-btn" id="btn-siguiente" onclick="avanzarPregunta()">Siguiente Pregunta ➡️</button>
-    </section>
+        <button class="restart-btn" id="btn-cambiar-modo" onclick="cambiarModo()">↩️ Cambiar de modalidad</button>
+    </div>
 </div>
 
 <script>
@@ -215,7 +150,7 @@ const bancoPreguntas = [
 {"n": 49, "p": "CHOTEAR", "o": ["A) expulsar", "B) mofar", "C) arrogar", "D) temer", "E) ataque"], "r": 0, "a": "Expulsar. Rechazar o desechar a alguien de forma despectiva."},
 {"n": 50, "p": "FAROLEAR", "o": ["A) engreír", "B) mostrar", "C) iluminar", "D) suponer", "E) presumir"], "r": 4, "a": "Presumir. Ostentar altanería para llamar la atención ajena."},
 {"n": 51, "p": "OBLITERAR", "o": ["A) borrar", "B) recordar", "C) expandir", "D) iniciar", "E) festejar"], "r": 0, "a": "Borrar. Obstruir, anular o eliminar un conducto o registro."},
-{"n": 52, "p": "ESOTÉRICO", "o": ["A) común", "B) oculto", "C) científico", "D) público", "E) ruidoso"], "r": 1, "a": "Oculto. Reservado a unos pocos, secreto o de difícil acceso."},
+{"n": 52, "p": "ESOTÉRICO", "o": ["A) common", "B) oculto", "C) científico", "D) público", "E) ruidoso"], "r": 1, "a": "Oculto. Reservado a unos pocos, secreto o de difícil acceso."},
 {"n": 53, "p": "EXHAUSTIVO", "o": ["A) incompleto", "B) superficial", "C) completo", "D) cansado", "E) efímero"], "r": 2, "a": "Completo. Que agota por completo una materia, minucioso."},
 {"n": 54, "p": "INDOLENCIA", "o": ["A) dolor", "B) empatía", "C) rapidez", "D) pereza", "E) entusiasmo"], "r": 3, "a": "Pereza. Falta de ánimo, dejadez o negligencia ante los deberes."},
 {"n": 55, "p": "LACONISMO", "o": ["A) extensión", "B) elocuencia", "C) exageración", "D) orgullo", "E) brevedad"], "r": 4, "a": "Brevedad. Expresarse con pocas y concisas palabras."},
@@ -225,7 +160,7 @@ const bancoPreguntas = [
 {"n": 59, "p": "QUIMERA", "o": ["A) reality", "B) monstruo", "C) certeza", "D) ilusión", "E) verdad"], "r": 3, "a": "Ilusión. Producto de la imaginación que es irrealizable."},
 {"n": 60, "p": "SUTILEZA", "o": ["A) grosería", "B) agudeza", "C) pesadez", "D) mentira", "E) lentitud"], "r": 1, "a": "Agudeza. Delicadeza, ingenio o perspicacia fina."},
 {"n": 61, "p": "VOLUBLE", "o": ["A) estable", "B) pesado", "C) cambiante", "D) eterno", "E) rígido"], "r": 2, "a": "Cambiante. Que cambia de opinión o carácter con facilidad."},
-{"n": 62, "p": "CONCULCAR", "o": ["A) respetar", "B) violar", "C) aplaudir", "D) estudiar", "E) redactar"], "r": 1, "a": "Violan. Quebrantar una ley, norma o derecho ciudadano."},
+{"n": 62, "p": "CONCULCAR", "o": ["A) respetar", "B) violar", "C) aplaudir", "D) estudiar", "E) redactar"], "r": 1, "a": "Violar. Quebrantar una ley, norma o derecho ciudadano."},
 {"n": 63, "p": "EXECRAR", "o": ["A) bendecir", "B) amar", "C) maldecir", "D) limpiar", "E) tolerar"], "r": 2, "a": "Maldecir. Condenar o reprobar con fuerza moral una acción."},
 {"n": 64, "p": "FRUGAL", "o": ["A) excesivo", "B) moderado", "C) frutal", "D) costoso", "E) glotón"], "r": 1, "a": "Moderado. Comedido en el comer; alimentación sencilla y sana."},
 {"n": 65, "p": "GARRULO", "o": ["A) hablador", "B) taciturno", "C) educado", "D) violento", "E) silencioso"], "r": 0, "a": "Hablador. Persona charlatana o que habla en exceso."},
@@ -261,7 +196,7 @@ const bancoPreguntas = [
 {"n": 95, "p": "VETO", "o": ["A) mina", "B) censura", "C) prohibición", "D) sufragio", "E) cédula"], "r": 2, "a": "Prohibición. Facultad para impedir la ejecución de una norma o ley."},
 {"n": 96, "p": "LIBAR", "o": ["A) lamer", "B) marear", "C) tomar", "D) soltar", "E) emancipar"], "r": 2, "a": "Tomar. Beber un líquido a pequeños sorbos, equivalente a tomar."},
 {"n": 97, "p": "LAYA", "o": ["A) línea", "B) tiberio", "C) calidad", "D) evasiva", "E) alaba"], "r": 2, "a": "Calidad. Define la clase, condición, naturaleza o calidad de algo."},
-{"n": 98, "p": "CEPA", "o": ["A) aprenda", "B) conozca", "C) isla", "D) higiene", "E) raza"], "r": 4, "a": "Raza. Sustantivo que define el origen o tronco familiar de una especie."},
+{"n": 98, "p": "CEPA", "o": ["A) aprenda", "B) conozca", "C) isla", "D) hygiene", "E) raza"], "r": 4, "a": "Raza. Sustantivo que define el origen o tronco familiar de una especie."},
 {"n": 99, "p": "CAPITULAR", "o": ["A) cercenar", "B) cadalso", "C) claudicar", "D) ahorcar", "E) título"], "r": 2, "a": "Claudicar. Significa rendirse bajo condiciones o dejar de oponer resistencia."},
 {"n": 100, "p": "PANFLETO", "o": ["A) totalidad", "B) sátira", "C) acto", "D) boceto", "E) soltura"], "r": 1, "a": "Sátira. Escrito de corte agresivo diseñado para criticar con dureza."},
 {"n": 101, "p": "INEPTO", "o": ["A) limitado", "B) incapaz", "C) impotente", "D) inapto", "E) tozudo"], "r": 1, "a": "Incapaz. Define a quien carece por completo de la aptitud, capacidad o competencia natural o intelectual para resolver problemas generales."},
@@ -298,7 +233,7 @@ const bancoPreguntas = [
 {"n": 132, "p": "ALBAÑAL", "o": ["A) estanque", "B) palestra", "C) desagüe", "D) letrina", "E) silo"], "r": 2, "a": "Desagüe. Conducto, canal o tubería subterránea construida específicamente para dar salida a las aguas sucias o pluviales de una edificación."},
 {"n": 133, "p": "DESAPERCIBIDO", "o": ["A) inadvertido", "B) desprovisto", "C) ignorado", "D) ignoto", "E) indiferente"], "r": 0, "a": "Inadvertido. Califica a aquello que pasa completamente sin ser visto, que no es percibido o que no llama la atención del entorno."},
 {"n": 134, "p": "LAXADO", "o": ["A) absuelto", "B) ablandado", "C) extendido", "D) cansado", "E) dilatado"], "r": 1, "a": "Ablandado. Participio que comparte el núcleo semántico de disminuir la tensión, firmeza o rigidez natural de los tejidos orgánicos o materiales."},
-{"n": 135, "p": "PELOTILLERO", "o": ["A) cuentista", "B) suertero", "C) servil", "D) sortilegio", "E) sugestión"], "r": 2, "a": "Servil. Adjetivo que describe a la persona aduladora o lisonjera que muestra una sumisión baja exagerada ante sus superiores para obtener favores."},
+{"n": 135, "p": "PELOTILLERO", "o": ["A) cuentista", "B) suertero", "C) servil", "D) sortilegio", "E) sugestión"], "r": 2, "a": "Servil. Adjetivo que describe a la persona aduladora o lisonjera que muestra una sumisión baja exagerada ante sus superiores para obtener favors."},
 {"n": 136, "p": "DENUESTO", "o": ["A) deprecación", "B) litigio", "C) agravio", "D) hollar", "E) humillar"], "r": 2, "a": "Agravio. Sustantivo masculino que significa ofensa, insulto o injuria dirigida a perjudicar la honra o la dignidad moral de un individuo."},
 {"n": 137, "p": "POLISARCIA", "o": ["A) inapetencia", "B) hidropesía", "C) seboso", "D) obesidad", "E) gordura"], "r": 3, "a": "Obesidad. Término médico y científico equivalente que define la acumulación crónica y patológica de tejido graso en el organismo vivo."},
 {"n": 138, "p": "INSANIA", "o": ["A) locura", "B) parolina", "C) neurosis", "D) psicopatía", "E) demencia"], "r": 4, "a": "Demencia. Estado patológico y forense caracterizado por la pérdida profunda de la razón, el juicio o el deterioro de las capacidades cognitivas."},
@@ -345,7 +280,7 @@ const bancoPreguntas = [
 {"n": 179, "p": "CELESTINAJE", "o": ["A) mancebía", "B) tercería", "C) temeridad", "D) feminismo", "E) explotación"], "r": 1, "a": "Tercería. Oficio o mediación de un tercero para facilitar o encubrir una relación amorosa."},
 {"n": 180, "p": "FALLA", "o": ["A) tara", "B) yerro", "C) equívoco", "D) anomalía", "E) imperfección"], "r": 4, "a": "Imperfección. Defecto o carencia en la estructura de algo que reduce su calidad o impide su perfección."},
 {"n": 181, "p": "PENACHO", "o": ["A) protector", "B) copete", "C) plumaje", "D) cumbre", "E) grujido"], "r": 1, "a": "Copete. Grupo de plumas levantadas en la cabeza de algunas aves o mechón de pelo elevado."},
-{"n": 182, "p": "CURSADO", "o": ["A) inocente", "B) examinado", "C) deterioro", "D) baquiano", "E) expedido"], "r": 3, "a": "Baquiano. Persona diestra, práctica, versada o experimentada en un entorno, camino o materia."},
+{"n": 182, "p": "CURSADO", "o": ["A) inocente", "B) examinado", "C) deterioration", "D) baquiano", "E) expedido"], "r": 3, "a": "Baquiano. Persona diestra, práctica, versada o experimentada en un entorno, camino o materia."},
 {"n": 183, "p": "DEDUCIR", "o": ["A) razonar", "B) pensar", "C) filosofar", "D) descontar", "E) aumentar"], "r": 0, "a": "Razonar. Conducir el pensamiento de forma lógica y estructurada para extraer una conclusión (según tu libro)."},
 {"n": 184, "p": "OBSOLETO", "o": ["A) envejecido", "B) discontinuo", "C) arcaizado", "D) caducidad", "E) añoso"], "r": 2, "a": "Arcaizado. Algo antiguo, anticuado o que ha quedado completamente en desuso frente a lo moderno."},
 {"n": 185, "p": "ACTUARIO", "o": ["A) bromista", "B) valedor", "C) agasajo", "D) escribano", "E) testigo"], "r": 3, "a": "Escribano. Oficial público legalmente autorizado para dar fe de las actuaciones en los juzgados."},
@@ -398,7 +333,7 @@ const bancoPreguntas = [
 {"n": 232, "p": "BISOÑO", "o": ["A) bisoñé", "B) jovial", "C) aprendiz", "D) lerdo", "E) íntegro"], "r": 2, "a": "Aprendiz. Persona novata, principiante o que carece de experiencia formal en un arte u oficio."},
 {"n": 233, "p": "DEMASÍA", "o": ["A) detrás", "B) tardanza", "C) confianza", "D) soberbia", "E) exceso"], "r": 4, "a": "Exceso. Cantidad, actitud o porción que supera marcadamente la medida regular o justa."},
 {"n": 234, "p": "HACINAR", "o": ["A) habitar", "B) aparejar", "C) arrostrar", "D) amontonar", "E) hamacar"], "r": 3, "a": "Amontonar. Acumular o juntar gran cantidad de cosas o bultos sin orden en un espacio reducido."},
-{"n": 235, "p": "DENUESTO", "o": ["A) ajeno", "B) oprobio", "C) notable", "D) efectivo", "E) creativo"], "r": 1, "a": "Oprobio. Palabra ofensiva, injuria, afrenta o insulto con la que se busca degradar la honra ajena."},
+{"n": 235, "p": "DENUESTO", "o": ["A) ajeno", "B) oprobio", "C) notable", "D) efectivo", "E) creative"], "r": 1, "a": "Oprobio. Palabra ofensiva, injuria, afrenta o insulto con la que se busca degradar la honra ajena."},
 {"n": 236, "p": "APÓCRIFO", "o": ["A) notorio", "B) falso", "C) ilegal", "D) utópico", "E) auténtico"], "r": 1, "a": "Falso. Elemento, documento u obra supuesta o fingida que carece por completo de autenticidad."},
 {"n": 237, "p": "CELAR", "o": ["A) odiar", "B) revelar", "C) vigilar", "D) advertir", "E) descuidar"], "r": 2, "a": "Vigilar. Observar atentamente, custodiar o celar con esmero el cumplimiento de una obligación."},
 {"n": 238, "p": "VEJAR", "o": ["A) denigrar", "B) atender", "C) elogiar", "D) insultar", "E) aporrear"], "r": 0, "a": "Denigrar. Ofender gravemente, humillar o maltratar atentando directamente contra la dignidad de alguien."},
@@ -413,22 +348,101 @@ const bancoPreguntas = [
 {"n": 247, "p": "ACRITUD", "o": ["A) vulgaridad", "B) altura", "C) rigor", "D) bondad", "E) maldad"], "r": 2, "a": "Rigor. Aspereza, dureza o severidad excesiva en las condiciones, el carácter o el trato."},
 {"n": 248, "p": "PARÁFRASIS", "o": ["A) glosa", "B) partitura", "C) escrito", "D) mensaje", "E) copia"], "r": 0, "a": "Glosa. Nota, explicación o comentario interpretativo realizado sobre un fragmento de texto original."},
 {"n": 249, "p": "EFUSIÓN", "o": ["A) calor", "B) soltura", "C) dejadez", "D) ventura", "E) derrame"], "r": 4, "a": "Derrame. Salida, emisión o derramamiento físico de un gas o líquido fuera de su depósito natural."},
-{"n": 250, "p": "VOCERO", "o": ["A) ternero", "B) heraldo", "C) mendaz", "D) artesano", "E) profeta"], "r": 1, "a": "Heraldo. Mensajero oficial autorizado para transmitir decretos o noticias en nombre de una autoridad."}
+{"n": 250, "p": "VOCERO", "o": ["A) ternero", "B) heraldo", "C) mendaz", "D) artesano", "E) profeta"], "r": 1, "a": "Heraldo. Mensajero oficial autorizado para transmitir decretos o noticias en nombre de una autoridad."},
+{"n": 251, "p": "OBSTINACIÓN", "o": ["A) exaltación", "B) sigilo", "C) atracción", "D) pertinacia", "E) consunción"], "r": 3, "a": "Pertinacia. Obstinación pertinaz, terquedad o la cualidad de ser muy duradero o persistente en algo."},
+{"n": 252, "p": "RÍGIDO", "o": ["A) guiado", "B) austero", "C) persuasivo", "D) disuasivo", "E) certero"], "r": 1, "a": "Austero. Que es severo, riguroso en el cumplimiento de las normas morales o en el estilo de vida, sin excesos ni adornos."},
+{"n": 253, "p": "MONTARAZ", "o": ["A) valiente", "B) rústico", "C) urbano", "D) hosco", "E) salvaje"], "r": 4, "a": "Salvaje. Que no es doméstico, no está cultivado o se encuentra en un estado natural y libre, sin domesticar."},
+{"n": 254, "p": "INEXORABLE", "o": ["A) moldeable", "B) precisable", "C) destinado", "D) inmutable", "E) presumible"], "r": 3, "a": "Inmutable. Que no cambia ni es propenso a cambiar; constante, firme y permanente."},
+{"n": 255, "p": "SIMPOSIO", "o": ["A) conferencia", "B) discurso", "C) soliloquio", "D) atrio", "E) foro"], "r": 0, "a": "Conferencia. Reunión de personas donde se debate y expone un asunto, o disertación pública sobre un tema científico, artístico o literario."},
+{"n": 256, "p": "SÁPIDO", "o": ["A) sabroso", "B) conocido", "C) delicioso", "D) hartura", "E) gordura"], "r": 0, "a": "Sabroso. Que tiene un sabor agradable y vivo al paladar."},
+{"n": 257, "p": "TORVO", "o": ["A) bestial", "B) atraer", "C) fiero", "D) miedo", "E) noble"], "r": 2, "a": "Fiero. Que es agresivo, salvaje, duro o que causa espanto por su aspecto o mirada."},
+{"n": 258, "p": "TURGENTE", "o": ["A) espeso", "B) ambiguo", "C) innecesario", "D) belicoso", "E) abultado"], "r": 4, "a": "Abultado. Que tiene bulto, volumen o que está hinchado y sobresale."},
+{"n": 259, "p": "HÁLITO", "o": ["A) nimbo", "B) descubrir", "C) entender", "D) aliento", "E) aburrido"], "r": 3, "a": "Aliento. Aire que se expulsa al respirar, o emanación de un cuerpo."},
+{"n": 260, "p": "HÍBRIDO", "o": ["A) impuro", "B) desabrido", "C) indefinido", "D) áspero", "E) mestizaje"], "r": 0, "a": "Impuro. Que contiene mezcla de sustancias extrañas que alteran su pureza o naturaleza, perdiendo su condición de puro."},
+{"n": 261, "p": "HOLGORIO", "o": ["A) diversión", "B) amplitud", "C) regocijo", "D) desocupado", "E) domicilio"], "r": 2, "a": "Regocijo. Alegría intensa o júbilo, especialmente el que se manifiesta exteriormente con celebraciones o fiestas."},
+{"n": 262, "p": "IMBERBE", "o": ["A) tontería", "B) lampiño", "C) implícito", "D) pelón", "E) empedernido"], "r": 1, "a": "Lampiño. Que no tiene pelo o que tiene muy poco, especialmente en la cara o en el cuerpo."},
+{"n": 263, "p": "SOLEMNE", "o": ["A) rígido", "B) serio", "C) patriótico", "D) litúrgico", "E) militar"], "r": 1, "a": "Serio. Grave, formal y considerado, que no muestra ligereza o falta de respeto."},
+{"n": 264, "p": "RÉDITO", "o": ["A) ganancia", "B) crédito", "C) residuo", "D) rescate", "E) rudimento"], "r": 0, "a": "Ganancia. Beneficio económico o utilidad monetaria que rinde un capital, una inversión o una actividad económica."},
+{"n": 265, "p": "INOPE", "o": ["A) lerdo", "B) mísero", "C) austero", "D) recio", "E) hábil"], "r": 1, "a": "Mísero. Que vive en un estado de extrema pobreza, desdicha, indigencia o miseria."},
+{"n": 266, "p": "REBUSCA", "o": ["A) descarto", "B) sediento", "C) jumento", "D) raído", "E) encuentro"], "r": 0, "a": "Descarto. Vinculado al desecho, residuo o los restos que se separan o dejan de lado en un campo tras la cosecha."},
+{"n": 267, "p": "ALEVOSO", "o": ["A) holgazán", "B) perverso", "C) infidente", "D) necio", "E) basto"], "r": 2, "a": "Infidente. Que es infiel, que comete una falta a la confianza o que revela secretos confiados (traidor)."},
+{"n": 268, "p": "SUMIR", "o": ["A) rehuir", "B) cobrar", "C) suturar", "D) entreabrir", "E) abismar"], "r": 4, "a": "Abismar. Hundir o meter a alguien en un lugar o en una situación profunda o extrema física o mentalmente."},
+{"n": 269, "p": "PÁRAMO", "o": ["A) terreno", "B) bosque", "C) desierto", "D) prado", "E) feroz"], "r": 2, "a": "Desierto. Territorio arenoso, pedregoso, seco y desabrigado que carece casi por completo de vegetación."},
+{"n": 270, "p": "MEDROSO", "o": ["A) mediano", "B) timorato", "C) ocioso", "D) pasible", "E) activo"], "r": 1, "a": "Timorato. Que siente un temor excesivo, timidez o que es propenso a asustarse con facilidad; miedoso."},
+{"n": 271, "p": "INCÓLUME", "o": ["A) latoso", "B) inoportuno", "C) duro", "D) indino", "E) ileso"], "r": 4, "a": "Ileso. Que resulta sin daño alguno de un peligro, accidente o situación de riesgo."},
+{"n": 272, "p": "OPROBIO", "o": ["A) encono", "B) desaprobación", "C) ignominia", "D) ditirambo", "E) concordia"], "r": 2, "a": "Ignominia. Ofensa pública que afecta el honor, la deshonra o la humillación que sufre una persona."},
+{"n": 273, "p": "TOSCO", "o": ["A) burdo", "B) huraño", "C) grosería", "D) áspero", "E) corriente"], "r": 0, "a": "Burdo. Tosco, basto, hecho con materiales de poca calidad o sin esmero y delicadeza."},
+{"n": 274, "p": "CARENCIA", "o": ["A) censura", "B) defecto", "C) improperio", "D) duda", "E) asenso"], "r": 1, "a": "Defecto. Falta o privación de las cualidades propias e inherentes a algo; imperfección natural o moral."},
+{"n": 275, "p": "NEGATIVA", "o": ["A) voluntad", "B) dejadez", "C) aseveración", "D) intuición", "E) positiva"], "r": 1, "a": "Dejadez. Actitud psicológica de rechazo, apatía o desgano donde la persona cae en la inacción o desidia."},
+{"n": 276, "p": "NESCIENTE", "o": ["A) remoto", "B) actual", "C) filial", "D) yerto", "E) ignorante"], "r": 4, "a": "Ignorante. Que carece de conocimiento, instrucción o que ignora una materia o asunto específico."},
+{"n": 277, "p": "ASOLAR", "o": ["A) consolar", "B) presagiar", "C) encarar", "D) arrasar", "E) presumir"], "r": 3, "a": "Arrasar. Destruir por completo, arruinar o demoler una superficie o lugar sin dejar nada en pie."},
+{"n": 278, "p": "PÚTRIDO", "o": ["A) fétido", "B) descompuesto", "C) inmundo", "D) hediondo", "E) putrefacto"], "r": 4, "a": "Putrefacto. Que está podrido o se encuentra en un estado completo de descomposición orgánica."},
+{"n": 279, "p": "INTRINSIQUEZA", "o": ["A) malignidad", "B) familiaridad", "C) sumisión", "D) absolución", "E) oscuridad"], "r": 1, "a": "Familiaridad. Íntima amistad, confianza estrecha o trato afectuoso propio de los amigos íntimos."},
+{"n": 280, "p": "MITOTERO", "o": ["A) animoso", "B) repelente", "C) fementido", "D) melindroso", "E) humilde"], "r": 3, "a": "Melindroso. Persona que manifiesta una delicadeza afectada, remilgada o exagerada en sus acciones o gestos."},
+{"n": 281, "p": "JINGLAR", "o": ["A) temblar", "B) erguirse", "C) oscilar", "D) amagar", "E) rehuir"], "r": 2, "a": "Oscilar. Moverse de una parte a otra colgado; efectuar movimientos de vaivén o balancearse."},
+{"n": 282, "p": "ORONDO", "o": ["A) engolado", "B) terne", "C) nimio", "D) fútil", "E) inútil"], "r": 0, "a": "Engolado. Persona engreída, presuntuosa, altanera o llena de vanidad que actúa con superioridad."},
+{"n": 283, "p": "BARRENAR", "o": ["A) lisura", "B) fusta", "C) horadar", "D) bazofia", "E) mimbre"], "r": 2, "a": "Horadar. Hacer un agujero, taladrar o perforar una cosa atravesándola de parte a parte."},
+{"n": 284, "p": "VANÍLOCUO", "o": ["A) elogioso", "B) verborreico", "C) impetuoso", "D) silencioso", "E) hermético"], "r": 1, "a": "Verborreico. Que habla demasiado, de manera vana o con abundancia excesiva de palabras con poco contenido."},
+{"n": 285, "p": "FEÉRICO", "o": ["A) encantador", "B) límpido", "C) gemebundo", "D) rígido", "E) alevoso"], "r": 0, "a": "Encantador. Perteneciente o relativo a las hadas o a la magia; maravilloso o de una belleza fascinante."},
+{"n": 286, "p": "SANFASÓN", "o": ["A) sagitario", "B) hiriente", "C) torpe", "D) desfachatez", "E) sigiloso"], "r": 3, "a": "Desfachatez. Desvergüenza, descaro o falta total de respeto y formas (proviene del francés sans façon)."},
+{"n": 287, "p": "DESIDIOSO", "o": ["A) taciturno", "B) vesánico", "C) portentoso", "D) disidente", "E) incurioso"], "r": 4, "a": "Incurioso. Que carece de curiosidad, cuidado o interés; negligente, apático o dejado frente a sus deberes."},
+{"n": 288, "p": "ABSTRUSO", "o": ["A) diáfano", "B) compuesto", "C) intrincado", "D) embarazoso", "E) rotundo"], "r": 2, "a": "Intrincado. Que es de difícil comprensión por ser muy complejo, enredado, complicado o confuso."},
+{"n": 289, "p": "ZAFIO", "o": ["A) esbelto", "B) sandio", "C) ineducado", "D) sagaz", "E) probable"], "r": 2, "a": "Ineducado. Persona grosera, tosca, ruda o que muestra una total falta de buenos modales y cortesía."},
+{"n": 290, "p": "ANODINO", "o": ["A) inicuo", "B) ineficaz", "C) precoz", "D) propincuo", "E) inocuo"], "r": 1, "a": "Ineficaz. Que es insignificante, insustancial o que no tiene la capacidad para alcanzar el efecto deseado."},
+{"n": 291, "p": "POSE", "o": ["A) modo", "B) método", "C) actitud", "D) silueta", "E) afectación"], "r": 4, "a": "Afectación. Falta de naturalidad; postura o manera artificial de comportarse para aparentar algo que no se es."},
+{"n": 292, "p": "SAGAZ", "o": ["A) audaz", "B) mendaz", "C) perspicaz", "D) mordaz", "E) rapaz"], "r": 2, "a": "Perspicaz. Que tiene una inteligencia rápida y aguda que le permite percatarse de cosas de forma rápida."},
+{"n": 293, "p": "TUPIDO", "o": ["A) tejido", "B) indispuesto", "C) lleno", "D) obstruido", "E) detenido"], "r": 3, "a": "Obstruido. Que tiene un conducto, paso o abertura cerrado, tapado o bloqueado por un obstáculo."},
+{"n": 294, "p": "HOSCO", "o": ["A) áspero", "B) amargo", "C) duro", "D) hostil", "E) odioso"], "r": 3, "a": "Hostil. Que muestra un carácter desagradable, huraño o una actitud contraria y poco amigable."},
+{"n": 295, "p": "INSINUANTE", "o": ["A) artero", "B) persuasivo", "C) codicioso", "D) melodioso", "E) ruidoso"], "r": 1, "a": "Persuasivo. Que tiene la fuerza, eficacia o habilidad sutil para convencer o inducir a alguien a creer o hacer algo."},
+{"n": 296, "p": "QUEBRAJA", "o": ["A) modestia", "B) anuencia", "C) suspenso", "D) fealdad", "E) rendija"], "r": 4, "a": "Rendija. Grieta, abertura o hendidura larga y estrecha que se produce en un cuerpo sólido."},
+{"n": 297, "p": "DISCRIMEN", "o": ["A) inocencia", "B) peligro", "C) humildad", "D) vanidad", "E) barbaridad"], "r": 1, "a": "Peligro. Situación crítica, límite o riesgo inminente en la que existe la posibilidad de que suceda un mal."},
+{"n": 298, "p": "REMISO", "o": ["A) temido", "B) ardido", "C) necio", "D) acidioso", "E) venal"], "r": 3, "a": "Acidioso. Que muestra falta de voluntad, desgana, pereza, desidia o flojera para realizar las cosas (variante de acedioso)."},
+{"n": 299, "p": "EXIMIO", "o": ["A) exangüe", "B) exento", "C) excelente", "D) experto", "E) estulto"], "r": 2, "a": "Excelente. Muy ilustre, excelso, eminente o que sobresale por sus extraordinarias cualidades."},
+{"n": 300, "p": "SUTILEZA", "o": ["A) amabilidad", "B) imperturbabilidad", "C) intrascendencia", "D) inalterabilidad", "E) ingeniosidad"], "r": 4, "a": "Ingeniosidad. Agudeza, perspicacia, finura o ingenio mental para discurrir o notar detalles difíciles."}
+];
+const bancoMD = [
+{n:301,p:"MD 1-0: ¿Cuál enunciado distingue mejor una capacidad fundamental de una capacidad operacional?",o:["A) La fundamental integra capacidades operacionales similares; la operacional reúne habilidades componentes de una fundamental.","B) La fundamental solo existe en el nivel táctico; la operacional solo en el estratégico.","C) La fundamental se limita a personal; la operacional exclusivamente a material.","D) Ambas expresiones son equivalentes y se usan indistintamente.","E) La operacional reemplaza a las funciones del Ejército."],r:0,a:"Las capacidades fundamentales agrupan capacidades operacionales similares y orientan el diseño de la estructura y magnitud de la fuerza; las operacionales son habilidades componentes de una fundamental."},
+{n:302,p:"MD 1-0: Si una fuerza debe articular capacidades según su misión y amenaza específica dentro de una brigada de combate, ¿qué concepto de la visión institucional se está aplicando?",o:["A) Fuerza modular.","B) Fuerza únicamente territorial.","C) Acción cívica.","D) Cooperación internacional.","E) Control administrativo."],r:0,a:"Fuerza modular. La visión describe una fuerza modular capaz de articular diversas capacidades fundamentales según misión y amenaza específica."},
+{n:303,p:"MD 1-0: Una actividad orientada a vigilar fronteras y producir información para garantizar la seguridad se relaciona directamente con qué acción estratégica?",o:["A) Investigación histórica del patrimonio.","B) Actividades de inteligencia y vigilancia de fronteras.","C) Cooperación cultural internacional.","D) Gestión presupuestal institucional.","E) Formación de colegios militares."],r:1,a:"El rol de garantizar la independencia, soberanía e integridad territorial incluye desarrollar actividades de inteligencia y operaciones de vigilancia de fronteras."},
+{n:304,p:"MD 1-0: ¿Qué combinación corresponde a las seis capacidades fundamentales señaladas en el manual?",o:["A) Comando y control, inteligencia, movimiento y maniobra, fuegos, protección y sostenimiento.","B) Logística, personal, educación, sanidad, ingeniería y comunicaciones.","C) Ofensiva, defensiva, estabilidad, apoyo, reserva y movilización.","D) Planeamiento, presupuesto, doctrina, educación, salud y relaciones internacionales.","E) Ciberdefensa, telemática, aviación, ingeniería, artillería y caballería."],r:0,a:"Las seis capacidades fundamentales son comando y control, inteligencia, movimiento y maniobra, fuegos, protección y sostenimiento."},
+{n:305,p:"MD 1-0: Si una actividad comprende colección, procesamiento, difusión, reconocimiento y vigilancia y contrainteligencia, ¿a qué capacidad operacional pertenece?",o:["A) Fuegos.","B) Protección.","C) Inteligencia.","D) Sostenimiento.","E) Movimiento y maniobra."],r:2,a:"Inteligencia. El manual enumera esas actividades dentro de la capacidad operacional de inteligencia."},
+{n:306,p:"MD 1-0: ¿Cuál es la finalidad central de la misión institucional descrita en el capítulo 2?",o:["A) Contribuir a garantizar independencia, soberanía, integridad territorial y bienestar general de la población.","B) Concentrar todas las funciones estatales en el Ejército.","C) Sustituir permanentemente a las autoridades civiles.","D) Limitar la acción militar al ámbito internacional.","E) Priorizar exclusivamente el desarrollo económico."],r:0,a:"La misión busca contribuir a garantizar la independencia, soberanía, integridad territorial y bienestar general, además de participar en desarrollo, orden interno, defensa civil y política exterior conforme a ley."},
+{n:307,p:"MD 1-0: ¿Cuál de los siguientes NO forma parte de la visión institucional?",o:["A) Disuasivo.","B) Reconocido.","C) Respetado.","D) Integrado a la sociedad.","E) Autosuficiente económicamente."],r:4,a:"La visión señala: ser un Ejército disuasivo, reconocido, respetado e integrado a la sociedad. La autosuficiencia económica no forma parte de esa formulación."},
+{n:308,p:"MD 1-0: ¿Qué órgano realiza el planeamiento estratégico institucional y asesora al Comandante General?",o:["A) Inspectoría General del Ejército.","B) Estado Mayor General del Ejército.","C) Procuraduría Pública del Ejército.","D) Órgano de Control Institucional.","E) Consejo Consultivo del Ejército."],r:1,a:"El Estado Mayor General del Ejército es el órgano de planeamiento y asesoramiento del más alto nivel."},
+{n:309,p:"MD 1-0: ¿Qué diferencia establece el manual entre interoperatividad e interoperabilidad?",o:["A) La interoperatividad se refiere a operar coordinadamente con otras fuerzas; la interoperabilidad a proporcionar o recibir servicios entre fuerzas o sistemas según la misión.","B) Son términos idénticos sin distinción conceptual.","C) La primera es administrativa y la segunda presupuestal.","D) La primera corresponde solo al ciberespacio y la segunda solo al dominio terrestre.","E) La primera es una capacidad fundamental y la segunda un rol estratégico."],r:0,a:"El glosario distingue la interoperatividad como capacidad de operar coordinada y simultáneamente con otras fuerzas, y la interoperabilidad como capacidad de proporcionar o recibir servicios entre fuerzas o sistemas."},
+{n:310,p:"MD 1-0: Si dos o más Fuerzas Armadas emplean sus medios para cumplir una misión conjunta, ¿qué concepto corresponde?",o:["A) Operación integrada.","B) Operación conjunta.","C) Acción cívica.","D) Acción multisectorial.","E) Gestión del riesgo."],r:1,a:"Operación conjunta. El manual la describe como aquella que involucra el empleo de dos o más fuerzas: Ejército, Marina o Fuerza Aérea."},
+{n:311,p:"MD 1-0: ¿Qué institución conduce políticamente el Sector Defensa?",o:["A) Comando Conjunto de las Fuerzas Armadas.","B) Ejército del Perú.","C) Ministerio de Defensa.","D) Estado Mayor General del Ejército.","E) Policía Nacional del Perú."],r:2,a:"El Ministerio de Defensa es el órgano rector y responsable de la conducción política del Sector Defensa."},
+{n:312,p:"MD 1-0: ¿Cuál es la función del Comando Conjunto destacada en el capítulo 1?",o:["A) Conducir exclusivamente operaciones del Ejército.","B) Realizar el planeamiento, preparación, coordinación y conducción de operaciones militares conjuntas.","C) Administrar el presupuesto de cada instituto armado.","D) Ejercer la defensa jurídica de las Fuerzas Armadas.","E) Dirigir los colegios militares."],r:1,a:"El CCFFAA realiza el planeamiento, preparación, coordinación y conducción de las operaciones militares conjuntas."},
+{n:313,p:"MD 1-0: ¿Cuál afirmación refleja mejor el concepto de ambiente operacional?",o:["A) Solo comprende el terreno físico donde opera una unidad.","B) Es la combinación de condiciones, circunstancias e influencias que afectan el empleo de capacidades y las decisiones del comandante.","C) Se limita a amenazas externas convencionales.","D) Es equivalente al área administrativa de una unidad.","E) Excluye las dimensiones aérea, marítima y ciberespacial."],r:1,a:"Ambiente operacional: combinación de condiciones, circunstancias e influencias que afectan el empleo de capacidades militares y las decisiones del comandante; comprende dimensiones terrestre, aérea, marítima, espacial y ciberespacial."},
+{n:314,p:"MD 1-0: ¿Cuál es el propósito de los roles estratégicos asignados por el Estado al Ejército?",o:["A) Convertirlos en normas presupuestales.","B) Concretar propósitos estatales en misiones mediante planeamiento y empleo de capacidades militares.","C) Sustituir la Constitución y las leyes.","D) Limitar las capacidades al tiempo de paz.","E) Regular únicamente la carrera militar."],r:1,a:"Los roles estratégicos son propósitos que el Estado asigna al Ejército y se concretan en misiones mediante planeamiento y empleo de capacidades militares."},
+{n:315,p:"MD 1-0: ¿Qué caracteriza a un Ejército multimisión?",o:["A) Una fuerza diseñada para una única misión permanente.","B) Una estructura moderna, modular y polivalente sustentada en planeamiento basado en capacidades.","C) Una fuerza sin especialidades.","D) Una organización exclusivamente administrativa.","E) Una fuerza limitada al combate convencional."],r:1,a:"Ejército multimisión: estructura moderna, modular y polivalente, sustentada en planeamiento basado en capacidades militares."},
+{n:316,p:"MD 1-0: ¿Cuál NO corresponde a la ética militar descrita en el manual?",o:["A) Orientar las acciones mediante principios, valores y deberes.","B) Crear conciencia de responsabilidad asociada al ejercicio profesional.","C) Sustituir la preparación técnica y física del militar.","D) Formar parte transversal de la educación ética-moral.","E) Orientar la conducta de los integrantes de la institución."],r:2,a:"La ética militar orienta mediante principios, valores y deberes y crea conciencia de responsabilidad; no sustituye la preparación técnica y física."},
+{n:317,p:"MD 1-0: ¿Cuál conjunto corresponde a los principios militares enumerados en la sección 3.6?",o:["A) Respeto por la Constitución y leyes; respeto por DDHH y DIH; honor militar; ética en el actuar; compromiso y fe institucional; perseverancia y abnegación.","B) Disciplina, logística, inteligencia, maniobra, fuegos y protección.","C) Lealtad, presupuesto, educación, salud, movilidad y ciberdefensa.","D) Honor, ofensiva, defensiva, estabilidad, reserva y sostenimiento.","E) Vocación, carrera, ascenso, sanción, presupuesto y mando."],r:0,a:"Es el conjunto de seis principios militares expresamente enumerados en la sección 3.6."},
+{n:318,p:"MD 1-0: ¿Por qué el liderazgo se considera permanente y progresivo?",o:["A) Porque solo se desarrolla al alcanzar los grados superiores.","B) Porque la formación del líder militar continúa a lo largo de la carrera en dimensiones individual y organizacional.","C) Porque depende exclusivamente del mando formal.","D) Porque reemplaza la formación académica.","E) Porque solo se aplica durante operaciones."],r:1,a:"La formación del líder militar es permanente y progresiva a lo largo de la carrera, en dimensiones individual y organizacional."},
+{n:319,p:"MD 1-0: ¿Qué órgano realiza funciones de control, supervisión e investigación de asuntos militares, operacionales y disciplinarios?",o:["A) Inspectoría General del Ejército.","B) Estado Mayor General del Ejército.","C) Comandancia General del Ejército.","D) Procuraduría Pública del Ejército.","E) Consejo Superior del Ejército."],r:0,a:"La Inspectoría General del Ejército realiza funciones de control, supervisión e investigación en el ámbito de su competencia."},
+{n:320,p:"MD 1-0: ¿Cuál es la finalidad del desarrollo nacional según el glosario?",o:["A) Aumentar exclusivamente el poder militar.","B) Lograr la plena satisfacción de las necesidades de la población mediante crecimiento sostenido y sustentable del Poder Nacional.","C) Sustituir el sistema de defensa nacional.","D) Concentrar la economía en el sector Defensa.","E) Limitar la participación del Estado al ámbito regional."],r:1,a:"Desarrollo nacional: proceso de crecimiento sostenido y sustentable del Poder Nacional para alcanzar el bienestar general y satisfacer las necesidades de la población."},
+{n:321,p:"MD 1-0: ¿Qué principio describe mejor la acción multisectorial?",o:["A) Integración, cooperación y sincronización de actividades de dos o más sectores bajo coordinación o regulación de una autoridad designada.","B) Empleo exclusivo de medios militares.","C) Coordinación únicamente entre unidades del Ejército.","D) Acción limitada al ámbito internacional.","E) Sustitución de organismos civiles por unidades militares."],r:0,a:"Acción multisectorial: integración, cooperación y sincronización de actividades de dos o más sectores para alcanzar unidad de esfuerzos."},
+{n:322,p:"MD 1-0: ¿Cuál opción define mejor defensa nacional según el glosario?",o:["A) Conjunto de previsiones y acciones del Gobierno para permitir la supervivencia, permanencia y desarrollo del Estado frente a antagonismos o presiones.","B) Empleo de las Fuerzas Armadas únicamente en combate.","C) Protección exclusiva de fronteras frente a amenazas externas.","D) Actividad reservada al Ministerio de Defensa.","E) Medida temporal aplicable solo durante conflictos."],r:0,a:"Defensa nacional: conjunto de previsiones y acciones que adopta el Gobierno para permitir la supervivencia, permanencia y desarrollo del Estado frente a antagonismos o presiones."},
+{n:323,p:"MD 1-0: En la visión institucional, ¿qué atributo se vincula con una gestión moderna, eficiente y transparente y una cultura innovadora basada en valores?",o:["A) Disuasivo.","B) Reconocido.","C) Respetado.","D) Integrado a la sociedad.","E) Modular."],r:2,a:"Respetado. El manual relaciona este atributo con gestión institucional moderna, eficiente y transparente, cultura innovadora basada en valores, liderazgo y profesionalismo."},
+{n:324,p:"MD 1-0: ¿Cuál actividad pertenece a la capacidad operacional de protección y no a inteligencia?",o:["A) Colección.","B) Procesamiento.","C) Contrainteligencia.","D) Ciberdefensa y seguridad de la información.","E) Difusión."],r:3,a:"Ciberdefensa y seguridad de la información figura entre las capacidades operacionales de protección."},
+{n:325,p:"MD 1-0: ¿Qué relación establece el manual entre desarrollo nacional y defensa nacional?",o:["A) Son objetivos incompatibles.","B) Un mayor grado de desarrollo nacional incrementa las posibilidades de la defensa nacional.","C) El desarrollo nacional elimina la necesidad de defensa.","D) La defensa nacional depende solo del desarrollo militar.","E) El desarrollo nacional se limita a infraestructura vial."],r:1,a:"El glosario establece que cuanto mayor sea el grado de desarrollo nacional, mayores serán las posibilidades de la defensa nacional."},
+{n:326,p:"MD 1-0: ¿Qué describe mejor movimiento y maniobra como capacidad fundamental?",o:["A) Procesar información para producir inteligencia.","B) Desplegar, cambiar, reagrupar o trasladar fuerzas para obtener una posición de ventaja relativa.","C) Administrar exclusivamente recursos financieros.","D) Ejecutar únicamente fuegos indirectos.","E) Proteger solo instalaciones administrativas."],r:1,a:"Movimiento y maniobra permite desplegar, cambiar, reagrupar o trasladar fuerzas para obtener una posición de ventaja relativa."},
+{n:327,p:"MD 1-0: ¿Qué caracteriza al ambiente operacional VICA?",o:["A) Volátil, incierto, complejo y ambiguo.","B) Variable, integrado, convencional y administrativo.","C) Vigilado, interno, coordinado y armado.","D) Visible, inmediato, centralizado y adaptable.","E) Virtual, industrial, convencional y aéreo."],r:0,a:"VICA significa volátil, incierto, complejo y ambiguo, características señaladas para el ambiente operacional."},
+{n:328,p:"MD 1-0: Si una acción busca mejorar condiciones sociales y económicas mediante cooperación entre FFAA y órganos civiles responsables, ¿qué concepto corresponde?",o:["A) Acción cívica.","B) Fuegos.","C) Geoestrategia.","D) Contrainteligencia.","E) Fuerza modular."],r:0,a:"Acción cívica: conjunto de actividades de las FFAA en apoyo de la población y en cooperación con órganos civiles responsables."},
+{n:329,p:"MD 1-0: ¿Cuál enunciado corresponde al concepto de fuerza modular?",o:["A) Fuerza que articula diversas capacidades operacionales según misionamiento, amenaza y ambiente operacional.","B) Fuerza integrada únicamente por unidades de una misma especialidad.","C) Fuerza diseñada sin considerar la amenaza.","D) Fuerza empleada solo en operaciones ofensivas.","E) Fuerza que reemplaza las capacidades fundamentales por medios administrativos."],r:0,a:"Fuerza modular: articula diversas capacidades operacionales de acuerdo con el misionamiento, amenaza específica y ambiente operacional."},
+{n:330,p:"MD 1-0: ¿Qué idea central del capítulo 6 justifica la transformación institucional?",o:["A) La necesidad de adaptarse al ambiente operacional futuro y a los retos de la seguridad multidimensional.","B) La reducción permanente de capacidades.","C) El abandono de la doctrina Wiracocha.","D) La eliminación de la planificación institucional.","E) La concentración exclusiva en amenazas tradicionales."],r:0,a:"El capítulo 6 aborda la necesidad de adaptarse al ambiente operacional del futuro, los retos de la seguridad multidimensional y el Plan de Transformación Institucional."}
 ];
 
-const bancoManual = [{"p":"¿Qué es la seguridad nacional según el MD 1-0?","o":["La situación que alcanza el Estado con garantías de soberanía, independencia, integridad territorial, estado constitucional de derecho, paz social e intereses nacionales.","El conjunto de operaciones militares exclusivamente externas.","La administración económica del Estado.","La actividad exclusiva de la Policía Nacional.","El control de las fronteras sin considerar a la población."],"r":0,"exp":""},{"p":"¿Cuál es la finalidad de la seguridad nacional?","o":["Garantizar un clima social propicio para el desarrollo pleno e integral de la persona humana, el bienestar general y el bien común en un ambiente de paz y tranquilidad.","Aumentar exclusivamente el poder militar.","Regular solamente la actividad económica.","Eliminar toda actividad internacional.","Controlar únicamente las fronteras."],"r":0,"exp":""},{"p":"¿Qué es la defensa nacional según el MD 1-0?","o":["El conjunto de previsiones y acciones que el Estado adopta y ejecuta para garantizar la seguridad nacional.","El conjunto de actividades privadas para el desarrollo económico.","La administración exclusiva de las Fuerzas Armadas.","La política exterior del Estado.","La protección exclusiva de instalaciones militares."],"r":0,"exp":""},{"p":"¿Cómo se desarrolla la defensa nacional?","o":["De manera integral y permanente, en los ámbitos interno y externo.","Solo durante conflictos armados internacionales.","Solo en tiempo de paz.","Únicamente en el ámbito externo.","Solo por las Fuerzas Armadas."],"r":0,"exp":""},{"p":"¿Quién preside el Sistema de Defensa Nacional (SIDENA)?","o":["El presidente de la República, en su condición de jefe de Estado.","El Ministro de Defensa.","El Comandante General del Ejército.","El jefe del Comando Conjunto.","El Congreso de la República."],"r":0,"exp":""},{"p":"¿Qué órgano es responsable del planeamiento, preparación, coordinación y conducción de las operaciones militares conjuntas de las Fuerzas Armadas?","o":["El Comando Conjunto de las Fuerzas Armadas (CCFFAA).","El Ministerio de Educación.","La Policía Nacional del Perú.","El Estado Mayor del Ejército exclusivamente.","El INDECI."],"r":0,"exp":""},{"p":"¿Qué son las operaciones conjuntas?","o":["Las que involucran el empleo de dos o más fuerzas: Ejército, Marina o Fuerza Aérea.","Las que incluyen únicamente al Ejército.","Las que incluyen exclusivamente a la Policía.","Las operaciones civiles de emergencia.","Las actividades diplomáticas."],"r":0,"exp":""},{"p":"¿Qué son las operaciones integradas?","o":["Aquellas que incluyen a la Policía Nacional del Perú.","Aquellas que incluyen solo a la Fuerza Aérea.","Aquellas realizadas exclusivamente por civiles.","Aquellas realizadas fuera del territorio nacional.","Aquellas que no requieren coordinación."],"r":0,"exp":""},{"p":"¿Qué es la acción unificada?","o":["La integración, cooperación y sincronización de actividades de organismos gubernamentales, no gubernamentales, instituciones privadas y organismos internacionales con las operaciones militares, bajo una autoridad designada.","La actuación aislada del Ejército.","La sustitución de las autoridades civiles por militares.","La ejecución exclusiva de operaciones de combate.","La coordinación únicamente entre unidades del Ejército."],"r":0,"exp":""},{"p":"¿Cuál es la característica distintiva del dominio terrestre?","o":["La presencia de grandes cantidades de seres humanos.","La ausencia de población.","La presencia exclusiva de medios aéreos.","El dominio exclusivo del ciberespacio.","La inexistencia de infraestructura."],"r":0,"exp":""},{"p":"¿Qué enfatizan las Operaciones Terrestres Unificadas?","o":["La sincronización de capacidades con otros institutos armados, organizaciones gubernamentales y gobiernos aliados/intergubernamentales.","El empleo aislado de las fuerzas terrestres.","La eliminación de toda cooperación civil.","La actuación únicamente defensiva.","La suspensión de operaciones multinacionales."],"r":0,"exp":""},{"p":"¿En qué tres ámbitos de actuación se organiza la participación del componente terrestre?","o":["Frente externo, frente interno y tiempo de paz.","Solo frente externo y guerra.","Solo frente interno y paz.","Únicamente frontera y amazonía.","Solo territorio marítimo y aéreo."],"r":0,"exp":""},{"p":"¿Cuál de los siguientes figura como amenaza para el Estado en la lista presentada para 2021?","o":["Corrupción y su afectación a las instituciones del Estado.","Turismo internacional.","Intercambio cultural.","Educación universitaria.","Actividad deportiva."],"r":0,"exp":""},{"p":"¿Cuál es una amenaza relacionada con el ciberespacio señalada en el MD 1-0?","o":["Actividades que atentan contra sistemas de información, seguridad digital, redes de comunicación y ciberinfraestructuras críticas.","La enseñanza de informática.","El uso educativo de internet.","La investigación científica.","La capacitación tecnológica."],"r":0,"exp":""},{"p":"¿Cuántas categorías de seguridad humana señala el documento citado de la ONU?","o":["Siete.","Cinco.","Seis.","Ocho.","Diez."],"r":0,"exp":""},{"p":"¿Cuál NO corresponde a una de las siete categorías de seguridad humana enumeradas?","o":["Seguridad militar ofensiva.","Seguridad económica.","Seguridad alimentaria.","Seguridad ambiental.","Seguridad política."],"r":0,"exp":""},{"p":"¿Qué comprende la seguridad personal?","o":["La ausencia de violencia física.","El acceso a alimentos.","La protección del medio ambiente.","La estabilidad monetaria.","La identidad cultural."],"r":0,"exp":""},{"p":"¿Cuál es la finalidad primordial del Ejército del Perú según la Constitución citada en el MD 1-0?","o":["Garantizar la independencia, la soberanía y la integridad territorial de la República.","Administrar la política económica nacional.","Dirigir la política exterior.","Controlar exclusivamente la seguridad ciudadana.","Administrar el sistema educativo nacional."],"r":0,"exp":""},{"p":"¿Cuál es la visión del Ejército del Perú?","o":["Ser un Ejército disuasivo, reconocido, respetado e integrado a la sociedad.","Ser exclusivamente una fuerza de combate.","Ser una institución exclusivamente tecnológica.","Ser una organización sin presencia nacional.","Ser una fuerza subordinada a gobiernos extranjeros."],"r":0,"exp":""},{"p":"¿Cuál es la misión del Ejército del Perú según el MD 1-0?","o":["Defender a la nación y los intereses nacionales de cualquier amenaza o agresión empleando el poder militar terrestre; participar además en desarrollo económico y social, orden interno, defensa civil y política exterior de acuerdo a ley.","Realizar únicamente operaciones de guerra convencional.","Controlar exclusivamente las fronteras.","Administrar todos los sectores del Estado.","Participar únicamente en ayuda humanitaria."],"r":0,"exp":""},{"p":"¿Qué órgano constituye el Alto Mando del Ejército?","o":["El Comandante General del Ejército, el Jefe del Estado Mayor General del Ejército y el Inspector General del Ejército.","El Ministro de Defensa, el Presidente y el Congreso.","El Jefe del CCFFAA y los comandantes de las regiones.","Solo el Comandante General.","Los órganos consultivos."],"r":0,"exp":""},{"p":"¿Qué función principal tiene el Estado Mayor General del Ejército?","o":["Realizar el planeamiento estratégico institucional, formular la programación y supervisar la ejecución presupuestal y objetivos institucionales.","Ejercer exclusivamente la defensa jurídica.","Realizar únicamente operaciones aéreas.","Controlar exclusivamente hospitales.","Administrar los colegios civiles."],"r":0,"exp":""},{"p":"¿Qué órgano realiza funciones de control, supervisión e investigación de asuntos militares, operacionales y disciplinarios?","o":["La Inspectoría General del Ejército.","La Procuraduría Pública.","El Comando Logístico.","La Dirección de Salud.","La Dirección de Relaciones Internacionales."],"r":0,"exp":""},{"p":"¿Cuáles son los órganos consultivos del Ejército mencionados en el MD 1-0?","o":["Consejo Superior del Ejército, Consejo Consultivo del Ejército y Comité Económico del Ejército.","Consejo de Seguridad, Congreso y Senado.","Comité de Inteligencia, Comité de Salud y Comité de Educación.","Consejo Nacional de Defensa, Consejo de Ministros y Congreso.","Solo el Consejo Superior del Ejército."],"r":0,"exp":""},{"p":"¿Qué órgano ejerce la defensa jurídica del Ejército del Perú?","o":["La Procuraduría Pública del Ejército del Perú.","La Inspectoría General.","El Estado Mayor General.","El Comando Logístico.","El CCFFAA."],"r":0,"exp":""},{"p":"¿Qué órgano ejecuta operaciones aéreas según las necesidades de las dependencias del Ejército o como elemento de maniobra de los comandos operacionales?","o":["La Aviación del Ejército.","La División de Ejército.","El Comando Logístico.","La Procuraduría.","El Estado Mayor."],"r":0,"exp":""},{"p":"¿Qué órgano garantiza las operaciones militares en ciberdefensa y telemática?","o":["El Comando de Ciberdefensa y Telemática del Ejército.","La Aviación del Ejército.","La Inspectoría General.","La Procuraduría Pública.","El Comité Económico."],"r":0,"exp":""},{"p":"¿Cuál es uno de los cinco roles estratégicos institucionales del Ejército relacionado con: impedir intentos de agentes internos o externos de imponer su voluntad en el territorio y salvaguardar los intereses nacionales?","o":["Garantizar la independencia, soberanía e integridad territorial","Administrar la política monetaria","Dirigir el sistema educativo nacional","Regular el transporte civil","Gestionar los gobiernos locales"],"r":0,"exp":""},{"p":"¿Cuál es uno de los cinco roles estratégicos institucionales del Ejército relacionado con: participar en el mantenimiento y control del orden interno durante estados de excepción?","o":["Participar en el orden interno","Administrar la política monetaria","Dirigir el sistema educativo nacional","Regular el transporte civil","Gestionar los gobiernos locales"],"r":0,"exp":""},{"p":"¿Cuál es uno de los cinco roles estratégicos institucionales del Ejército relacionado con: participar mediante preparación permanente y respuesta inmediata ante desastres y emergencias?","o":["Participar en el Sistema Nacional de Gestión del Riesgo de Desastres","Administrar la política monetaria","Dirigir el sistema educativo nacional","Regular el transporte civil","Gestionar los gobiernos locales"],"r":0,"exp":""},{"p":"¿Cuál es uno de los cinco roles estratégicos institucionales del Ejército relacionado con: participar con otros sectores del Estado en políticas públicas para el desarrollo económico, social y sostenible?","o":["Participar en el desarrollo nacional","Administrar la política monetaria","Dirigir el sistema educativo nacional","Regular el transporte civil","Gestionar los gobiernos locales"],"r":0,"exp":""},{"p":"¿Cuál es uno de los cinco roles estratégicos institucionales del Ejército relacionado con: participar en operaciones, acciones militares y otras actividades internacionales en apoyo de la política exterior y los intereses nacionales?","o":["Participar en la política exterior","Administrar la política monetaria","Dirigir el sistema educativo nacional","Regular el transporte civil","Gestionar los gobiernos locales"],"r":0,"exp":""},{"p":"¿Qué rol estratégico comprende la preparación permanente y respuesta inmediata ante situaciones de desastre y emergencia?","o":["Participar en el Sistema Nacional de Gestión del Riesgo de Desastres","Participar en política exterior","Participar en el orden interno","Participar en desarrollo nacional","Garantizar independencia, soberanía e integridad territorial"],"r":0,"exp":""},{"p":"¿Qué rol estratégico comprende operaciones y entrenamientos combinados de defensa hemisférica, regional y subregional?","o":["Participar en la política exterior","Participar en el desarrollo nacional","Participar en el orden interno","Participar en gestión del riesgo","Garantizar la integridad territorial"],"r":0,"exp":""},{"p":"¿Qué rol incluye apoyar a la PNP ante situaciones de violencia en zonas declaradas en estado de emergencia?","o":["Participar en el orden interno","Participar en política exterior","Participar en desarrollo nacional","Participar en gestión del riesgo","Garantizar la integridad territorial"],"r":0,"exp":""},{"p":"¿Qué rol incluye la construcción de infraestructura vial priorizando zonas de menor desarrollo?","o":["Participar en el desarrollo nacional","Participar en política exterior","Participar en orden interno","Participar en gestión del riesgo","Garantizar independencia y soberanía"],"r":0,"exp":""},{"p":"¿Qué rol incluye participar en operaciones para el mantenimiento de la paz en el marco de la ONU?","o":["Participar en la política exterior","Participar en el orden interno","Participar en el desarrollo nacional","Participar en gestión del riesgo","Garantizar integridad territorial"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una función del Ejército del Perú?","o":["Ejercer el control, la vigilancia y la defensa del territorio nacional.","Dirigir la política monetaria.","Administrar el Poder Judicial.","Regular los medios de comunicación.","Gestionar exclusivamente la educación civil."],"r":0,"exp":""},{"p":"¿Qué función tiene el Ejército respecto al Sistema de Vigilancia de Fronteras?","o":["Participa en su implementación y conducción.","Lo administra exclusivamente el sector privado.","No tiene participación.","Lo dirige el Ministerio de Educación.","Lo ejecuta únicamente la ONU."],"r":0,"exp":""},{"p":"¿Qué función cumple el Ejército respecto a la industria militar?","o":["La promueve e impulsa.","La privatiza obligatoriamente.","La elimina.","La transfiere a gobiernos extranjeros.","La limita a actividades civiles."],"r":0,"exp":""},{"p":"¿Qué es una capacidad militar según el MD 1-0?","o":["La habilidad resultante de integrar un conjunto de factores que permite aplicar procedimientos operativos para lograr un efecto militar deseado.","Una lista de personal disponible.","Un inventario de armamento.","Una norma administrativa.","Una unidad militar específica."],"r":0,"exp":""},{"p":"¿Cuáles son las dos grandes categorías de capacidades militares?","o":["Capacidades fundamentales y capacidades operacionales.","Capacidades civiles y policiales.","Capacidades aéreas y marítimas.","Capacidades estratégicas y diplomáticas.","Capacidades administrativas y judiciales."],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (1)","o":["Comando y control","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (2)","o":["Inteligencia","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (3)","o":["Movimiento y maniobra","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (4)","o":["Fuegos","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (5)","o":["Protección","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes es una capacidad fundamental del Ejército? (6)","o":["Sostenimiento","Turismo militar","Política monetaria","Administración judicial","Comercio exterior"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a las capacidades operacionales de comando y control?","o":["Mando y planificación","Protección antiaérea","Apoyo de sanidad","Adquisición de blancos","Movilidad y contramovilidad"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a las capacidades operacionales de inteligencia?","o":["Colección","Ataque físico","Apoyo logístico","Protección electrónica","Movilidad"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a movimiento y maniobra?","o":["Movilidad y contramovilidad","Contrainteligencia","Apoyo de sanidad","Adquisición de blancos","Ciberdefensa"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a fuegos?","o":["Adquisición de blancos","Mando y planificación","Movilización","Protección del área de operaciones","Cooperación cívico-militar"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a sostenimiento?","o":["Apoyo logístico","Guerra psicológica","Reconocimiento y vigilancia","Ataque físico","Protección antiaérea"],"r":0,"exp":""},{"p":"¿Cuál de las siguientes pertenece a protección?","o":["Ciberdefensa y seguridad de la información","Colección","Maniobra","Mando y planificación","Apoyo al despliegue"],"r":0,"exp":""},{"p":"¿Cómo define el MD 1-0 la guerra en términos generales?","o":["Como un fenómeno social de gran repercusión en el ser humano.","Como una actividad exclusivamente tecnológica.","Como un fenómeno sin dimensión humana.","Como una actividad económica.","Como una actividad exclusivamente diplomática."],"r":0,"exp":""},{"p":"¿De qué palabra latina proviene etimológicamente 'militar'?","o":["Militaris","Solidus","Principium","Vocationis","Debere"],"r":0,"exp":""},{"p":"¿Qué significa el prefijo latino 'miles' en la explicación etimológica de militar?","o":["Persona enlistada en un ejército.","Moneda de oro.","Acción de llamar.","Obligación legal.","Principio moral."],"r":0,"exp":""},{"p":"¿Qué es la guerra según la cita atribuida a Carl von Clausewitz en el MD 1-0?","o":["Un acto de fuerza para imponer nuestra voluntad al adversario.","Un proceso administrativo.","Una actividad exclusivamente defensiva.","Una forma de cooperación internacional.","Una actividad económica."],"r":0,"exp":""},{"p":"¿Cuál es la relación entre guerra y política presentada mediante la cita de Clausewitz?","o":["La guerra corresponde al ejercicio continuado de la política por otros medios.","La guerra elimina toda relación con la política.","La política es consecuencia de la guerra.","La guerra es exclusivamente económica.","La política solo existe después de la guerra."],"r":0,"exp":""},{"p":"¿Cuál es el fin supremo de la vocación, formación, preparación y carrera militar?","o":["El dominio del arte de la guerra para satisfacer los requerimientos de la defensa nacional.","La administración pública civil.","El desarrollo empresarial privado.","La diplomacia económica.","La investigación histórica exclusivamente."],"r":0,"exp":""},{"p":"¿Qué dos características son señaladas como fundamentales para la vocación militar?","o":["Disciplina y patriotismo.","Inteligencia y logística.","Tecnología y economía.","Diplomacia y comercio.","Velocidad y movilidad."],"r":0,"exp":""},{"p":"¿Qué relación establece el MD 1-0 entre patriotismo e identidad?","o":["El patriotismo viene de la identidad; la identidad nace de la historia.","El patriotismo es independiente de la identidad.","La identidad nace únicamente de la tecnología.","El patriotismo se origina en la economía.","La historia no influye en la identidad."],"r":0,"exp":""},{"p":"¿Cuál es la primera finalidad de la educación del Ejército?","o":["Formar, especializar y perfeccionar profesionalmente a su personal en lo intelectual, cultural, psicofísico, ético y moral.","Capacitar exclusivamente en armamento.","Preparar solamente para funciones administrativas.","Formar exclusivamente en idiomas.","Desarrollar solo capacidades físicas."],"r":0,"exp":""},{"p":"¿Qué instituciones y unidades tienen responsabilidad en la formación militar según el documento?","o":["Las instituciones educativas del Ejército (COEDE) y las diferentes unidades de tropa.","Solo las universidades civiles.","Solo el Ministerio de Educación.","Solo las unidades de combate.","Solo el Estado Mayor."],"r":0,"exp":""},{"p":"¿De qué palabra latina proviene históricamente el término 'soldado' según el MD 1-0?","o":["Solidatus","Militaris","Vocationis","Debere","Principium"],"r":0,"exp":""},{"p":"¿De qué palabra procede 'solidatus' en la explicación etimológica de soldado?","o":["Solidus, una moneda de oro.","Miles, persona enlistada.","Vocationis, acción de llamar.","Debere, obligación.","Aris, pertenencia."],"r":0,"exp":""},{"p":"¿Cómo se define la moral del soldado en el MD 1-0?","o":["Como la psicología del soldado.","Como una norma jurídica.","Como un reglamento administrativo.","Como un tipo de armamento.","Como una operación militar."],"r":0,"exp":""},{"p":"¿Qué componente es considerado importante para la moral del soldado?","o":["El valor.","La riqueza.","La diplomacia.","La antigüedad.","La tecnología civil."],"r":0,"exp":""},{"p":"¿Qué principios se relacionan con la moral del soldado?","o":["Disciplina, patriotismo y deber.","Comercio, diplomacia y economía.","Velocidad, logística y aviación.","Historia, geografía y estadística.","Tecnología, ciencia y turismo."],"r":0,"exp":""},{"p":"¿A qué se refiere la carrera militar?","o":["A la trayectoria que recorre todo militar en el campo profesional, prestando servicios y adquiriendo conocimientos y competencias.","A una sola etapa de instrucción básica.","A una actividad exclusivamente administrativa.","A una carrera civil universitaria.","A una función temporal sin capacitación."],"r":0,"exp":""},{"p":"¿Cómo conceptualiza el MD 1-0 la ética militar?","o":["Como la expresión de principios, valores y deberes que orientan las acciones de los integrantes de la Institución.","Como un reglamento exclusivamente disciplinario.","Como una técnica de combate.","Como una política económica.","Como una actividad de inteligencia."],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Respeto por la Constitución y las leyes","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Respeto por los DDHH y el DIH","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Honor militar","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Ética en el actuar","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Compromiso y fe institucional","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuál de los siguientes es un principio militar señalado en el MD 1-0?","o":["Perseverancia y abnegación","Interés particular","Competencia comercial","Neutralidad diplomática","Rentabilidad económica"],"r":0,"exp":""},{"p":"¿Cuántos macro valores posee el Ejército del Perú según el MD 1-0?","o":["Cuatro.","Tres.","Cinco.","Seis.","Ocho."],"r":0,"exp":""},{"p":"¿Cuál es un valor inherente al macro valor «Vocación de servicio»?","o":["Coraje","Economía","Comercio","Diplomacia","Competencia"],"r":0,"exp":""},{"p":"¿Cuál es un valor inherente al macro valor «Disciplina»?","o":["Responsabilidad","Economía","Comercio","Diplomacia","Competencia"],"r":0,"exp":""},{"p":"¿Cuál es un valor inherente al macro valor «Integridad»?","o":["Veracidad","Economía","Comercio","Diplomacia","Competencia"],"r":0,"exp":""},{"p":"¿Cuál es un valor inherente al macro valor «Compromiso con la excelencia»?","o":["Liderazgo","Economía","Comercio","Diplomacia","Competencia"],"r":0,"exp":""},{"p":"¿Qué macro valor comprende los siguientes valores: coraje, perseverancia, entrega, espíritu de servicio, patriotismo?","o":["Vocación de servicio","Seguridad nacional","Defensa civil","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué macro valor comprende los siguientes valores: responsabilidad, obediencia, justicia, puntualidad, respeto?","o":["Disciplina","Seguridad nacional","Defensa civil","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué macro valor comprende los siguientes valores: veracidad, honor, dignidad, honestidad, solidaridad?","o":["Integridad","Seguridad nacional","Defensa civil","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué macro valor comprende los siguientes valores: liderazgo, identidad, iniciativa, superación?","o":["Compromiso con la excelencia","Seguridad nacional","Defensa civil","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Cuál es el pilar fundamental de toda institución armada y la columna vertebral de la formación militar?","o":["La disciplina.","La economía.","La diplomacia.","La tecnología.","La política exterior."],"r":0,"exp":""},{"p":"¿Qué caracteriza a la integridad según el MD 1-0?","o":["Actuar con honor y rectitud, con devoción por la honestidad, sinceridad y cumplimiento del deber.","Buscar beneficios personales antes que el deber.","Evitar asumir responsabilidades.","Actuar solo cuando alguien observa.","Priorizar intereses particulares."],"r":0,"exp":""},{"p":"¿Qué caracteriza al compromiso con la excelencia?","o":["El deseo de superación que impulsa a estar moral, física, intelectual y técnicamente preparado y orientado a la mejora continua.","La reducción de la capacitación.","La ausencia de innovación.","La priorización de intereses personales.","La eliminación de estándares."],"r":0,"exp":""},{"p":"¿Qué es la confianza para la efectividad del Ejército según el documento?","o":["La esencia de la efectividad del Ejército y fundamento de la profesión militar.","Una actividad administrativa secundaria.","Un requisito exclusivamente económico.","Un concepto ajeno a los valores.","Una técnica de combate."],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de actuar con absoluta imparcialidad, independencia y autonomía?","o":["Neutralidad","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de guardar reserva respecto de hechos o informaciones conocidos por razón de jerarquía o cargo?","o":["Discreción","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de respetar y cumplir la Constitución, leyes, normas y disposiciones vigentes y no procurar beneficios indebidos?","o":["Adecuado ejercicio de la jerarquía o del cargo","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de presentar la declaración al inicio, durante y al término de la gestión, según corresponda?","o":["Declaración jurada de ingresos, bienes y rentas","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de utilizar responsablemente el tiempo oficial para cumplir las funciones de manera eficiente y eficaz?","o":["Adecuado uso del tiempo de trabajo","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de abstenerse de difundir información confidencial, reservada o secreta y no usarla para beneficios personales?","o":["Adecuado uso de la información","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de denunciar ante el superior o autoridad correspondiente los actos ilícitos o indebidos conocidos por razón de las funciones?","o":["Obligación de denunciar","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué deber militar corresponde a la obligación de cumplir medidas activas y pasivas de inteligencia y contrainteligencia para proteger la institución y la misión?","o":["Seguridad","Vocación de servicio","Operaciones conjuntas","Política exterior","Desarrollo nacional"],"r":0,"exp":""},{"p":"¿Qué dos características tiene el deber militar según Lazo (1989), citado en el MD 1-0?","o":["Universal y absoluto.","Temporal y voluntario.","Civil y militar.","Interno y externo.","Táctico y estratégico."],"r":0,"exp":""},{"p":"¿Qué significa que el deber militar sea universal?","o":["Que se da en todos y cada uno de los militares y todo militar reconoce la existencia del deber y la obligación de cumplirlo.","Que depende de la voluntad personal.","Que solo aplica a oficiales.","Que solo aplica en guerra.","Que solo aplica a unidades de combate."],"r":0,"exp":""},{"p":"¿Qué significa que el deber militar sea absoluto?","o":["Que es una norma imperativa que no depende de la voluntad del militar y, asumido el deber, ningún motivo lo exime de cumplirlo.","Que puede modificarse libremente.","Que solo rige en tiempo de guerra.","Que depende del cargo.","Que aplica solo a superiores."],"r":0,"exp":""},{"p":"¿Cómo es la formación del líder militar según el MD 1-0?","o":["Permanente y progresiva a lo largo de la carrera, en dimensiones individual y organizacional.","Únicamente durante la formación inicial.","Solo mediante experiencia de combate.","Solo en cursos civiles.","Únicamente después del ascenso."],"r":0,"exp":""},{"p":"¿Qué es un comandante?","o":["El militar que ejerce el mando de una fuerza, cualquiera sea su magnitud o naturaleza.","Solo el oficial de mayor antigüedad.","El encargado exclusivo de logística.","Un funcionario civil.","Un integrante de la policía."],"r":0,"exp":""},{"p":"¿Cuántos aspectos involucra el modelo de liderazgo del Ejército?","o":["Seis.","Cuatro.","Cinco.","Siete.","Ocho."],"r":0,"exp":""},{"p":"¿Cuál es uno de los seis aspectos del modelo de liderazgo del Ejército?","o":["Filosofía de liderazgo.","Política monetaria.","Administración civil.","Comercio exterior.","Geografía nacional."],"r":0,"exp":""},{"p":"¿En qué tipo de políticas públicas participa el Ejército para contribuir al desarrollo nacional?","o":["Políticas que contribuyan al desarrollo económico, social y sostenible del país.","Solo políticas tributarias.","Solo políticas educativas.","Solo políticas monetarias.","Solo políticas comerciales."],"r":0,"exp":""},{"p":"¿Qué actividad realiza el Ejército para apoyar la integración nacional?","o":["Construcción de infraestructura vial, priorizando zonas de menor desarrollo e incorporando poblaciones vulnerables.","Administración de puertos comerciales.","Emisión de moneda.","Gestión de bancos.","Regulación de empresas privadas."],"r":0,"exp":""},{"p":"¿Qué acción realiza el Ejército respecto a la Amazonía?","o":["Contribuye a proteger la intangibilidad de sus recursos y participa en políticas para su desarrollo y defensa del medio ambiente.","La administra como territorio extranjero.","La excluye de sus funciones.","La destina exclusivamente a operaciones militares.","La transfiere a gobiernos regionales."],"r":0,"exp":""},{"p":"¿Qué acciones de primera respuesta ante desastres se mencionan?","o":["Control y seguridad terrestre, sistema de comando de incidentes, evaluación de daños, transporte, evacuaciones y telecomunicaciones de emergencia.","Solo construcción de cuarteles.","Solo operaciones aéreas ofensivas.","Solo actividades diplomáticas.","Solo entrega de documentos."],"r":0,"exp":""},{"p":"¿Qué acciones de respuesta complementaria ante desastres se mencionan?","o":["Distribución de bienes de ayuda comunitaria, atención hospitalaria, albergues, remoción de escombros y habilitación de vías.","Solo vigilancia fronteriza.","Solo entrenamiento militar.","Solo actividades internacionales.","Solo investigación histórica."],"r":0,"exp":""},{"p":"¿Qué participación internacional realiza el Ejército en el marco de la ONU?","o":["Participa en operaciones para el mantenimiento de la paz.","Dirige la Asamblea General.","Administra el Consejo de Seguridad.","Controla las fronteras de otros países.","Redacta tratados económicos."],"r":0,"exp":""},{"p":"¿Qué actividad internacional realiza el Ejército respecto a ciudadanos afectados por crisis o desastres en el extranjero?","o":["Operaciones de evacuación de conciudadanos.","Operaciones de control tributario.","Administración de embajadas.","Emisión de pasaportes.","Regulación comercial."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Acción cívica»?","o":["Conjunto de actividades que las FFAA realizan en apoyo de la población y en participación en el desarrollo social, cultural y económico del país.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Acción multisectorial»?","o":["Integración, cooperación y sincronización de actividades de dos o más sectores del Estado, bajo coordinación o regulación de una autoridad designada.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Ambiente operacional»?","o":["Combinación de condiciones, circunstancias e influencias que afectan el empleo de capacidades militares e inciden en las decisiones del comandante y la potencia combativa.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Armas combinadas»?","o":["Empleo sincronizado y simultáneo de armas de combate u otros elementos del poder de combate para lograr un efecto mayor que empleándolos por separado.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Ciberespacio»?","o":["Dominio global dentro del entorno de información compuesto por una red interdependiente de infraestructuras de TI y datos residentes.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Comando y control»?","o":["Ejercicio de autoridad y dirección de un comandante debidamente designado sobre fuerzas agregadas y asignadas.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Conflicto social»?","o":["Proceso complejo en el cual sectores de la sociedad, el Estado y/o empresas perciben posiciones, intereses, objetivos, valores, creencias o necesidades contradictorios, con posibilidad de violencia.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Defensa civil»?","o":["Conjunto de medidas permanentes destinadas a prevenir y reducir riesgos y atender y reparar daños causados por desastres o calamidades.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Defensa nacional»?","o":["Conjunto de previsiones y acciones que adopta el Gobierno para permitir la supervivencia y permanencia del Estado y alcanzar objetivos nacionales pese a antagonismos o presiones.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Desarrollo nacional»?","o":["Proceso de crecimiento sostenido y sustentable del Poder Nacional realizado por el Estado para alcanzar el bienestar general.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Desarrollo sostenible»?","o":["Mejora que satisface las necesidades presentes sin comprometer las capacidades de generaciones futuras.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Deontología»?","o":["Rama de la ética que trata de los deberes, especialmente de los que rigen actividades profesionales.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Ejército multimisión»?","o":["Resultado de una metodología para diseñar estructura y magnitud de una fuerza moderna, modular y polivalente, organizada bajo el principio de armas combinadas.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Interoperabilidad»?","o":["Capacidad de una fuerza o sistema para proporcionar o recibir servicios de otra fuerza o sistema según la misión asignada, operando conjunta y efectivamente.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Interoperatividad»?","o":["Capacidad de una fuerza para operar coordinada y simultáneamente con otras de igual o diferentes armas, en operaciones conjuntas o combinadas, para objetivos comunes.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Movimiento y maniobra»?","o":["Conjunto de tareas y sistemas que mueve y emplea fuerzas para ganar una posición de ventaja relativa mediante movimiento combinado con fuego directo y combate cercano.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Orden interno»?","o":["Situación en la cual está garantizada la estabilidad y normal funcionamiento de la institucionalidad político-jurídica del Estado dentro del estado de derecho.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Roles estratégicos»?","o":["Propósito que el Estado asigna al Ejército, concretado en misiones mediante planeamiento que considera concepción estratégica y empleo de capacidades militares.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Soberanía»?","o":["Poder de mando que tiene la sociedad para elegir o decidir espontáneamente su destino a través de organismos gubernamentales previstos por las leyes.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"Según el glosario del MD 1-0, ¿qué es «Terrorismo»?","o":["Conjunto de acciones violentas o uso calculado de violencia ilícita o amenaza de violencia ilícita para provocar temor, coacción o intimidación con objetivos generalmente políticos, religiosos o ideológicos.","Una actividad exclusivamente administrativa sin relación con seguridad o defensa.","Una función reservada únicamente a entidades privadas.","Un concepto referido solo a la política económica.","Una actividad limitada al tiempo de guerra."],"r":0,"exp":""},{"p":"¿Qué significa la sigla «CCFFAA» según el MD 1-0?","o":["Comando Conjunto de las Fuerzas Armadas","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «CEPLAN» según el MD 1-0?","o":["Centro Nacional de Planeamiento Estratégico","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «OCDE» según el MD 1-0?","o":["Organización para la Cooperación y Desarrollo Económicos","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «SINAGERD» según el MD 1-0?","o":["Sistema Nacional de Gestión del Riesgo de Desastres","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «VRAEM» según el MD 1-0?","o":["Valle de los ríos Apurímac, Ene y Mantaro","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «RPAs» según el MD 1-0?","o":["Sistema de aeronave pilotada a distancia","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «FFAA» según el MD 1-0?","o":["Fuerzas Armadas","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «MINDEF» según el MD 1-0?","o":["Ministerio de Defensa","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «ONU» según el MD 1-0?","o":["Organización de las Naciones Unidas","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Qué significa la sigla «PNP» según el MD 1-0?","o":["Policía Nacional del Perú","Ministerio de Defensa y Ejército","Sistema Nacional de Inteligencia","Comando de Operaciones Terrestres","Centro de Educación Militar"],"r":0,"exp":""},{"p":"¿Cuántos capítulos tiene el MD 1-0, además de una introducción y tres anexos?","o":["Seis.","Cuatro.","Cinco.","Siete.","Ocho."],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 1 del MD 1-0?","o":["Nuestro servicio a la seguridad y defensa nacional","El Ejército del futuro","La profesión militar y su base filosófica","Participación en política exterior","Nuestra historia y las guerras"],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 2?","o":["Nuestra misión y los roles estratégicos que nos asigna el Estado","Seguridad nacional","Ética militar","Política exterior","Ejército del futuro"],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 3?","o":["La profesión militar y su base filosófica","El Ejército del futuro","Seguridad nacional","Desarrollo nacional","Política exterior"],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 4?","o":["Nuestra contribución en el desarrollo nacional y en la gestión del riesgo de desastres","Participación en política exterior","La profesión militar","El Ejército del futuro","Seguridad nacional"],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 5?","o":["Participación en la política exterior","Seguridad nacional","Desarrollo nacional","Ética militar","Capacidades militares"],"r":0,"exp":""},{"p":"¿Qué tema corresponde al Capítulo 6?","o":["El Ejército del futuro","La defensa nacional","La profesión militar","El orden interno","El glosario"],"r":0,"exp":""},{"p":"¿Qué doctrina sustenta el Concepto Fundamental de Empleo mencionado en el prólogo?","o":["La doctrina Wiracocha.","La doctrina Ottawa.","La doctrina Ciber.","La doctrina Antártica.","La doctrina Multisectorial."],"r":0,"exp":""},{"p":"¿Qué publicación constituye la piedra angular de la doctrina Wiracocha según el prólogo?","o":["El Manual Directriz 1-0.","El Manual Directriz 2-0.","El Manual Directriz 3-0.","El reglamento disciplinario.","El manual de logística."],"r":0,"exp":""}];
+// Los bancos permanecen separados: nunca se mezclan Sinónimos y Manual MD 1-0.
+let modoActual = null;
+let bancoActual = [];
 let preguntas = [];
+let preguntasRestantes = [];
 let idxActual = 0;
 let puntaje = 0;
 let racha = 0;
-let mejorRacha = 0;
-let correctas = 0;
-let incorrectas = 0;
 let bloqueado = false;
 let iniciado = false;
-let modoActual = "sinonimos";
-let bancoActual = bancoPreguntas;
-
 const txtProgreso = document.getElementById("txt-progreso");
 const txtPuntaje = document.getElementById("txt-puntaje");
 const txtRacha = document.getElementById("txt-racha");
@@ -440,208 +454,155 @@ const alertaRespuestaCorrecta = document.getElementById("alerta-respuesta-correc
 const analisisTexto = document.getElementById("analisis-texto");
 const btnSiguiente = document.getElementById("btn-siguiente");
 const btnIniciar = document.getElementById("btn-iniciar");
-const barraProgreso = document.getElementById("barra-progreso");
-const tituloTest = document.getElementById("titulo-test");
-const sourceNote = document.getElementById("source-note");
-const modoSinonimos = document.getElementById("modo-sinonimos");
-const modoManual = document.getElementById("modo-manual");
-const inicioScreen = document.getElementById("inicio-screen");
-const quizScreen = document.getElementById("quiz-screen");
-const selectionStatus = document.getElementById("selection-status");
+const selectorModo = document.getElementById("selector-modo");
+const panelExamen = document.getElementById("panel-examen");
+const tituloPrincipal = document.getElementById("titulo-principal");
+const modoActualTexto = document.getElementById("modo-actual");
+const btnCambiarModo = document.getElementById("btn-cambiar-modo");
 
 function mezclar(array) {
-    const copia = [...array];
-    for (let i = copia.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copia[i], copia[j]] = [copia[j], copia[i]];
-    }
-    return copia;
+  const copia = [...array];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia;
 }
 
-function prepararPregunta(item) {
-    const opciones = item.o.map((texto, indiceOriginal) => ({
-        texto: String(texto).replace(/^\s*[A-E]\)\s*/i, ""),
-        correcta: indiceOriginal === item.r
-    }));
-    const mezcladas = mezclar(opciones);
-    return {
-        ...item,
-        o: mezcladas.map(x => x.texto),
-        r: mezcladas.findIndex(x => x.correcta)
-    };
-}
+function obtenerSignificado(item) { return item.a || "Significado no disponible en el banco."; }
 
-function seleccionarModo(modo) {
-    if (iniciado) return;
-    modoActual = modo;
-    bancoActual = modo === "manual" ? bancoManual : bancoPreguntas;
-    modoSinonimos.classList.toggle("active", modo === "sinonimos");
-    modoManual.classList.toggle("active", modo === "manual");
-
-    if (modo === "manual") {
-        tituloTest.textContent = "📘 Test Manual MD 1-0";
-        selectionStatus.innerHTML = "Modalidad seleccionada: <strong>Manual MD 1-0</strong>";
-        sourceNote.textContent = "Preguntas basadas en el Manual Directriz MD 1-0, Ejército del Perú, edición 2021.";
-        btnIniciar.textContent = "▶️ Comenzar Test del Manual";
-    } else {
-        tituloTest.textContent = "🔤 Test de Sinónimos";
-        selectionStatus.innerHTML = "Modalidad seleccionada: <strong>Sinónimos</strong>";
-        sourceNote.textContent = "Banco de 250 preguntas de sinónimos.";
-        btnIniciar.textContent = "▶️ Comenzar Test de Sinónimos";
-    }
-}
-
-function iniciarTest() {
-    preguntas = mezclar(bancoActual).slice(0, Math.min(50, bancoActual.length)).map(prepararPregunta);
-    idxActual = 0;
-    puntaje = 0;
-    racha = 0;
-    mejorRacha = 0;
-    correctas = 0;
-    incorrectas = 0;
-    bloqueado = false;
-    iniciado = true;
-
-    inicioScreen.classList.add("hidden");
-    quizScreen.classList.remove("hidden");
-    txtPuntaje.textContent = "✨ Puntos: 0";
-    txtRacha.textContent = "🔥 Racha: 0";
-    btnSiguiente.style.display = "none";
-    cargarPregunta();
+function prepararOpciones(item) {
+  const opciones = item.o.map((texto, indiceOriginal) => ({ texto: texto.replace(/^[A-E]\)\s*/i, ""), indiceOriginal }));
+  const mezcladas = mezclar(opciones);
+  item._opciones = mezcladas.map((x, i) => ({ etiqueta: String.fromCharCode(65 + i), texto: x.texto, indiceOriginal: x.indiceOriginal }));
+  item._respuesta = item._opciones.findIndex(x => x.indiceOriginal === item.r);
 }
 
 function cargarPregunta() {
-    if (!iniciado) return;
-    if (idxActual >= preguntas.length) return mostrarResultado();
-
-    bloqueado = false;
-    feedbackTexto.className = "feedback";
-    feedbackTexto.textContent = "";
-    alertaRespuestaCorrecta.style.display = "none";
-    contenedorAnalisis.style.display = "none";
-    btnSiguiente.style.display = "none";
-    btnSiguiente.textContent = "➡️ Siguiente pregunta";
-    listaOpciones.innerHTML = "";
-
-    const item = preguntas[idxActual];
-    txtProgreso.textContent = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
-    barraProgreso.style.width = `${(idxActual / preguntas.length) * 100}%`;
-
-    // No se muestra la numeración original del banco.
-    preguntaTexto.textContent = item.p;
-
-    item.o.forEach((opcion, index) => {
-        const boton = document.createElement("button");
-        boton.className = "option-btn";
-        boton.innerHTML = `<strong>${String.fromCharCode(65 + index)})</strong> ${opcion}`;
-        boton.onclick = () => verificarRespuesta(index, boton);
-        listaOpciones.appendChild(boton);
-    });
+  if (!iniciado) return;
+  if (idxActual >= preguntas.length) { mostrarResultado(); return; }
+  bloqueado = false;
+  const item = preguntas[idxActual];
+  prepararOpciones(item);
+  feedbackTexto.className = "feedback";
+  feedbackTexto.innerHTML = "";
+  alertaRespuestaCorrecta.style.display = "none";
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "none";
+  listaOpciones.innerHTML = "";
+  txtProgreso.textContent = `Pregunta: ${idxActual + 1}/${preguntas.length}`;
+  preguntaTexto.textContent = item.p;
+  item._opciones.forEach((opcion, index) => {
+    const boton = document.createElement("button");
+    boton.className = "option-btn";
+    boton.innerHTML = `<strong>${opcion.etiqueta})</strong> ${opcion.texto}`;
+    boton.onclick = () => verificarRespuesta(index, boton);
+    listaOpciones.appendChild(boton);
+  });
 }
 
 function mostrarResultado() {
-    const total = preguntas.length;
-    const porcentaje = total ? Math.round((correctas / total) * 100) : 0;
-    const nota = total ? ((correctas / total) * 20).toFixed(1) : "0.0";
-    const nivel = porcentaje >= 90 ? "🏆 Excelente desempeño" :
-                  porcentaje >= 70 ? "👏 Muy buen resultado" :
-                  porcentaje >= 50 ? "📚 Buen comienzo, sigue practicando" :
-                  "💪 Sigue practicando y mejorarás";
-
-    txtProgreso.textContent = `🏁 Test terminado: ${total}/${total}`;
-    barraProgreso.style.width = "100%";
-    preguntaTexto.textContent = modoActual === "manual" ? "🎉 ¡Completaste el test del Manual MD 1-0!" : "🎉 ¡Completaste el test de sinónimos!";
-    listaOpciones.innerHTML = "";
-    contenedorAnalisis.style.display = "none";
-    feedbackTexto.className = "feedback success";
-    feedbackTexto.innerHTML = `
-        <div class="resultado-final">
-            <h2>📊 Resultado final</h2>
-            <div class="nota-grande">${nota}/20</div>
-            <div class="subtitulo">${modoActual === "manual" ? "Manual MD 1-0 • edición 2021" : "Test de Sinónimos"}</div>
-            <div class="result-bar"><div style="width:${porcentaje}%"></div></div>
-            <p><strong>${porcentaje}% de aciertos</strong></p>
-            <div class="result-grid">
-                <div class="result-card"><strong>${correctas}</strong><span>✅ Correctas</span></div>
-                <div class="result-card"><strong>${incorrectas}</strong><span>❌ Incorrectas</span></div>
-                <div class="result-card"><strong>${mejorRacha}</strong><span>🔥 Mejor racha</span></div>
-                <div class="result-card"><strong>${puntaje}</strong><span>✨ Puntos</span></div>
-            </div>
-            <div class="result-message">${nivel}</div>
-        </div>`;
-
-    btnSiguiente.style.display = "block";
-    btnSiguiente.textContent = "🔄 Hacer otro test";
-    btnSiguiente.onclick = reiniciarSeleccion;
+  const total = preguntas.length;
+  const buenas = Math.round(puntaje / 10);
+  const malas = total - buenas;
+  const porcentajeBuenas = Math.round((buenas / total) * 100);
+  const porcentajeMalas = Math.round((malas / total) * 100);
+  const nota = (buenas / total * 20).toFixed(1);
+  txtProgreso.textContent = `🏁 Ronda terminada: ${total}/${total}`;
+  preguntaTexto.innerHTML = `🎉 ¡Terminaste el examen de ${modoActual === 'sinonimos' ? 'Sinónimos' : 'Manual MD 1-0'}!`;
+  listaOpciones.innerHTML = "";
+  feedbackTexto.className = "feedback success";
+  feedbackTexto.innerHTML = `<div class="resultado-final"><h2>📊 Resultado final</h2><div class="nota-grande">${nota}<small>/20</small></div><p><strong>✅ Buenas:</strong> ${buenas} (${porcentajeBuenas}%)</p><p><strong>❌ Malas:</strong> ${malas} (${porcentajeMalas}%)</p><p><strong>🎯 Puntaje:</strong> ${puntaje} puntos</p></div>`;
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "block";
+  btnSiguiente.textContent = modoActual === 'sinonimos' ? "🔄 Otras 50 preguntas de Sinónimos" : "🔄 Nuevo examen MD 1-0";
+  btnSiguiente.onclick = iniciarTest;
 }
-
-function reiniciarSeleccion() {
-    iniciado = false;
-    inicioScreen.classList.remove("hidden");
-    quizScreen.classList.add("hidden");
-    listaOpciones.innerHTML = "";
-    feedbackTexto.textContent = "";
-    feedbackTexto.className = "feedback";
-    contenedorAnalisis.style.display = "none";
-    btnSiguiente.style.display = "none";
-    txtProgreso.textContent = "Pregunta: 0/50";
-    txtPuntaje.textContent = "✨ Puntos: 0";
-    txtRacha.textContent = "🔥 Racha: 0";
-    barraProgreso.style.width = "0%";
-    seleccionarModo(modoActual);
-}
-
-function volverAlInicio() {
-    if (confirm("¿Quieres salir del test y volver a elegir la modalidad?")) {
-        reiniciarSeleccion();
-    }
-}
-
 function verificarRespuesta(indiceSeleccionado, botonPresionado) {
-    if (bloqueado) return;
-    bloqueado = true;
-
-    const item = preguntas[idxActual];
-    const botones = Array.from(listaOpciones.getElementsByClassName("option-btn"));
-    botones.forEach(boton => boton.disabled = true);
-
-    if (indiceSeleccionado === item.r) {
-        botonPresionado.classList.add("correct");
-        feedbackTexto.textContent = "✨ ¡Correcto!";
-        feedbackTexto.className = "feedback success";
-        puntaje += 10;
-        correctas++;
-        racha++;
-        mejorRacha = Math.max(mejorRacha, racha);
-        alertaRespuestaCorrecta.style.display = "none";
-    } else {
-        botonPresionado.classList.add("incorrect");
-        if (botones[item.r]) botones[item.r].classList.add("correct");
-        feedbackTexto.textContent = "❌ Respuesta incorrecta.";
-        feedbackTexto.className = "feedback error";
-        incorrectas++;
-        racha = 0;
-        alertaRespuestaCorrecta.style.display = "inline-block";
-        alertaRespuestaCorrecta.textContent = `La respuesta correcta era: ${String.fromCharCode(65 + item.r)}) ${item.o[item.r]}`;
-    }
-
-    txtPuntaje.textContent = `✨ Puntos: ${puntaje}`;
-    txtRacha.textContent = `🔥 Racha: ${racha}`;
-    analisisTexto.textContent = item.a || item.exp || "Respuesta basada en el contenido del banco.";
-    contenedorAnalisis.style.display = "block";
-    barraProgreso.style.width = `${((idxActual + 1) / preguntas.length) * 100}%`;
-    btnSiguiente.style.display = "block";
-    btnSiguiente.textContent = idxActual === preguntas.length - 1 ? "📊 Ver resultado" : "➡️ Siguiente pregunta";
-    btnSiguiente.onclick = avanzarPregunta;
+  if (bloqueado) return;
+  bloqueado = true;
+  const item = preguntas[idxActual];
+  const botones = Array.from(listaOpciones.getElementsByClassName("option-btn"));
+  botones.forEach(b => b.disabled = true);
+  const esCorrecta = indiceSeleccionado === item._respuesta;
+  if (esCorrecta) {
+    botonPresionado.classList.add("correct");
+    feedbackTexto.innerHTML = "✨ ¡Correcto!";
+    feedbackTexto.className = "feedback success";
+    puntaje += 10;
+    racha += 1;
+    alertaRespuestaCorrecta.style.display = "none";
+  } else {
+    botonPresionado.classList.add("incorrect");
+    botones[item._respuesta].classList.add("correct");
+    feedbackTexto.innerHTML = "❌ Respuesta incorrecta.";
+    feedbackTexto.className = "feedback error";
+    racha = 0;
+    alertaRespuestaCorrecta.style.display = "inline-block";
+    alertaRespuestaCorrecta.innerHTML = `Respuesta correcta: <strong>${item._opciones[item._respuesta].etiqueta}) ${item._opciones[item._respuesta].texto}</strong>`;
+  }
+  txtPuntaje.textContent = `✨ Puntos: ${puntaje}`;
+  txtRacha.textContent = `🔥 Racha: ${racha}`;
+  analisisTexto.innerHTML = `<div><strong>📖 Significado de la respuesta:</strong> ${obtenerSignificado(item)}</div><div style="margin-top:8px"><strong>🧠 Relación:</strong> El término seleccionado corresponde al sentido del concepto planteado según el banco de estudio.</div>`;
+  contenedorAnalisis.style.display = "block";
+  btnSiguiente.style.display = "block";
+  btnSiguiente.textContent = idxActual === preguntas.length - 1 ? "📊 Ver resultado" : "➡️ Siguiente pregunta";
+  btnSiguiente.onclick = avanzarPregunta;
 }
 
 function avanzarPregunta() {
-    if (!bloqueado) return;
-    idxActual++;
-    cargarPregunta();
+  if (!bloqueado) return;
+  idxActual++;
+  cargarPregunta();
 }
 
-seleccionarModo("sinonimos");
+function seleccionarModo(modo) {
+  modoActual = modo;
+  bancoActual = modo === 'sinonimos' ? bancoPreguntas : bancoMD;
+  preguntasRestantes = mezclar([...bancoActual]);
+  selectorModo.style.display = "none";
+  panelExamen.style.display = "block";
+  tituloPrincipal.textContent = modo === 'sinonimos' ? "📖 Test de Sinónimos" : "🎖️ Test del Manual MD 1-0";
+  modoActualTexto.textContent = modo === 'sinonimos' ? "📖 Sinónimos" : "🎖️ Manual MD 1-0";
+  const cantidad = modo === 'sinonimos' ? 50 : Math.min(50, bancoMD.length);
+  btnIniciar.textContent = modo === 'sinonimos' ? "▶️ Iniciar 50 preguntas de Sinónimos" : `▶️ Iniciar ${cantidad} preguntas del MD 1-0`;
+  txtProgreso.textContent = `Pregunta: 0/${cantidad}`;
+  preguntaTexto.textContent = modo === 'sinonimos' ? "Presiona «Iniciar» para comenzar el examen de Sinónimos." : "Presiona «Iniciar» para comenzar el examen exclusivo del Manual MD 1-0.";
+  listaOpciones.innerHTML = "";
+  feedbackTexto.innerHTML = "";
+  contenedorAnalisis.style.display = "none";
+  btnSiguiente.style.display = "none";
+  btnIniciar.style.display = "block";
+  iniciado = false;
+}
+
+function cambiarModo() {
+  modoActual = null;
+  bancoActual = [];
+  preguntas = [];
+  preguntasRestantes = [];
+  selectorModo.style.display = "block";
+  panelExamen.style.display = "none";
+  tituloPrincipal.textContent = "📚 Banco de Preguntas";
+}
+
+function iniciarTest() {
+  if (!modoActual || bancoActual.length === 0) return;
+  if (preguntasRestantes.length === 0) preguntasRestantes = mezclar([...bancoActual]);
+
+  // Sinónimos: rondas de 50. Manual MD 1-0: usa el banco del manual únicamente.
+  const cantidadRonda = modoActual === 'sinonimos' ? 50 : Math.min(50, preguntasRestantes.length);
+  preguntas = mezclar([...preguntasRestantes]).slice(0, cantidadRonda);
+  const usadas = new Set(preguntas.map(p => p.n));
+  preguntasRestantes = preguntasRestantes.filter(p => !usadas.has(p.n));
+
+  idxActual = 0; puntaje = 0; racha = 0; bloqueado = false; iniciado = true;
+  btnIniciar.style.display = "none";
+  txtPuntaje.textContent = "✨ Puntos: 0";
+  txtRacha.textContent = "🔥 Racha: 0";
+  btnSiguiente.style.display = "none";
+  cargarPregunta();
+}
 </script>
 </body>
 </html>
