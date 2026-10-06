@@ -543,7 +543,14 @@ function verificarRespuesta(indiceSeleccionado, botonPresionado) {
   }
   txtPuntaje.textContent = `✨ Puntos: ${puntaje}`;
   txtRacha.textContent = `🔥 Racha: ${racha}`;
-  analisisTexto.innerHTML = `<div><strong>📖 Significado de la respuesta:</strong> ${obtenerSignificado(item)}</div><div style="margin-top:8px"><strong>🧠 Relación:</strong> El término seleccionado corresponde al sentido del concepto planteado según el banco de estudio.</div>`;
+  const significadoRespuesta = obtenerSignificado(item);
+  const esSinonimo = item.n <= 300;
+  const conceptoPregunta = esSinonimo
+    ? `${item.p}: ${significadoRespuesta}`
+    : `El concepto planteado se relaciona con la respuesta correcta según el contenido del Manual MD 1-0.`;
+  analisisTexto.innerHTML = esSinonimo
+    ? `<div><strong>📖 Significado de la respuesta:</strong> ${significadoRespuesta}</div><div style="margin-top:8px"><strong>🧠 Concepto de la pregunta:</strong> ${conceptoPregunta}</div>`
+    : `<div><strong>📖 Significado de la respuesta:</strong> ${significadoRespuesta}</div><div style="margin-top:8px"><strong>🧠 Relación:</strong> ${conceptoPregunta}</div>`;
   contenedorAnalisis.style.display = "block";
   btnSiguiente.style.display = "block";
   btnSiguiente.textContent = idxActual === preguntas.length - 1 ? "📊 Ver resultado" : "➡️ Siguiente pregunta";
