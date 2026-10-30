@@ -102,8 +102,11 @@
         .res-error-l .mal { color: var(--mal); font-weight: 700; }
         .res-error-l .bien { color: var(--ok); font-weight: 700; }
         .res-perfecto { margin-top: 16px; font-weight: 700; color: var(--ok); }
+        .sis-btn { background: #7c9cff; color: #0a1230; }
         .tcp-btn { background: #4ea8ff; color: #04162b; }
         .so-btn { background: #a78bfa; color: #170b3a; }
+        .volver-btn { background: #2a3658; color: var(--texto); }
+        .volver-btn:hover { background: #34426a; filter: none; }
     </style>
 </head>
 <body>
@@ -113,10 +116,22 @@
 
     <div id="selector-modo" class="modo-selector">
         <p class="selector-subtitulo">Selecciona el tipo de examen que deseas realizar:</p>
-        <button class="start-btn" onclick="seleccionarModo('sinonimos')">📖 SINÓNIMOS</button>
+        <button class="start-btn" onclick="abrirVerbal()">🧠 RAZONAMIENTO VERBAL</button>
         <button class="start-btn manual-btn" onclick="seleccionarModo('manual')">🎖️ MANUAL MD 1-0</button>
+        <button class="start-btn sis-btn" onclick="abrirSistemas()">💻 ING SISTEMAS</button>
+    </div>
+
+    <div id="selector-verbal" class="modo-selector" style="display:none;">
+        <p class="selector-subtitulo">Razonamiento Verbal: elige el tema que deseas practicar:</p>
+        <button class="start-btn" onclick="seleccionarModo('sinonimos')">📖 SINÓNIMOS</button>
+        <button class="start-btn volver-btn" onclick="volverMenuPrincipal()">⬅️ Volver al menú principal</button>
+    </div>
+
+    <div id="selector-sistemas" class="modo-selector" style="display:none;">
+        <p class="selector-subtitulo">Ing. Sistemas: elige el curso que deseas practicar:</p>
         <button class="start-btn tcp-btn" onclick="seleccionarModo('tcpip')">🌐 TCP/IP</button>
         <button class="start-btn so-btn" onclick="seleccionarModo('so')">💻 INTRODUCCIÓN S.O.</button>
+        <button class="start-btn volver-btn" onclick="volverMenuPrincipal()">⬅️ Volver al menú principal</button>
     </div>
 
     <div id="panel-examen" style="display:none;">
@@ -592,7 +607,52 @@ const bancoPreguntas = [
 {"n": 442, "p": "REO", "o": ["A) preso", "B) prófugo", "C) convicto", "D) inculpado", "E) sentenciado"], "r": 0, "a": "Preso. Persona detenida o privada de libertad por la justicia.", "c": "Persona detenida o privada de libertad por la justicia."},
 {"n": 443, "p": "CAUSAL", "o": ["A) visual", "B) azar", "C) suerte", "D) motivo", "E) imprevisto"], "r": 3, "a": "Motivo. Razón o causa que explica un acontecimiento.", "c": "Razón o causa que explica un acontecimiento."},
 {"n": 444, "p": "AEDO", "o": ["A) viento", "B) vanidad", "C) aire", "D) poeta", "E) atmósfera"], "r": 3, "a": "Poeta. Cantor épico de la antigua Grecia.", "c": "Cantor épico de la antigua Grecia."},
-{"n": 445, "p": "AFORO", "o": ["A) forrar", "B) cobrar", "C) cabida", "D) cerrado", "E) tapar"], "r": 2, "a": "Cabida. Capacidad o espacio disponible de un recinto.", "c": "Capacidad o espacio disponible de un recinto."}
+{"n": 445, "p": "AFORO", "o": ["A) forrar", "B) cobrar", "C) cabida", "D) cerrado", "E) tapar"], "r": 2, "a": "Cabida. Capacidad o espacio disponible de un recinto.", "c": "Capacidad o espacio disponible de un recinto."},
+{"n": 446, "p": "AGENESIA", "o": ["A) fecundo", "B) abundante", "C) robusto", "D) vigoroso", "E) estéril"], "r": 4, "a": "Estéril. La agenesia implica la imposibilidad o falta de desarrollo/engendramiento, asociada a lo estéril.", "c": "La agenesia implica la imposibilidad o falta de desarrollo/engendramiento, asociada a lo estéril."},
+{"n": 447, "p": "TRANSCRIBIR", "o": ["A) borrar", "B) omitir", "C) tachar", "D) copiar", "E) inventar"], "r": 3, "a": "Copiar. Transcribir es pasar un texto de un lugar a otro o copiarlo fielmente.", "c": "Transcribir es pasar un texto de un lugar a otro o copiarlo fielmente."},
+{"n": 448, "p": "ABSCISIÓN", "o": ["A) unión", "B) separación", "C) adhesión", "D) fusión", "E) mezcla"], "r": 1, "a": "Separación. La abscisión es la separación o corte de una parte de un cuerpo o tejido.", "c": "La abscisión es la separación o corte de una parte de un cuerpo o tejido."},
+{"n": 449, "p": "ABALIZAR", "o": ["A) ocultar", "B) borrar", "C) apagar", "D) ignorar", "E) señalar"], "r": 4, "a": "Señalar. Abalizar significa colocar balizas para marcar o señalar un camino o peligro.", "c": "Abalizar significa colocar balizas para marcar o señalar un camino o peligro."},
+{"n": 450, "p": "CONCOMITANTE", "o": ["A) ajeno", "B) opuesto", "C) relacionado", "D) aislado", "E) contrario"], "r": 2, "a": "Relacionado. Lo concomitante es aquello que acompaña o está estrechamente relacionado con otra cosa.", "c": "Lo concomitante es aquello que acompaña o está estrechamente relacionado con otra cosa."},
+{"n": 451, "p": "ASEPSIA", "o": ["A) saneamiento", "B) contagio", "C) infección", "D) suciedad", "E) podredumbre"], "r": 0, "a": "Saneamiento. La asepsia es la ausencia de gérmenes o el proceso de desinfección y saneamiento.", "c": "La asepsia es la ausencia de gérmenes o el proceso de desinfección y saneamiento."},
+{"n": 452, "p": "INSIDIOSO", "o": ["A) amable", "B) sincero", "C) leal", "D) generoso", "E) fastidioso"], "r": 4, "a": "Fastidioso. En esta clave específica se vincula lo insidioso con lo molesto o fastidioso. Nota: en el diccionario, insidioso es quien tiende asechanzas; la clave de tu lista lo asocia con fastidioso.", "c": "En esta clave específica se vincula lo insidioso con lo molesto o fastidioso."},
+{"n": 453, "p": "AHÍTO", "o": ["A) hambriento", "B) harto", "C) famélico", "D) necesitado", "E) escaso"], "r": 1, "a": "Harto. Ahíto se refiere a la persona saciada o harta de comida u otra cosa.", "c": "Ahíto se refiere a la persona saciada o harta de comida u otra cosa."},
+{"n": 454, "p": "SEDANTE", "o": ["A) paliativo", "B) estimulante", "C) excitante", "D) tóxico", "E) irritante"], "r": 0, "a": "Paliativo. Un sedante actúa como un paliativo para calmar o mitigar molestias o dolor.", "c": "Un sedante actúa como un paliativo para calmar o mitigar molestias o dolor."},
+{"n": 455, "p": "INCUMBIR", "o": ["A) eludir", "B) rehusar", "C) ignorar", "D) atañer", "E) descuidar"], "r": 3, "a": "Atañer. Incumbir significa corresponder o atañer a alguien una obligación o asunto.", "c": "Incumbir significa corresponder o atañer a alguien una obligación o asunto."},
+{"n": 456, "p": "IDEOLOGÍA", "o": ["A) anarquía", "B) ignorancia", "C) azar", "D) doctrina", "E) desorden"], "r": 3, "a": "Doctrina. Una ideología es un conjunto de ideas o doctrina que rige un pensamiento.", "c": "Una ideología es un conjunto de ideas o doctrina que rige un pensamiento."},
+{"n": 457, "p": "ABDICACIÓN", "o": ["A) asumir", "B) renunciar", "C) usurpar", "D) reclamar", "E) heredar"], "r": 1, "a": "Renunciar. La abdicación es el acto formal de ceder o renunciar a un cargo o soberanía.", "c": "La abdicación es el acto formal de ceder o renunciar a un cargo o soberanía."},
+{"n": 458, "p": "IGNICIÓN", "o": ["A) extinción", "B) enfriamiento", "C) combustión", "D) sofoco", "E) humedad"], "r": 2, "a": "Combustión. La ignición es el desencadenamiento de una combustión o fuego.", "c": "La ignición es el desencadenamiento de una combustión o fuego."},
+{"n": 459, "p": "HURGUETE", "o": ["A) discreto", "B) indiferente", "C) apático", "D) fisgón", "E) reservado"], "r": 3, "a": "Fisgón. Hurguete describe a la persona curiosa, entrometida o fisgona.", "c": "Hurguete describe a la persona curiosa, entrometida o fisgona."},
+{"n": 460, "p": "FORTUITO", "o": ["A) previsto", "B) planeado", "C) seguro", "D) inopinado", "E) deliberado"], "r": 3, "a": "Inopinado. Fortuito es aquello que sucede por casualidad o de manera inopinada.", "c": "Fortuito es aquello que sucede por casualidad o de manera inopinada."},
+{"n": 461, "p": "DISCONTINUO", "o": ["A) constante", "B) continuo", "C) perpetuo", "D) ininterrumpido", "E) intermitente"], "r": 4, "a": "Intermitente. Algo discontinuo no es constante, sino que ocurre de forma intermitente.", "c": "Algo discontinuo no es constante, sino que ocurre de forma intermitente."},
+{"n": 462, "p": "ALEA", "o": ["A) certeza", "B) orden", "C) plan", "D) azar", "E) lógica"], "r": 3, "a": "Azar. Alea es un sustantivo que denota suerte, contingencia o azar.", "c": "Alea es un sustantivo que denota suerte, contingencia o azar."},
+{"n": 463, "p": "TÚMULO", "o": ["A) cuna", "B) altar", "C) tumba", "D) trono", "E) estrado"], "r": 2, "a": "Tumba. Un túmulo es el sepulcro o tumba levantada sobre la tierra.", "c": "Un túmulo es el sepulcro o tumba levantada sobre la tierra."},
+{"n": 464, "p": "DECURSO", "o": ["A) continuación", "B) detención", "C) retroceso", "D) interrupción", "E) inicio"], "r": 0, "a": "Continuación. El decurso es la continuación o el paso del tiempo y de los acontecimientos.", "c": "El decurso es la continuación o el paso del tiempo y de los acontecimientos."},
+{"n": 465, "p": "HETEROGENEIDAD", "o": ["A) uniformidad", "B) variedad", "C) igualdad", "D) similitud", "E) unidad"], "r": 1, "a": "Variedad. La heterogeneidad implica diversidad de elementos, es decir, variedad.", "c": "La heterogeneidad implica diversidad de elementos, es decir, variedad."},
+{"n": 466, "p": "DICTAMEN", "o": ["A) silencio", "B) rumor", "C) opinión", "D) capricho", "E) mandato"], "r": 2, "a": "Opinión. Un dictamen es un juicio, valoración u opinión emitida sobre un asunto.", "c": "Un dictamen es un juicio, valoración u opinión emitida sobre un asunto."},
+{"n": 467, "p": "FISONOMÍA", "o": ["A) semblante", "B) disfraz", "C) carácter", "D) voz", "E) vestimenta"], "r": 0, "a": "Semblante. La fisonomía es el aspecto particular del rostro o semblante de una persona.", "c": "La fisonomía es el aspecto particular del rostro o semblante de una persona."},
+{"n": 468, "p": "FRACCIONAR", "o": ["A) unir", "B) partir", "C) juntar", "D) sumar", "E) completar"], "r": 1, "a": "Partir. Fraccionar equivale a dividir o partir un todo en partes.", "c": "Fraccionar equivale a dividir o partir un todo en partes."},
+{"n": 469, "p": "MAJAR", "o": ["A) alisar", "B) triturar", "C) pulir", "D) ensamblar", "E) estirar"], "r": 1, "a": "Triturar. Majar es machacar, desmenuzar o triturar un elemento.", "c": "Majar es machacar, desmenuzar o triturar un elemento."},
+{"n": 470, "p": "HIRSUTO", "o": ["A) lampiño", "B) erizado", "C) suave", "D) terso", "E) pelado"], "r": 1, "a": "Erizado. Hirsuto califica al pelo disperso, áspero y erizado.", "c": "Hirsuto califica al pelo disperso, áspero y erizado."},
+{"n": 471, "p": "DETRACCIÓN", "o": ["A) alabanza", "B) elogio", "C) difamación", "D) defensa", "E) aplauso"], "r": 2, "a": "Difamación. Detracción es el acto de desacreditar, hablar mal o difamar a alguien.", "c": "Detracción es el acto de desacreditar, hablar mal o difamar a alguien."},
+{"n": 472, "p": "HATO", "o": ["A) joyas", "B) víveres", "C) armas", "D) flores", "E) libros"], "r": 1, "a": "Víveres. Un hato es el conjunto de provisión de ropas, enseres o víveres.", "c": "Un hato es el conjunto de provisión de ropas, enseres o víveres."},
+{"n": 473, "p": "ENERVADO", "o": ["A) debilitado", "B) fortalecido", "C) vigoroso", "D) enérgico", "E) entusiasmado"], "r": 0, "a": "Debilitado. Enervar es quitar las fuerzas o dejar a alguien debilitado.", "c": "Enervar es quitar las fuerzas o dejar a alguien debilitado."},
+{"n": 474, "p": "REPULSIÓN", "o": ["A) atracción", "B) simpatía", "C) agrado", "D) aceptación", "E) rechazo"], "r": 4, "a": "Rechazo. La repulsión expresa aversión o rechazo categórico.", "c": "La repulsión expresa aversión o rechazo categórico."},
+{"n": 475, "p": "SOCOLOR", "o": ["A) verdad", "B) pretexto", "C) franqueza", "D) sinceridad", "E) realidad"], "r": 1, "a": "Pretexto. Socolor es una locución o término utilizado como motivo o pretexto.", "c": "Socolor es una locución o término utilizado como motivo o pretexto."},
+{"n": 476, "p": "HECES", "o": ["A) excremento", "B) alimento", "C) sudor", "D) saliva", "E) savia"], "r": 0, "a": "Excremento. Heces se refiere a los residuos fecales o excremento.", "c": "Heces se refiere a los residuos fecales o excremento."},
+{"n": 477, "p": "HARNERO", "o": ["A) martillo", "B) cuchara", "C) zaranda", "D) balde", "E) pala"], "r": 2, "a": "Zaranda. El harnero es un cedazo o zaranda para cernir materiales.", "c": "El harnero es un cedazo o zaranda para cernir materiales."},
+{"n": 478, "p": "ABOMINACIÓN", "o": ["A) agrado", "B) afecto", "C) simpatía", "D) repulsión", "E) devoción"], "r": 3, "a": "Repulsión. La abominación es el aborrecimiento extremo o repulsión hacia algo.", "c": "La abominación es el aborrecimiento extremo o repulsión hacia algo."},
+{"n": 479, "p": "ACTITUD", "o": ["A) postura", "B) error", "C) lugar", "D) ruido", "E) objeto"], "r": 0, "a": "Postura. Actitud se refiere a la postura o disposición física/mental.", "c": "Actitud se refiere a la postura o disposición física/mental."},
+{"n": 480, "p": "OSTENTACIÓN", "o": ["A) modestia", "B) discreción", "C) sencillez", "D) oscilación", "E) humildad"], "r": 3, "a": "Oscilación. En este examen se asocia al vaivén o movimiento de oscilación. Nota: en el diccionario, ostentación es alarde o jactancia; la clave de tu lista la asocia con oscilación.", "c": "En este examen se asocia al vaivén o movimiento de oscilación."},
+{"n": 481, "p": "PANEGIRISTA", "o": ["A) detractor", "B) crítico", "C) rival", "D) opositor", "E) sectario"], "r": 4, "a": "Sectario. Se asocia al defensor fervoroso o eufórico de una doctrina. Nota: en el diccionario, panegirista es quien elogia; la clave de tu lista lo asocia con sectario.", "c": "Se asocia al defensor fervoroso o eufórico de una doctrina."},
+{"n": 482, "p": "HOMILÍA", "o": ["A) himno", "B) poema", "C) sermón", "D) fábula", "E) canción"], "r": 2, "a": "Sermón. La homilía es la plática o sermón religioso.", "c": "La homilía es la plática o sermón religioso."},
+{"n": 483, "p": "EXENTO", "o": ["A) obligado", "B) liberado", "C) gravado", "D) sujeto", "E) sometido"], "r": 1, "a": "Liberado. Estar exento significa estar libre o liberado de una carga u obligación.", "c": "Estar exento significa estar libre o liberado de una carga u obligación."},
+{"n": 484, "p": "ACTIVO", "o": ["A) pasivo", "B) eficaz", "C) inerte", "D) lento", "E) inactivo"], "r": 1, "a": "Eficaz. En esta clave se asocia con el dinamismo enfocado en ser eficaz.", "c": "En esta clave se asocia con el dinamismo enfocado en ser eficaz."},
+{"n": 485, "p": "RETICENTE", "o": ["A) insiste", "B) franco", "C) sincero", "D) abierto", "E) explícito"], "r": 0, "a": "Insiste. En esta evaluación se vincula con la persistencia de una actitud. Nota: en el diccionario, reticente es quien se muestra reservado o desconfiado; la clave de tu lista lo asocia con insiste.", "c": "En esta evaluación se vincula con la persistencia de una actitud."},
+{"n": 486, "p": "HIDRÓPICO", "o": ["A) sediento", "B) saciado", "C) satisfecho", "D) hidratado", "E) repleto"], "r": 0, "a": "Sediento. En pruebas verbales se relaciona directamente con el estado de estar sediento.", "c": "En pruebas verbales se relaciona directamente con el estado de estar sediento."},
+{"n": 487, "p": "ADHESIÓN", "o": ["A) rechazo", "B) desunión", "C) separación", "D) desapego", "E) apego"], "r": 4, "a": "Apego. Expresa inclinación, unión o apego voluntario.", "c": "Expresa inclinación, unión o apego voluntario."},
+{"n": 488, "p": "DENIGRANTE", "o": ["A) elogioso", "B) honroso", "C) humillante", "D) halagador", "E) ilustre"], "r": 2, "a": "Humillante. Denigrante se refiere a aquello que deshonra o resulta humillante.", "c": "Denigrante se refiere a aquello que deshonra o resulta humillante."},
+{"n": 489, "p": "ADITAMENTO", "o": ["A) añadidura", "B) sustracción", "C) recorte", "D) pérdida", "E) mengua"], "r": 0, "a": "Añadidura. Aditamento es la cosa que se agrega o añadidura.", "c": "Aditamento es la cosa que se agrega o añadidura."},
+{"n": 490, "p": "CONMINACIÓN", "o": ["A) promesa", "B) intimidación", "C) súplica", "D) ruego", "E) halago"], "r": 1, "a": "Intimidación. Conminación es la amenaza o intimidación con una pena.", "c": "Conminación es la amenaza o intimidación con una pena."}
 ];
 const bancoMD = [
 {n:301,p:"MD 1-0: ¿Qué enunciado distingue mejor una capacidad fundamental de una capacidad operacional?",o:["A) La fundamental agrupa capacidades operacionales similares; la operacional es una habilidad componente de una fundamental.","B) La fundamental es propia del nivel táctico; la operacional, del nivel estratégico.","C) La fundamental se refiere al personal; la operacional, al material.","D) Ambas expresiones son equivalentes y se usan indistintamente.","E) La operacional reemplaza a las funciones del Ejército en tiempo de paz."],r:0,a:"Las capacidades fundamentales agrupan capacidades operacionales similares y orientan el diseño de la estructura y magnitud de la fuerza; las operacionales son habilidades componentes de una fundamental."},
@@ -1090,6 +1150,9 @@ const bancoTCP = [
 ];
 
 // Los bancos permanecen separados: nunca se mezclan Sinónimos y Manual MD 1-0.
+// Cantidad de preguntas por examen (si el banco tiene menos, se usan todas).
+const PREGUNTAS_POR_RONDA = 50;
+
 // Configuración de cada modalidad (los bancos nunca se mezclan entre sí).
 const MODOS = {
   sinonimos: { banco: bancoPreguntas, titulo: "📖 Test de Sinónimos", etiqueta: "📖 Sinónimos", nombre: "Sinónimos" },
@@ -1123,6 +1186,8 @@ const analisisTexto = document.getElementById("analisis-texto");
 const btnSiguiente = document.getElementById("btn-siguiente");
 const btnIniciar = document.getElementById("btn-iniciar");
 const selectorModo = document.getElementById("selector-modo");
+const selectorSistemas = document.getElementById("selector-sistemas");
+const selectorVerbal = document.getElementById("selector-verbal");
 const panelExamen = document.getElementById("panel-examen");
 const tituloPrincipal = document.getElementById("titulo-principal");
 const modoActualTexto = document.getElementById("modo-actual");
@@ -1276,15 +1341,38 @@ function avanzarPregunta() {
   cargarPregunta();
 }
 
+// Menú "RAZONAMIENTO VERBAL": agrupa los temas verbales (por ahora, Sinónimos).
+function abrirVerbal() {
+  selectorModo.style.display = "none";
+  selectorVerbal.style.display = "block";
+  tituloPrincipal.textContent = "🧠 RAZONAMIENTO VERBAL";
+}
+
+// Menú "ING SISTEMAS": agrupa TCP/IP e Introducción a S.O.
+function abrirSistemas() {
+  selectorModo.style.display = "none";
+  selectorSistemas.style.display = "block";
+  tituloPrincipal.textContent = "💻 ING SISTEMAS";
+}
+
+function volverMenuPrincipal() {
+  selectorSistemas.style.display = "none";
+  selectorVerbal.style.display = "none";
+  selectorModo.style.display = "block";
+  tituloPrincipal.textContent = "📚 Banco de Preguntas";
+}
+
 function seleccionarModo(modo) {
   modoActual = modo;
   bancoActual = MODOS[modo].banco;
   preguntasRestantes = mezclar([...bancoActual]);
   selectorModo.style.display = "none";
+  selectorSistemas.style.display = "none";
+  selectorVerbal.style.display = "none";
   panelExamen.style.display = "block";
   tituloPrincipal.textContent = MODOS[modo].titulo;
   modoActualTexto.textContent = MODOS[modo].etiqueta;
-  const cantidad = Math.min(20, bancoActual.length);
+  const cantidad = Math.min(PREGUNTAS_POR_RONDA, bancoActual.length);
   btnIniciar.textContent = `▶️ Iniciar ${cantidad} preguntas de ${MODOS[modo].nombre}`;
   txtProgreso.textContent = `Pregunta: 0/${cantidad}`;
   preguntaTexto.textContent = `Presiona «Iniciar» para comenzar el examen de ${MODOS[modo].nombre}.`;
@@ -1299,19 +1387,20 @@ function seleccionarModo(modo) {
 }
 
 function cambiarModo() {
+  const veniaDeSistemas = modoActual === "tcpip" || modoActual === "so";
+  const veniaDeVerbal = modoActual === "sinonimos";
   iniciado = false;
   modoActual = null;
   bancoActual = [];
   preguntas = [];
   preguntasRestantes = [];
-  selectorModo.style.display = "block";
   panelExamen.style.display = "none";
-  tituloPrincipal.textContent = "📚 Banco de Preguntas";
+  if (veniaDeSistemas) abrirSistemas(); else if (veniaDeVerbal) abrirVerbal(); else volverMenuPrincipal();
 }
 
 function iniciarTest() {
   if (!modoActual || bancoActual.length === 0) return;
-  const cantidadRonda = Math.min(20, bancoActual.length);
+  const cantidadRonda = Math.min(PREGUNTAS_POR_RONDA, bancoActual.length);
   if (preguntasRestantes.length < cantidadRonda) {
     const ya = new Set(preguntasRestantes.map(p => p.n));
     preguntasRestantes = [...preguntasRestantes, ...mezclar(bancoActual.filter(p => !ya.has(p.n)))];
